@@ -10,33 +10,33 @@
 	<script src="../src/request.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../src/stats.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../src/queues.js" type="text/javascript" charset="utf-8"></script>
-	
+
 	<script src="lib/jquery-1.6.2.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="lib/jquery-ui-1.8.16.custom.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="lib/raphael-min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="lib/g.raphael-min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="lib/g.bar-min.js" type="text/javascript" charset="utf-8"></script>
-	
-	
+
+
 	<script src="simpanel.js" type="text/javascript" charset="utf-8"></script>
 	<script src="queue.js" type="text/javascript" charset="utf-8"></script>
-	
+
 	<link rel="stylesheet" href="panel.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="css/jquery-ui-1.8.16.custom.css" type="text/css" media="screen" title="no title" charset="utf-8">
-	
+
 	<script type="text/javascript" charset="utf-8">
 
 		$(function () {
-			
+
 			QueueApp.init();
 			QueueApp.reset();
-	
+
 QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":null},{"x":156,"y":92,"type":"source","name":"source_1","out":"monitor_1","model":{"lambda":0.25}}]');
 
 //QueueApp.loadtext('[{"x":324,"y":158,"type":"splitter","name":"splitter_1","out":["queue_2","queue_1"],"model":{"prob":0.5}},{"x":315,"y":259,"type":"source","name":"source_5","out":"queue_1","model":{"lambda":0.5}},{"x":310,"y":68,"type":"source","name":"source_4","out":"queue_2","model":{"lambda":0.5}},{"x":162,"y":229,"type":"source","name":"source_3","out":"queue_4","model":{"lambda":0.5}},{"x":169,"y":125,"type":"source","name":"source_2","out":"queue_4","model":{"lambda":0.5}},{"x":5,"y":237,"type":"source","name":"source_1","out":"queue_3","model":{"lambda":0.5}},{"x":190,"y":165,"type":"queue","name":"queue_4","out":"splitter_1","model":{"nservers":1,"mu":1,"infinite":true,"maxqlen":0}},{"x":40,"y":165,"type":"queue","name":"queue_3","out":"queue_4","model":{"nservers":1,"mu":1,"infinite":true,"maxqlen":0}},{"x":362,"y":91,"type":"queue","name":"queue_2","model":{"nservers":1,"mu":1,"infinite":true,"maxqlen":0}},{"x":380,"y":212,"type":"queue","name":"queue_1","model":{"nservers":1,"mu":1,"infinite":true,"maxqlen":0}}]');
-		
+
 	});
-		
+
 	</script>
 </head>
 
@@ -58,14 +58,14 @@ QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":
 				<button id="play_sim">Simulate</button>
 				<button id="config_sim">5000 sec</button>
 			</span>
-			
+
 		</span>
 	</div>
 
 
-	<div id="canvas">	
+	<div id="canvas">
 	</div>
-	
+
 	<div id="results">
 		<div id="server_stats" class="stats">
 			<h2>Server 1</h2>
@@ -88,7 +88,7 @@ QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":
 			</table>
 		</div>
 	</div>
-	
+
 	More here.
 	<div id="server_form" title="Server Properties">
 		<form>
@@ -98,7 +98,7 @@ QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":
 		</fieldset>
 		</form>
 	</div>
-	
+
 	<div id="source_form" title="Source Properties">
 		<form>
 		<fieldset>
@@ -107,7 +107,7 @@ QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":
 		</fieldset>
 		</form>
 	</div>
-	
+
 	<div id="splitter_form" title="Splitter Properties">
 		<form>
 		<fieldset>
@@ -116,11 +116,11 @@ QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":
 		</fieldset>
 		</form>
 	</div>
-	
+
 	<div id="monitor_form" title="Splitter Properties">
 
 	</div>
-	
+
 	<div id="save_dialog" title="Save">
 		<p>Save the following to a text file. </p>
 		<textarea id="save_textarea" name="save_textarea" rows="20" cols="80"></textarea>
@@ -131,10 +131,10 @@ QueueApp.loadtext('[{"x":384,"y":73,"type":"monitor","name":"monitor_1","model":
 	</div>
 
 	<div id="log">
-		
+
 	</div>
 
-	
+
 </body>
 
 </html>

@@ -57,7 +57,7 @@ function runTests() {
 			}
 		}
 	}
-	
+
 	document.write("Number of test cases = " + alltests.length);
 	for (var i = 0; i < alltests.length; i ++) {
 		var fn = alltests[i];
@@ -73,6 +73,8 @@ function runTests() {
 			throw new Error("Testing stopped on error");
 		}
 	}
-	
+
 	document.write("SUCCESS !!");
 };
+
+export { assertFail, assertAlmost, assertEquals }

@@ -12,7 +12,7 @@
 function Sim() {
 	this.simTime = 0;
 	this.entities = [];
-	this.queue = new Sim.PQueue();
+	this.queue = new PQueue();
 	this.endTime = 0;
 	this.entityId = 1;
 }
@@ -62,7 +62,7 @@ Sim.prototype.addEntity = function (proto) {
 		proto.setTimer = function (duration) {
 			ARG_CHECK(arguments, 1, 1);
 			
-			var ro = new Sim.Request(
+			var ro = new Request(
 					this, 
 					this.sim.time(), 
 					this.sim.time() + duration);
@@ -72,9 +72,9 @@ Sim.prototype.addEntity = function (proto) {
 		};
 		
 		proto.waitEvent = function (event) {
-			ARG_CHECK(arguments, 1, 1, Sim.Event);
+			ARG_CHECK(arguments, 1, 1, Event);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			
 			ro.source = event;
 			event.addWaitList(ro);
@@ -82,9 +82,9 @@ Sim.prototype.addEntity = function (proto) {
 		};
 		
 		proto.queueEvent = function (event) {
-			ARG_CHECK(arguments, 1, 1, Sim.Event);
+			ARG_CHECK(arguments, 1, 1, Event);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			
 			ro.source = event;
 			event.addQueue(ro);
@@ -92,45 +92,45 @@ Sim.prototype.addEntity = function (proto) {
 		};
 		
 		proto.useFacility = function (facility, duration) {
-			ARG_CHECK(arguments, 2, 2, Sim.Facility);
+			ARG_CHECK(arguments, 2, 2, Facility);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			ro.source = facility;
 			facility.use(duration, ro);
 			return ro;
 		};
 		
 		proto.putBuffer = function (buffer, amount) {
-			ARG_CHECK(arguments, 2, 2, Sim.Buffer);
+			ARG_CHECK(arguments, 2, 2, Buffer);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			ro.source = buffer;
 			buffer.put(amount, ro);
 			return ro;
 		};
 		
 		proto.getBuffer = function (buffer, amount) {
-			ARG_CHECK(arguments, 2, 2, Sim.Buffer);
+			ARG_CHECK(arguments, 2, 2, Buffer);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			ro.source = buffer;
 			buffer.get(amount, ro);
 			return ro;
 		};
 		
 		proto.putStore = function (store, obj) {
-			ARG_CHECK(arguments, 2, 2, Sim.Store);
+			ARG_CHECK(arguments, 2, 2, Store);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			ro.source = store;
 			store.put(obj, ro);
 			return ro;
 		};
 		
 		proto.getStore = function (store, filter) {
-			ARG_CHECK(arguments, 1, 2, Sim.Store, Function);
+			ARG_CHECK(arguments, 1, 2, Store, Function);
 			
-			var ro = new Sim.Request(this, this.sim.time(), 0);
+			var ro = new Request(this, this.sim.time(), 0);
 			ro.source = store;
 			store.get(filter, ro);
 			return ro;
@@ -139,7 +139,7 @@ Sim.prototype.addEntity = function (proto) {
 		proto.send = function (message, delay, entities) {
 			ARG_CHECK(arguments, 2, 3);
 			
-			var ro = new Sim.Request(this.sim, this.time(), this.time() + delay);
+			var ro = new Request(this.sim, this.time(), this.time() + delay);
 			ro.source = this;
 			ro.msg = message;
 			ro.data = entities;
@@ -277,7 +277,7 @@ Sim.prototype.log = function (message, entity) {
  *   - Round robin with priority: NOT IMM
  */
 
-Sim.Facility = function (name, discipline, servers, maxqlen) {
+function Facility(name, discipline, servers, maxqlen) {
 	ARG_CHECK(arguments, 1, 4);
 	
 	this.free = servers ? servers : 1;
@@ -286,59 +286,59 @@ Sim.Facility = function (name, discipline, servers, maxqlen) {
 	
 	switch (discipline) {
 
-	case Sim.Facility.LCFS:
+	case Facility.LCFS:
 		this.use = this.useLCFS;
-		this.queue = new Sim.Queue();
+		this.queue = new Queue();
 		break;
-	case Sim.Facility.PS:
+	case Facility.PS:
 		this.use = this.useProcessorSharing;
 		this.queue = [];
 		break;
-	case Sim.Facility.FCFS:
+	case Facility.FCFS:
 	default:
 		this.use = this.useFCFS;
 		this.freeServers = new Array(this.servers);
-		this.queue = new Sim.Queue();
+		this.queue = new Queue();
 		for (var i = 0; i < this.freeServers.length; i++) {
 			this.freeServers[i] = true;
 		}
 	}
 	
-	this.stats = new Sim.Population();
+	this.stats = new Population();
 	this.busyDuration = 0;
 };
 
-Sim.Facility.FCFS = 1;
-Sim.Facility.LCFS = 2;
-Sim.Facility.PS = 3;
-Sim.Facility.NumDisciplines = 4;
+Facility.FCFS = 1;
+Facility.LCFS = 2;
+Facility.PS = 3;
+Facility.NumDisciplines = 4;
 
-Sim.Facility.prototype.reset = function () {
+Facility.prototype.reset = function () {
 	this.queue.reset();
 	this.stats.reset();
 	this.busyDuration = 0;
 };
 
-Sim.Facility.prototype.systemStats = function () {
+Facility.prototype.systemStats = function () {
 	return this.stats;
 };
 
-Sim.Facility.prototype.queueStats = function () {
+Facility.prototype.queueStats = function () {
 	return this.queue.stats;
 };
 
-Sim.Facility.prototype.usage = function () {
+Facility.prototype.usage = function () {
 	return this.busyDuration;
 };
 
-Sim.Facility.prototype.finalize = function (timestamp) {
+Facility.prototype.finalize = function (timestamp) {
 	ARG_CHECK(arguments, 1, 1);
 	
 	this.stats.finalize(timestamp);
 	this.queue.stats.finalize(timestamp);
 };
 
-Sim.Facility.prototype.useFCFS = function (duration, ro) {
+Facility.prototype.useFCFS = function (duration, ro) {
 	ARG_CHECK(arguments, 2, 2);
 	if ( (this.maxqlen === 0 && !this.free)
 	 		|| (this.maxqlen > 0 && this.queue.size() >= this.maxqlen)) {
@@ -355,7 +355,7 @@ Sim.Facility.prototype.useFCFS = function (duration, ro) {
 	this.useFCFSSchedule(now);
 };
 
-Sim.Facility.prototype.useFCFSSchedule = function (timestamp) {
+Facility.prototype.useFCFSSchedule = function (timestamp) {
 	ARG_CHECK(arguments, 1, 1);
 	
 	while (this.free > 0 && !this.queue.empty()) {
@@ -377,14 +377,14 @@ Sim.Facility.prototype.useFCFSSchedule = function (timestamp) {
 		// cancel all other reneging requests
 		ro.cancelRenegeClauses();
 		
-		var newro = new Sim.Request(this, timestamp, timestamp + ro.duration);
+		var newro = new Request(this, timestamp, timestamp + ro.duration);
 		newro.done(this.useFCFSCallback, this, ro);
 
 		ro.entity.sim.queue.insert(newro);
 	}
 };
 
-Sim.Facility.prototype.useFCFSCallback = function (ro) {
+Facility.prototype.useFCFSCallback = function (ro) {
 	// We have one more free server
 	this.free ++;
 	this.freeServers[ro.msg] = true;
@@ -399,7 +399,7 @@ Sim.Facility.prototype.useFCFSCallback = function (ro) {
 	
 }
 
-Sim.Facility.prototype.useLCFS = function (duration, ro) {
+Facility.prototype.useLCFS = function (duration, ro) {
 	ARG_CHECK(arguments, 2, 2);
 	
 	// if there was a running request..
@@ -430,7 +430,7 @@ Sim.Facility.prototype.useLCFS = function (duration, ro) {
 	ro.entity.sim.queue.insert(ro);
 };
 
-Sim.Facility.prototype.useLCFSCallback = function () {
+Facility.prototype.useLCFSCallback = function () {
 	var ro = this;
 	var facility = ro.source;
 	
@@ -453,15 +453,15 @@ Sim.Facility.prototype.useLCFSCallback = function () {
 	}
 };
 
-Sim.Facility.prototype.useProcessorSharing = function (duration, ro) {
-	ARG_CHECK(arguments, 2, 2, null, Sim.Request);
+Facility.prototype.useProcessorSharing = function (duration, ro) {
+	ARG_CHECK(arguments, 2, 2, null, Request);
 	ro.duration = duration;
 	ro.cancelRenegeClauses();
 	this.stats.enter(ro.entity.time());
 	this.useProcessorSharingSchedule(ro, true);
 };
 
-Sim.Facility.prototype.useProcessorSharingSchedule = function(ro, isAdded) {
+Facility.prototype.useProcessorSharingSchedule = function(ro, isAdded) {
 	var current = ro.entity.time();
 	var size = this.queue.length;
 	var multiplier = isAdded ? ((size + 1.0) / size) : ((size - 1.0) / size);
@@ -476,7 +476,7 @@ Sim.Facility.prototype.useProcessorSharingSchedule = function(ro, isAdded) {
 		if (ev.ro === ro) {
 			continue;
 		}
-		var newev = new Sim.Request(this, current, current + (ev.deliverAt - current) * multiplier);
+		var newev = new Request(this, current, current + (ev.deliverAt - current) * multiplier);
 		newev.ro = ev.ro;
 		newev.source = this;
 		newev.deliver = this.useProcessorSharingCallback;
@@ -488,7 +488,7 @@ Sim.Facility.prototype.useProcessorSharingSchedule = function(ro, isAdded) {
 	
 	// add this new request
 	if (isAdded) {
-		var newev = new Sim.Request(this, current, current + ro.duration * (size + 1));
+		var newev = new Request(this, current, current + ro.duration * (size + 1));
 		newev.ro = ro;
 		newev.source = this;
 		newev.deliver = this.useProcessorSharingCallback;
@@ -505,7 +505,7 @@ Sim.Facility.prototype.useProcessorSharingSchedule = function(ro, isAdded) {
 	} 
 };
 
-Sim.Facility.prototype.useProcessorSharingCallback = function () {
+Facility.prototype.useProcessorSharingCallback = function () {
 	var ev = this;
 	var fac = ev.source;
 	
@@ -519,25 +519,25 @@ Sim.Facility.prototype.useProcessorSharingCallback = function () {
 /** Buffer
  * 
  */
-Sim.Buffer = function (name, capacity, initial) {
+function Buffer(name, capacity, initial) {
 	ARG_CHECK(arguments, 2, 3);
 	
 	this.name = name;
 	this.capacity = capacity;
 	this.available = (initial === undefined) ? 0 : initial;
-	this.putQueue = new Sim.Queue();
-	this.getQueue = new Sim.Queue();
+	this.putQueue = new Queue();
+	this.getQueue = new Queue();
 };
 
-Sim.Buffer.prototype.current = function () {
+Buffer.prototype.current = function () {
 	return this.available;
 };
 
-Sim.Buffer.prototype.size = function () {
+Buffer.prototype.size = function () {
 	return this.capacity;
 };
 
-Sim.Buffer.prototype.get = function (amount, ro) {
+Buffer.prototype.get = function (amount, ro) {
 	ARG_CHECK(arguments, 2, 2);
 	
 	if (this.getQueue.empty()
@@ -557,7 +557,7 @@ Sim.Buffer.prototype.get = function (amount, ro) {
 	this.getQueue.push(ro, ro.entity.time());
 };
 
-Sim.Buffer.prototype.put = function (amount, ro) {
+Buffer.prototype.put = function (amount, ro) {
 	ARG_CHECK(arguments, 2, 2);
 	
 	if (this.putQueue.empty()
@@ -578,7 +578,7 @@ Sim.Buffer.prototype.put = function (amount, ro) {
 	this.putQueue.push(ro, ro.entity.time());
 };
 
-Sim.Buffer.prototype.progressGetQueue = function () {
+Buffer.prototype.progressGetQueue = function () {
 	var obj;
 	while (obj = this.getQueue.top()) {
 		// if obj is cancelled.. remove it.
@@ -601,7 +601,7 @@ Sim.Buffer.prototype.progressGetQueue = function () {
 	}
 };
 
-Sim.Buffer.prototype.progressPutQueue = function () {
+Buffer.prototype.progressPutQueue = function () {
 	var obj;
 	while (obj = this.putQueue.top()) {
 		// if obj is cancelled.. remove it.
@@ -624,11 +624,11 @@ Sim.Buffer.prototype.progressPutQueue = function () {
 	}
 };
 
-Sim.Buffer.prototype.putStats = function () {
+Buffer.prototype.putStats = function () {
 	return this.putQueue.stats;
 };
 
-Sim.Buffer.prototype.getStats = function () {
+Buffer.prototype.getStats = function () {
 	return this.getQueue.stats;
 };
 
@@ -637,25 +637,25 @@ Sim.Buffer.prototype.getStats = function () {
  * 
  */
 
-Sim.Store = function (name, capacity) {
+function Store(name, capacity) {
 	ARG_CHECK(arguments, 2, 3);
 	
 	this.name = name;
 	this.capacity = capacity;
 	this.objects = [];
-	this.putQueue = new Sim.Queue();
-	this.getQueue = new Sim.Queue();
+	this.putQueue = new Queue();
+	this.getQueue = new Queue();
 };
 
-Sim.Store.prototype.current = function () {
+Store.prototype.current = function () {
 	return this.objects.length;
 };
 
-Sim.Store.prototype.size = function () {
+Store.prototype.size = function () {
 	return this.capacity;
 };
 
-Sim.Store.prototype.get = function (filter, ro) {
+Store.prototype.get = function (filter, ro) {
 	ARG_CHECK(arguments, 2, 2);
 	
 	if (this.getQueue.empty() && this.current() > 0) {
@@ -696,7 +696,7 @@ Sim.Store.prototype.get = function (filter, ro) {
 	this.getQueue.push(ro, ro.entity.time());
 };
 
-Sim.Store.prototype.put = function (obj, ro) {
+Store.prototype.put = function (obj, ro) {
 	ARG_CHECK(arguments, 2, 2);
 
 	if (this.putQueue.empty() && this.current() < this.capacity) {
@@ -717,7 +717,7 @@ Sim.Store.prototype.put = function (obj, ro) {
 	this.putQueue.push(ro, ro.entity.time());
 };
 
-Sim.Store.prototype.progressGetQueue = function () {
+Store.prototype.progressGetQueue = function () {
 	var ro;
 	while (ro = this.getQueue.top()) {
 		// if obj is cancelled.. remove it.
@@ -765,7 +765,7 @@ Sim.Store.prototype.progressGetQueue = function () {
 	}
 };
 
-Sim.Store.prototype.progressPutQueue = function () {
+Store.prototype.progressPutQueue = function () {
 	var ro;
 	while (ro = this.putQueue.top()) {
 		// if obj is cancelled.. remove it.
@@ -789,11 +789,11 @@ Sim.Store.prototype.progressPutQueue = function () {
 	}
 };
 
-Sim.Store.prototype.putStats = function () {
+Store.prototype.putStats = function () {
 	return this.putQueue.stats;
 };
 
-Sim.Store.prototype.getStats = function () {
+Store.prototype.getStats = function () {
 	return this.getQueue.stats;
 };
 
@@ -801,7 +801,7 @@ Sim.Store.prototype.getStats = function () {
 /** Event
  * 
  */
-Sim.Event = function (name) {
+function Event(name) {
 	ARG_CHECK(arguments, 0, 1);
 	
 	this.name = name;
@@ -810,7 +810,7 @@ Sim.Event = function (name) {
 	this.isFired = false;
 };
 
-Sim.Event.prototype.addWaitList = function(ro) {
+Event.prototype.addWaitList = function(ro) {
 	ARG_CHECK(arguments, 1, 1);
 	
 	if (this.isFired) {
@@ -821,7 +821,7 @@ Sim.Event.prototype.addWaitList = function(ro) {
 	this.waitList.push(ro);
 };
 
-Sim.Event.prototype.addQueue = function(ro) {
+Event.prototype.addQueue = function(ro) {
 	ARG_CHECK(arguments, 1, 1);
 	
 	if (this.isFired) {
@@ -832,7 +832,7 @@ Sim.Event.prototype.addQueue = function(ro) {
 	this.queue.push(ro);
 };
 
-Sim.Event.prototype.fire = function(keepFired) {
+Event.prototype.fire = function(keepFired) {
 	ARG_CHECK(arguments, 0, 1);
 	
 	if (keepFired) {
@@ -853,7 +853,7 @@ Sim.Event.prototype.fire = function(keepFired) {
 	}
 };
 
-Sim.Event.prototype.clear = function() {
+Event.prototype.clear = function() {
 	this.isFired = false;
 };
 
@@ -868,7 +868,7 @@ function ARG_CHECK(found, expMin, expMax) {
 		if (!arguments[i + 3] || !found[i]) continue;   // ARG_CHECK
 		
 //		print("TEST " + found[i] + " " + arguments[i + 3]   // ARG_CHECK
-//		+ " " + (found[i] instanceof Sim.Event)   // ARG_CHECK
+//		+ " " + (found[i] instanceof Event)   // ARG_CHECK
 //		+ " " + (found[i] instanceof arguments[i + 3])   // ARG_CHECK
 //		+ "\n");   // ARG CHECK
 		

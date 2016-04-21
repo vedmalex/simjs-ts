@@ -1,22 +1,24 @@
+import * as Sim from '../src/simi.js';
+
 function testEventFlash() {
-	var sim = new Sim();
+	var sim = new Sim.Sim();
 	var event = new Sim.Event('event');
-	
+
 	var Entity = {
 		count: 0,
 		start: function () {
 			assertEquals(event.isFired, false);
-			
+
 			this.waitEvent(event).done(function () {
 				assertEquals(event.isFired, false);
 				assertEquals(this.callbackSource, event);
 				assertEquals(this.time(), 10);
 				this.count ++;
 			});
-			
+
 			this.setTimer(10).done(function () {
 				assertEquals(event.isFired, false);
-				event.fire(); 
+				event.fire();
 			});
 
 			this.setTimer(20).done(function () {
@@ -27,14 +29,14 @@ function testEventFlash() {
 					this.count ++;
 				});
 			});
-			this.setTimer(21).done(function () { 
+			this.setTimer(21).done(function () {
 				assertEquals(event.isFired, false);
 				event.fire();
 				assertEquals(event.isFired, false);
 				});
-			
-			
-			
+
+
+
 		},
 		finalize: function () {
 			finalized++;
@@ -51,12 +53,12 @@ function testEventFlash() {
 function testEventSustain() {
 	var sim = new Sim();
 	var event = new Sim.Event('event');
-	
+
 	var Entity = {
 		count: 0,
 		start: function () {
 			assertEquals(event.isFired, false);
-			
+
 			this.waitEvent(event).done(function (s) {
 				assertEquals(event.isFired, true);
 				assertEquals(this.callbackSource, event);
@@ -77,8 +79,8 @@ function testEventSustain() {
 					this.count ++;
 				});
 			});
-			
-			this.setTimer(30).done(function () { 
+
+			this.setTimer(30).done(function () {
 				assertEquals(event.isFired, true);
 				event.clear();
 				assertEquals(event.isFired, false);
@@ -91,9 +93,9 @@ function testEventSustain() {
 					this.count ++;
 				});
 			});
-			
+
 			this.setTimer(41).done(function () { event.fire(true); });
-			
+
 		},
 		finalize: function () {
 			finalized++;
