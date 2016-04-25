@@ -1,10 +1,18 @@
-function testMessageSendOne() {
-	var sim = new Sim();
+import test from 'ava';
+import assertFail from '../tests/tester'
+import * as Sim from '../src/simi';
+
+var entities = 0;
+var finalized = 0;
+
+
+test('testMessageSendOne', (t) => {
+	var sim = new Sim.Sim();
 	var count = 0;
-	
+
 	var Entity = {
 		start: function () {
-			
+
 		},
 		init: function () {
 			if (this.master) {
@@ -12,10 +20,10 @@ function testMessageSendOne() {
 			}
 		},
 		onMessage: function (source, message) {
-			assertEquals(source, this.other);
-			assertEquals(message, "message");
-			assertEquals(this.time(), 10);
-			assertEquals(this.master, undefined);
+			t.is(source, this.other);
+			t.is(message, "message");
+			t.is(this.time(), 10);
+			t.is(this.master, undefined);
 			count ++;
 		},
 
@@ -33,13 +41,13 @@ function testMessageSendOne() {
 	o2.init();
 	sim.simulate(100);
 	entities = 2;
-	assertEquals(count, 1);
-}
+	t.is(count, 1);
+});
 
-function testMessageSendAll() {
-	var sim = new Sim();
+test('testMessageSendAll', (t) => {
+	var sim = new Sim.Sim();
 	var count = 0;
-	
+
 	var Entity = {
 		start: function () {},
 		init: function () {
@@ -48,10 +56,10 @@ function testMessageSendAll() {
 			}
 		},
 		onMessage: function (source, message) {
-			assertEquals(source, this.other);
-			assertEquals(message, "message");
-			assertEquals(this.time(), 10);
-			assertEquals(this.master, undefined);
+			t.is(source, this.other);
+			t.is(message, "message");
+			t.is(this.time(), 10);
+			t.is(this.master, undefined);
 			count ++;
 		},
 
@@ -67,16 +75,16 @@ function testMessageSendAll() {
 	o2.other = o1;
 	o3.other = o1;
 	o1.init(); o2.init();
-	
+
 	sim.simulate(100);
 	entities = 3;
-	assertEquals(count, 2);
-}
+	t.is(count, 2);
+});
 
-function testMessageSendArray() {
-	var sim = new Sim();
+test('testMessageSendArray', (t) => {
+	var sim = new Sim.Sim();
 	var count = 0;
-	
+
 	var Entity = {
 		start: function () {},
 		init: function () {
@@ -85,10 +93,10 @@ function testMessageSendArray() {
 			}
 		},
 		onMessage: function (source, message) {
-			assertEquals(source, this.other);
-			assertEquals(message, "message");
-			assertEquals(this.time(), 10);
-			assertEquals(this.master, undefined);
+			t.is(source, this.other);
+			t.is(message, "message");
+			t.is(this.time(), 10);
+			t.is(this.master, undefined);
 			count ++;
 		},
 
@@ -105,16 +113,16 @@ function testMessageSendArray() {
 	o2.other = o1;
 	o3.other = o1;
 	o1.init(); o2.init(); o3.init();
-	
+
 	sim.simulate(100);
 	entities = 3;
-	assertEquals(count, 2);
-}
+	t.is(count, 2);
+});
 
-function testMessageNoCallback() {
-	var sim = new Sim();
+test('testMessageNoCallback', (t) => {
+	var sim = new Sim.Sim();
 	var count = 0;
-	
+
 	var Entity = {
 		start: function (){},
 		init: function () {
@@ -122,7 +130,7 @@ function testMessageNoCallback() {
 				this.send("message", 10, this.other);
 			}
 		},
-	
+
 		finalize: function () {
 			finalized ++;
 		}
@@ -136,13 +144,13 @@ function testMessageNoCallback() {
 	o1.init(); o2.init();
 	sim.simulate(100);
 	entities = 2;
-	assertEquals(sim.time(), 10);
-}
+	t.is(sim.time(), 10);
+});
 
-function testMessageDelayedSendOne() {
-	var sim = new Sim();
+test('testMessageDelayedSendOne', (t) => {
+	var sim = new Sim.Sim();
 	var count = 0;
-	
+
 	var Entity = {
 		start: function () {},
 		init: function () {
@@ -151,10 +159,10 @@ function testMessageDelayedSendOne() {
 			}
 		},
 		onMessage: function (source, message) {
-			assertEquals(source, this.other);
-			assertEquals(message, "message");
-			assertEquals(this.time(), 20);
-			assertEquals(this.master, undefined);
+			t.is(source, this.other);
+			t.is(message, "message");
+			t.is(this.time(), 20);
+			t.is(this.master, undefined);
 			count ++;
 		},
 
@@ -171,13 +179,13 @@ function testMessageDelayedSendOne() {
 	o1.init(); o2.init();
 	sim.simulate(100);
 	entities = 2;
-	assertEquals(count, 1);
-}
+	t.is(count, 1);
+});
 
-function testMessageZeroDelay() {
-	var sim = new Sim();
+test('testMessageZeroDelay', (t) => {
+	var sim = new Sim.Sim();
 	var count = 0;
-	
+
 	var Entity = {
 		start: function () {},
 		init: function () {
@@ -186,10 +194,10 @@ function testMessageZeroDelay() {
 			}
 		},
 		onMessage: function (source, message) {
-			assertEquals(source, this.other);
-			assertEquals(message, "message");
-			assertEquals(this.time(), 10);
-			assertEquals(this.master, undefined);
+			t.is(source, this.other);
+			t.is(message, "message");
+			t.is(this.time(), 10);
+			t.is(this.master, undefined);
 			count ++;
 		},
 
@@ -206,5 +214,5 @@ function testMessageZeroDelay() {
 	o1.init(); o2.init();
 	sim.simulate(100);
 	entities = 2;
-	assertEquals(count, 1);
-}
+	t.is(count, 1);
+});

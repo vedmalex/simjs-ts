@@ -62,7 +62,7 @@ Request.prototype.waitUntil = function (delay, callback, context, argument) {
 	if (this.noRenege) return this;
 
 	var ro = this._addRequest(this.scheduledAt + delay, callback, context, argument);
-	this.entity.Simqueue.insert(ro);
+	this.entity.sim.queue.insert(ro);
 	return this;
 };
 

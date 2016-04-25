@@ -1,4 +1,4 @@
-function testRandom() {
+test('testRandom', (t) => {
 	var stream1 = new Random(1234);
 	var stream2 = new Random(6789);
 
@@ -10,9 +10,9 @@ function testRandom() {
 	for (var i = 0; i < 1000; i++) {
 		assertAlmost(stream1.random(), stream2.random());
 	}
-}
+});
 
-function testRandomPython() {
+test('testRandomPython', (t) => {
 	var seed1234 = [0.96645353569213877, 0.44073259917535268, 
 	                0.0074914700585871907, 0.91097596244912415, 
 	                0.93926899736376401, 0.58222757305894912, 
@@ -29,9 +29,9 @@ function testRandomPython() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.random(), seed1234[i]);
 	}
-}
+});
 
-function testExponentialPython() {
+test('testExponentialPython', (t) => {
 	// exponential distribution; lambda = 0.5
 	var seed1234_05 = [0.068244112607034252, 1.6386338770334943, 
 	                   9.7879804624141009, 0.18647753593175062, 
@@ -50,9 +50,9 @@ function testExponentialPython() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.exponential(0.5), seed1234_05[i], 0.00001);
 	}
-}
+});
 
-function testGaussianPython() {
+test('testGaussianPython', (t) => {
 	// mu = 1.0, sigma = 0.5
 	var seed1234_1_05 = [1.5271098209636194, 0.88722137212465679, 
 	                     2.0985202741880902, 1.0517458948636846, 
@@ -71,9 +71,9 @@ function testGaussianPython() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.normal(1.0, 0.5), seed1234_1_05[i]);
 	}
-}
+});
 
-function testParetoPython() {
+test('testParetoPython', (t) => {
 	// alpha = 0.5
 	var seed1234_05 = [888.60037609781762, 3.1971351047794356, 
 	                   1.0151530041282129, 126.17851900973129, 
@@ -91,9 +91,9 @@ function testParetoPython() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.pareto(0.5), seed1234_05[i], 0.0001);
 	}
-}
+});
 
-function testTriangularPython() {
+test('testTriangularPython', (t) => {
 	var seed1234 = [0.87048848640398568, 0.46943189025424797, 
 	                0.061202410322581211, 0.78902128359609847, 
 	                0.82574300209713813, 0.5429592868567118, 
@@ -111,10 +111,10 @@ function testTriangularPython() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.triangular(0, 1.0, 0.5), seed1234[i]);
 	}
-}
+});
 
 
-function testWeibullPython() {
+test('testWeibullPython', (t) => {
 	// alpha = 1.0, beta = 0.5
 	var seed1234_1_05 = [11.524828679722953, 0.33770924624900073, 
 	                     5.6545467864600952e-05, 5.8508298117564816, 
@@ -133,9 +133,9 @@ function testWeibullPython() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.weibull(1.0, 0.5), seed1234_1_05[i], 0.00001);
 	}
-}
+});
 
-function testGamma() {
+test('testGamma', (t) => {
 	var seed1234_05_10 = 
 		[2.5328290028164084, 7.8667124994892201e-05, 
 		 1.9393061554152005, 0.63216919042222641, 
@@ -188,10 +188,9 @@ function testGamma() {
 	for (var i = 0; i < 20; i++) {
 		assertAlmost(r.gamma(1.4, 1.0), seed1234_14_10[i], 0.000001);
 	}
-	
-}
+});
 
-function notestArgumentError() {
+test('notestArgumentError', (t) => {
 	var count = 0;
 	try { new Random(); } catch (e) { count ++; } // OK
 	try { new Random(1.1); } catch (e) { count ++; } // Fail
@@ -202,7 +201,7 @@ function notestArgumentError() {
 	try { new Random("abcd"); } catch (e) { count ++; } // Fail
 	try { new Random("1"); } catch (e) { count ++; } // Fail
 	
-	assertEquals(count, 5);
+	t.is(count, 5);
 	
 	count = 0;
 	var r = new Random();
@@ -240,5 +239,5 @@ function notestArgumentError() {
 	try { r.weibull(1,1); } catch (e) { count ++; } // OK
 	try { r.weibull(1,1,1); } catch (e) { count ++; } // FAIL
 	
-	assertEquals(count, 20);  // ARG CHECK
+	t.is(count, 20);  // ARG CHECK
 };

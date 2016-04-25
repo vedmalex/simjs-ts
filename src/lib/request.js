@@ -60,7 +60,7 @@ class Request {
         if (this.noRenege) return this;
 
         const ro = this._addRequest(this.scheduledAt + delay, callback, context, argument);
-        this.entity.Simqueue.insert(ro);
+        this.entity.sim.queue.insert(ro);
         return this;
     }
 

@@ -264,7 +264,7 @@ test('BufferPutTimeout', (t) => {
 			waitUntil(10);
 
 
-			// put 30, wait since there is request is front
+			// put 30, wait since there is request in front
 			this.putBuffer(buffer, 30).done(function () {
 				t.is(this.time(), 10);
 				this.count++;
