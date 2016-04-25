@@ -257,3 +257,5 @@ class Random {
 /**************************************************************************/
 Random.prototype.LOG4 = Math.log(4.0);
 Random.prototype.SG_MAGICCONST = 1.0 + Math.log(4.5);
+
+export { Random };

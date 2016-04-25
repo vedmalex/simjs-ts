@@ -1,3 +1,8 @@
+import test from 'ava';
+import assertFail from '../tests/tester'
+import * as Sim from '../src/simi';
+import Random from '../src/lib/random';
+
 test('testRandom', (t) => {
 	var stream1 = new Random(1234);
 	var stream2 = new Random(6789);
@@ -240,4 +245,4 @@ test('notestArgumentError', (t) => {
 	try { r.weibull(1,1,1); } catch (e) { count ++; } // FAIL
 	
 	t.is(count, 20);  // ARG CHECK
-};
+});
