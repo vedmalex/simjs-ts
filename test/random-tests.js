@@ -1,7 +1,8 @@
 import test from 'ava';
-import assertFail from '../tests/tester'
+import { assertFail, assertAlmost } from '../tests/tester'
 import * as Sim from '../src/simi';
 import Random from '../src/lib/random';
+import 'babel-core/register';
 
 test('testRandom', (t) => {
 	var stream1 = new Random(1234);
