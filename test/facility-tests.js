@@ -1,5 +1,4 @@
 import test from 'ava';
-import assertFail from '../tests/tester'
 import * as Sim from '../src/simi';
 
 var entities = 0;
@@ -405,7 +404,7 @@ test('testFacilityTimeoutDuringUsage', (t) => {
 
 			this.setTimer(4).done(function () {
 				this.useFacility(fac, 10).done(function () {
-					assertFail();
+					t.fail();
 				})
 				.waitUntil(4, function () {
 					t.is(this.time(), 8);
@@ -419,7 +418,7 @@ test('testFacilityTimeoutDuringUsage', (t) => {
 					this.count ++;
 				})
 				.waitUntil(5, function () {
-					assertFail();
+					t.fail();
 				});
 			});
 
@@ -448,7 +447,7 @@ test('testFacilityCancelDuringUsage', (t) => {
 				this.count ++;
 			});
 
-			this.ro2 = this.useFacility(fac, 10).done(assertFail);
+			this.ro2 = this.useFacility(fac, 10).done(t.fail);
 			this.setTimer(2).done(this.ro2.cancel, this.ro2);
 
 			this.useFacility(fac, 10).done(function () {
@@ -487,8 +486,8 @@ test('testFacilityLCFSImmuneToRenege', (t) => {
 				t.is(this.time(), 10);
 				this.count ++;
 			})
-			.waitUntil(1, assertFail)
-			.unlessEvent(event, assertFail);
+			.waitUntil(1, t.fail)
+			.unlessEvent(event, t.fail);
 
 			event.fire(true);
 
@@ -875,8 +874,8 @@ test('testFacilityPSImmuneToRenege', (t) => {
 				t.is(this.time(), 10);
 				this.count ++;
 			})
-			.waitUntil(1, assertFail)
-			.unlessEvent(event, assertFail);
+			.waitUntil(1, t.fail)
+			.unlessEvent(event, t.fail);
 
 			event.fire(true);
 

@@ -1,5 +1,5 @@
 import test from 'ava';
-import assertFail from '../tests/tester';
+;
 import * as Sim from '../src/simi';
 
 import 'babel-core/register';
@@ -140,7 +140,7 @@ test('testTimerTimeout1', (t) => {
     start: function () {
       this.setTimer(10)
       .done(function () {
-        assertFail();
+        t.fail();
       })
       .waitUntil(5, function () {
         t.is(this.time(), 5);
@@ -170,7 +170,7 @@ test('testTimerTimeout2', (t) => {
         this.count = 1;
       })
       .waitUntil(20, function () {
-        assertFail();
+        t.fail();
       });
     },
     finalize: function () {
@@ -192,10 +192,10 @@ test('testTimerMultipleTimeouts', (t) => {
     start: function () {
       this.setTimer(50)
       .done(function () {
-        assertFail();
+        t.fail();
       })
       .waitUntil(20, function () {
-        assertFail();
+        t.fail();
       })
       .waitUntil(10, function () {
         t.is(this.time(), 10);
@@ -223,7 +223,7 @@ test('testTimerWaitEvent', (t) => {
     start: function () {
       this.setTimer(50)
       .done(function () {
-        assertFail();
+        t.fail();
       })
       .unlessEvent(event, function() {
         t.is(this.time(), 10);

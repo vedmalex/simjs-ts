@@ -1,5 +1,4 @@
 import test from 'ava';
-import assertFail from '../tests/tester'
 import * as Sim from '../src/simi';
 
 import 'babel-core/register';
@@ -29,7 +28,7 @@ test('testStorePut', (t) => {
       });
 
       this.putStore(store, {a:1}).done(function () {
-        assertFail();
+        t.fail();
       });
 
 
@@ -74,7 +73,7 @@ test('testStoreGet', (t) => {
         t.is(this.callbackMessage.a, 10);
       });
 
-      this.getStore(store).done(assertFail);
+      this.getStore(store).done(t.fail);
 
     },
     finalize: function () {
@@ -117,7 +116,7 @@ test('testStoreGetFilter', (t) => {
         t.is(this.callbackMessage.a, 1);
       });
 
-      this.getStore(store).done(assertFail);
+      this.getStore(store).done(t.fail);
 
     },
     finalize: function () {
@@ -159,7 +158,7 @@ test('testStorePutProgress', (t) => {
       });
 
       this.putStore(store, {a:5}).done(function () {
-        assertFail();
+        t.fail();
       });
 
       this.setTimer(10).done(function () {
@@ -244,7 +243,7 @@ test('testStoreGetCancel', (t) => {
   var Entity = {
     count: 0,
     start: function () {
-      this.getStore(store).done(assertFail)
+      this.getStore(store).done(t.fail)
       .waitUntil(10, function () {
         t.is(this.time(), 10);
         this.count++;
@@ -290,7 +289,7 @@ test('testStoreGetEventRenege', (t) => {
 
       // wait, since filter function is false
       this.getStore(store, function () {return false;})
-      .done(assertFail)
+      .done(t.fail)
       .unlessEvent(event);
 
       this.setTimer(10).done(event.fire, event);
@@ -325,7 +324,7 @@ test('testStoreGetTimeout', (t) => {
 
       // wait, since filter function is false
       var ro = this.getStore(store, function () {return false;})
-      .done(assertFail).
+      .done(t.fail).
       waitUntil(10);
 
 
@@ -359,7 +358,7 @@ test('testStoreGetCancel', (t) => {
       // wait, since filter function is false
       var ro = this.getStore(store, function (){ return false;})
       .done(function () {
-        assertFail;
+        t.fail;
       });
 
 
@@ -409,7 +408,7 @@ test('testStoreGetStillWaits', (t) => {
       });
 
       this.getStore(store).done(function () {
-        assertFail();
+        t.fail();
       });
 
       this.setTimer(10).done(this.putStore, this, [store, {a:1}]);

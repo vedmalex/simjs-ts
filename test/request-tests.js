@@ -1,5 +1,4 @@
 import test from 'ava';
-import assertFail from '../tests/tester'
 import * as Sim from '../src/simi';
 
 var entities = 0;
@@ -155,7 +154,7 @@ test('testRequestCallbackData', (t) => {
                 this.putBuffer(buffer, 110)
                 .done(this.fn1, this, 1)
                 .unlessEvent(event, this.fn1, this, 2)
-                .waitUntil(10, assertFail, this, 3)
+                .waitUntil(10, t.fail, this, 3)
                 .setData('my data');
 
                 this.setTimer(5).done(event.fire, event);
@@ -274,7 +273,7 @@ test('testRequestSetTimer', (t) => {
 			// timers bailed out on event
 			this.setTimer(clock++)
 			.setData('event')
-			.done(function (d) {assertFail();})
+			.done(function (d) {t.fail();})
 			.unlessEvent(event, function (d) {
 				t.is(this.callbackSource, undefined);
 				t.is(this.callbackMessage, event);
@@ -287,7 +286,7 @@ test('testRequestSetTimer', (t) => {
 
 			this.setTimer(clock++)
 			.setData('event')
-			.done(function (d) {assertFail();})
+			.done(function (d) {t.fail();})
 			.unlessEvent(event, function (d) {
 				t.is(this.callbackSource, undefined);
 				t.is(this.callbackMessage, event);
@@ -298,7 +297,7 @@ test('testRequestSetTimer', (t) => {
 
 			this.setTimer(clock++)
 			.setData('event')
-			.done(function (d, e) {assertFail();})
+			.done(function (d, e) {t.fail();})
 			.unlessEvent(event, function (d, e) {
 				t.is(this.callbackSource, undefined);
 				t.is(this.callbackMessage, event);
@@ -350,7 +349,7 @@ test('testRequestPool', (t) => {
 			}, undefined, [101, 102]).setData('abcde');
 
 			// alloc request times out
-			this.allocPool(pool, 200).done(function () { assertFail(); })
+			this.allocPool(pool, 200).done(function () { t.fail(); })
 			.waitUntil(1, function (d) {
 				t.is(this.callbackSource, pool);
 				t.is(this.callbackMessage, undefined);
@@ -360,7 +359,7 @@ test('testRequestPool', (t) => {
 			}, this, 101).setData("waituntil");
 
 			// alloc request bails out on event
-			this.allocPool(pool, 200).done(function () { assertFail(); })
+			this.allocPool(pool, 200).done(function () { t.fail(); })
 			.unlessEvent(event, function (d) {
 				t.is(this.callbackSource, pool);
 				t.is(this.callbackMessage, event);
@@ -488,7 +487,7 @@ test('testRequestBuffer', (t) => {
 			this.setTimer(50).done(function () {
 				t.is(buffer.available, 0);
 				this.getBuffer(buffer, 10)
-				.done(function () { assertFail();})
+				.done(function () { t.fail();})
 				.waitUntil(1, function (d) {
 					t.is(this.callbackSource, buffer);
 					t.is(this.callbackMessage, undefined);
@@ -505,7 +504,7 @@ test('testRequestBuffer', (t) => {
 			this.setTimer(60).done(function () {
 				t.is(buffer.available, 0);
 				this.putBuffer(buffer, 1000)
-				.done(function () { assertFail();})
+				.done(function () { t.fail();})
 				.waitUntil(1, function (d) {
 					t.is(this.callbackSource, buffer);
 					t.is(this.callbackMessage, undefined);
@@ -522,7 +521,7 @@ test('testRequestBuffer', (t) => {
 				t.is(buffer.available, 0);
 				event.clear();
 				this.getBuffer(buffer, 10)
-				.done(function () { assertFail();})
+				.done(function () { t.fail();})
 				.unlessEvent(event, function (d) {
 					t.is(this.callbackSource, buffer);
 					t.is(this.callbackMessage, event);
@@ -540,7 +539,7 @@ test('testRequestBuffer', (t) => {
 				t.is(buffer.available, 0);
 				event.clear();
 				this.putBuffer(buffer, 1000)
-				.done(function () { assertFail();})
+				.done(function () { t.fail();})
 				.unlessEvent(event, function (d) {
 					t.is(this.callbackSource, buffer);
 					t.is(this.callbackMessage, event);
@@ -618,7 +617,7 @@ test('testRequestEvents', (t) => {
 		count: 0,
 		start: function () {
 			this.setTimer(10)
-			.done(assertFail)
+			.done(t.fail)
 			.unlessEvent([event1, event2], function () {
 				t.is(this.callbackSource, undefined);
 				t.is(this.callbackMessage, event1);
@@ -628,7 +627,7 @@ test('testRequestEvents', (t) => {
 
 
 			this.setTimer(15).done(function () {
-				this.waitEvent(event1).done(assertFail)
+				this.waitEvent(event1).done(t.fail)
 				.unlessEvent(event2, function (d) {
 					t.is(this.callbackSource, event1);
 					t.is(this.callbackMessage, event2);
@@ -663,7 +662,7 @@ test('testRequestEventRepeat', (t) => {
 		count: 0,
 		start: function () {
 			this.setTimer(10)
-			.done(assertFail)
+			.done(t.fail)
 			.unlessEvent([event1, event2], this.inc)
 			.unlessEvent([event1, event2], this.inc);
 
@@ -693,32 +692,32 @@ test('testRequestCancel', (t) => {
 		count: 0,
 		start: function () {
 			var ro1 = this.setTimer(50)
-				.done(assertFail)
-				.waitUntil(20, assertFail)
-				.unlessEvent(event, assertFail);
+				.done(t.fail)
+				.waitUntil(20, t.fail)
+				.unlessEvent(event, t.fail);
 
 			var ro2 = this.waitEvent(event)
-			.done(assertFail)
-			.waitUntil(20, assertFail)
-			.unlessEvent(event, assertFail);
+			.done(t.fail)
+			.waitUntil(20, t.fail)
+			.unlessEvent(event, t.fail);
 
 			var ro3 = this.putBuffer(buffer, 110)
-			.done(assertFail)
-			.waitUntil(20, assertFail)
-			.unlessEvent(event, assertFail);
+			.done(t.fail)
+			.waitUntil(20, t.fail)
+			.unlessEvent(event, t.fail);
 
 
 			this.useFacility(fac, 20);
 
 			var ro4 = this.useFacility(fac, 10)
-			.done(assertFail)
-			.waitUntil(20, assertFail)
-			.unlessEvent(event, assertFail);
+			.done(t.fail)
+			.waitUntil(20, t.fail)
+			.unlessEvent(event, t.fail);
 
 			var ro5 = this.getBuffer(buffer, 110)
-			.done(assertFail)
-			.waitUntil(20, assertFail)
-			.unlessEvent(event, assertFail);
+			.done(t.fail)
+			.waitUntil(20, t.fail)
+			.unlessEvent(event, t.fail);
 
 			this.setTimer(10).done(ro1.cancel, ro1);
 			this.setTimer(10).done(ro2.cancel, ro2);

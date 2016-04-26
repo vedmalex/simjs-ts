@@ -1,5 +1,4 @@
 import test from 'ava';
-import assertFail from '../tests/tester'
 import * as Sim from '../src/simi';
 import 'babel-core/register';
 

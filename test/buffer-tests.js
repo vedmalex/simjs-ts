@@ -1,5 +1,4 @@
 import test from 'ava';
-import assertFail from '../tests/tester'
 import * as Sim from '../src/simi';
 
 import 'babel-core/register';
@@ -196,7 +195,7 @@ test('BufferGetCancel', (t) => {
 		start: function () {
 			// at time 0, get 60 units -- waits
 			var ro = this.getBuffer(buffer, 60).done(function () {
-				assertFail;
+				t.fail;
 			});
 
 
@@ -228,7 +227,7 @@ test('BufferPutCancel', (t) => {
 		start: function () {
 			// at time 0, put 110 units -- waits
 			var ro = this.putBuffer(buffer, 110).done(function () {
-				assertFail;
+				t.fail;
 			});
 
 
@@ -260,7 +259,7 @@ test('BufferPutTimeout', (t) => {
 		start: function () {
 			// at time 0, put 110 units -- waits
 			var ro = this.putBuffer(buffer, 110)
-			.done(assertFail).
+			.done(t.fail).
 			waitUntil(10);
 
 
@@ -292,7 +291,7 @@ test('BufferPutEventRenege', (t) => {
 		start: function () {
 			// at time 0, put 110 units -- waits
 			var ro = this.putBuffer(buffer, 110)
-			.done(assertFail)
+			.done(t.fail)
 			.unlessEvent(event);
 
 			this.setTimer(10).done(event.fire, event);
@@ -325,7 +324,7 @@ test('BufferGetTimeout', (t) => {
 		start: function () {
 			// at time 0, get 110 units -- waits
 			var ro = this.getBuffer(buffer, 110)
-			.done(assertFail).
+			.done(t.fail).
 			waitUntil(10);
 
 
@@ -357,7 +356,7 @@ test('BufferGetEventRenege', (t) => {
 		start: function () {
 			// at time 0, get 110 units -- waits
 			var ro = this.getBuffer(buffer, 110)
-			.done(assertFail)
+			.done(t.fail)
 			.unlessEvent(event);
 
 			this.setTimer(10).done(event.fire, event);
