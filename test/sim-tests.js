@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as Sim from '../src/simi';
+import * as Sim from '../index';
 import 'babel-core/register';
 
 test('testSimExtendedPrototype', (t) => {

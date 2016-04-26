@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as Sim from '../src/simi';
+import * as Sim from '../index';
 
 var entities = 0;
 var finalized = 0;

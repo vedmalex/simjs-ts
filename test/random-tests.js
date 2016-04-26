@@ -1,7 +1,7 @@
 import test from 'ava';
 import { assertAlmost } from './utils';
-import * as Sim from '../src/simi';
-import Random from '../src/lib/random';
+import * as Sim from '../index';
+import Random from '../lib/random';
 import 'babel-core/register';
 
 test('testRandom', (t) => {

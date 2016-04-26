@@ -1,6 +1,6 @@
 import test from 'ava';
 import { assertAlmost } from './utils';
-import * as Sim from '../src/simi';
+import * as Sim from '../index';
 import 'babel-core/register';
 
 test('testDataSeries', (t) => {
