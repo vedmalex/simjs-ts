@@ -1,0 +1,127 @@
+<html>
+  <head>
+  <script type="text/javascript" src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" type="../bower_components/polymer/polymer.html" />
+  <script type="text/javascript" src="../build/simi.js"></script>
+  <script type="text/javascript" src="pick.js"></script>
+  <link rel="stylesheet" href="examples.css" type="text/css" />
+  <dom-module id="s-pick">
+    <template>
+      <div class="form">
+      <table>
+        <tr>
+          <td>Buffer Capacity: </td>
+          <td><input type="text" value="{{capacity}}"/></td>
+        </tr>
+        <tr>
+          <td>Salad preparation time (min):</td>
+          <td><input type="text" value="{{preparationTime}}"/></td>
+        </tr>
+        <tr>
+          <td>Mean interval between customer arrivals (min):</td>
+          <td><input type="text" value="{{meanInterval}}" /></td>
+        </tr>
+        <tr>
+          <td>Mean cashier transaction time (min):</td>
+          <td><input type="text" value="{{transactionTime}}" /></td>
+        </tr>
+        <tr>
+          <td>Random number generation seed:</td>
+          <td><input type="text" value="{{randomSeed}}" /></td>
+        </tr>
+        <tr>
+          <td>Simulation time (min):</td>
+          <td><input type="text" value="{{simTime}}"/></td>
+        </tr>
+      </table>
+      <button on-click="_runSimulation">Run Simulation</button>
+      </div>
+      <template is="dom-repeat" items="[[results]]">
+        <p>
+          Simulation Results for:
+          Pick Capacity = [[item.capacity]],
+          Preparation Time = [[item.preparationTime]]
+          Mean Arrival = [[item.meanArrival]]
+          Seed = [[item.randomSeed]]
+          Sim time = [[item.simTime]]
+          <br>
+          Average time at pick (min) = [[item.results_0]]
+          Average number of customers in restaurant = [[item.results_2]]
+        </p>
+      </template>
+      <button on-click="_clearResults">Clear</button>
+    </template>
+    <script>
+      Polymer({
+        is: 's-pick',
+        properties: {
+          capacity: {
+            type: Number,
+            notify: true,
+            value: 5
+          },
+          preparationTime: {
+            type: Number,
+            notify: true,
+            value: 5
+          },
+          meanInterval: {
+            type: Number,
+            notify: true,
+            value: 1
+          },
+          transactionTime: {
+            type: Number,
+            notify: true,
+            value: 1
+          },
+          randomSeed: {
+            type: String,
+            notify: true,
+            value: '1234'
+          },
+          simTime: {
+            type: Number,
+            notify: true,
+            value: 240
+          },
+          results: {
+            type: Array,
+            value: [],
+            notify: true
+          }
+        },
+        _runSimulation() {
+          var results = buffetRestaurantSimulation(
+              this.capacity,
+              this.preparationTime,
+              this.meanArrival,
+              this.transactionTime,
+              this.randomSeed,
+              this.simTime);
+
+          var msg = {
+            capacity: this.capacity,
+            preparationTime: this.preparationTime,
+            meanArrival: this.meanArrival,
+            transactionTime: this.transactionTime,
+            randomSeed: this.randomSeed,
+            simTime: this.simTime,
+            results_0: results[0].toFixed(4),
+            results_2: results[2].toFixed(4)
+          };
+          this.push('results', msg);
+        },
+        _clearResults() {
+          this.set('results', []);
+        }
+      });
+    </script>
+  </dom-module>
+  </head>
+  <body>
+    <s-pick></s-pick>
+  </body>
+</html>
+
+
