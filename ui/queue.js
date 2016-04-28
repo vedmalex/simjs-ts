@@ -348,8 +348,8 @@ var QueueApp = {
 
 	startSim: function () {
 		var len, i, model;
-		this.sim = new Sim();
-		this.random = new Random(1234);
+		this.sim = new Sim.Sim();
+		this.random = new Sim.Random(1234);
 		
 		len = this.models.length;
 		for (i = len - 1; i >= 0; i --) {
