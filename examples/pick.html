@@ -2,6 +2,7 @@
   <head>
   <script type="text/javascript" src="./bower_components/webcomponentsjs/webcomponents.js"></script>
   <link rel="import" href="./bower_components/polymer/polymer.html" />
+  <script type="text/javascript" src="../bower_components/requirejs/require.js"></script>
   <script type="text/javascript" src="../sim.js"></script>
   <link rel="stylesheet" href="examples.css" type="text/css" />
   <dom-module id="s-pick">
@@ -9,20 +10,20 @@
       <div class="form">
       <table>
         <tr>
-          <td>Buffer Capacity: </td>
+          <td>Pallet Tray Capacity: </td>
           <td><input type="text" value="{{capacity}}"/></td>
         </tr>
         <tr>
-          <td>Salad preparation time (min):</td>
-          <td><input type="text" value="{{preparationTime}}"/></td>
+          <td>Receive/Induct interval (min):</td>
+          <td><input type="text" value="{{receiveInterval}}"/></td>
         </tr>
         <tr>
-          <td>Mean interval between customer arrivals (min):</td>
+          <td>Mean interval between pick list arrival (min):</td>
           <td><input type="text" value="{{meanInterval}}" /></td>
         </tr>
         <tr>
-          <td>Mean cashier transaction time (min):</td>
-          <td><input type="text" value="{{transactionTime}}" /></td>
+          <td>Mean single pick transaction time (min):</td>
+          <td><input type="text" value="{{singlePickTime}}" /></td>
         </tr>
         <tr>
           <td>Random number generation seed:</td>
@@ -51,7 +52,7 @@
       <button on-click="_clearResults">Clear</button>
     </template>
     <script>
-      var Sim = require('../sim.js');
+      var Sim;
       Polymer({
         is: 's-pick',
         properties: {
@@ -94,7 +95,7 @@
         _runSimulation() {
           var results = pickSimulation(
               this.capacity,
-              this.preparationTime,
+              this.receiveInterval,
               this.meanArrival,
               this.transactionTime,
               this.randomSeed,
@@ -102,7 +103,7 @@
 
           var msg = {
             capacity: this.capacity,
-            preparationTime: this.preparationTime,
+            receiveInterval: this.receiveInterval,
             meanArrival: this.meanArrival,
             transactionTime: this.transactionTime,
             randomSeed: this.randomSeed,
@@ -118,45 +119,31 @@
       });
       function pickSimulation(
               BuffetCapacity,
-              PreparationTime,
+              ReceiveInterval,
               MeanArrival,
               CashierTime,
               Seed,
               Simtime)
       {
           var sim = new Sim.Sim();
+          var  = new Sim.Event('Request');
           var stats = new Sim.Population();
-          var cashier = new Sim.Facility('Cashier');
-          var buffet = new Sim.Buffer('Buffet', BuffetCapacity);
-          var random = new Random(Seed);
+          var palletJack = new Sim.Facility('Pallet Jack');
+          var palletTray = new Sim.Buffer('Pallet Tray');
+          var station = new Sim.Facility('Stations');
+          var random = new Sim.Random(parseInt(Seed));
 
-          var Customer = {
-              start: function () {
-                  this.order();
 
-                  var nextCustomerAt = random.exponential (1.0 / MeanArrival);
-                  this.setTimer(nextCustomerAt).done(this.start);
-              },
-
-              order: function () {
-                  sim.log("Customer ENTER at " + this.time());
-                  stats.enter(this.time());
-
-                  this.getBuffer(buffet, 1).done(function () {
-                      sim.log("Customer at CASHIER " + this.time() + " (entered at " + this.callbackData + ")");
-                      var serviceTime = random.exponential(1.0 / CashierTime);
-                      this.useFacility(cashier, serviceTime).done(function () {
-                          sim.log("Customer LEAVE at " + this.time() + " (entered at " + this.callbackData + ")");
-                          stats.leave(this.callbackData, this.time());
-                      }).setData(this.callbackData);
-                  }).setData(this.time());
+          class PickLists extends Sim.Entity {
+              start() {
+                this.
               }
           };
 
-          var Chef = {
+          class Receiver extends Sim.Entity {
               start: function () {
-                  this.putBuffer(buffet, BuffetCapacity - buffet.current());
-                  this.setTimer(PreparationTime).done(this.start);
+                  this.putBuffer(palletTray, BuffetCapacity - buffet.current());
+                  this.setTimer(ReceiveInterval).done(this.start);
               }
           };
 
