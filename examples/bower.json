@@ -1,0 +1,17 @@
+{
+  "name": "examples",
+  "homepage": "https://github.com/btelles/simjs-source",
+  "authors": [
+    "Bernardo Telles <btelles@google.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

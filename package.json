@@ -2,9 +2,9 @@
   "name": "simjs-updated",
   "version": "0.0.0",
   "description": "SimJS updated with ES2015 and updated toolchain",
-  "main": "lib/index.js",
+  "main": "sim.js",
   "files": [
-    "lib/"
+    "sim.js"
   ],
   "keywords": [
     "discrete",
@@ -22,12 +22,12 @@
   },
   "scripts": {
     "audit": "nsp check package",
-    "build": "babel -d ./ ./src",
+    "build": "browserify -d -e  src/sim.js -t babelify --outfile sim.js",
     "check": "npm run audit && npm outdated --depth 0",
     "coverage": "nyc --reporter=lcov --reporter=text --reporter=html npm test",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "github-release": "conventional-github-releaser -p angular",
-    "lint": "eslint src test",
+    "lint": "eslint src",
     "test": "ava --require babel-core/register",
     "validate": "npm run lint && npm test",
     "prepare": "npm run build && npm run validate && npm run check",
@@ -50,8 +50,11 @@
     "babel-cli": "^6.5.1",
     "babel-core": "^6.5.2",
     "babel-eslint": "^6.0.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.7.7",
     "babel-plugin-transform-function-bind": "^6.5.2",
     "babel-preset-es2015": "^6.5.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.0",
     "conventional-github-releaser": "^1.1.0",
     "coveralls": "^2.11.9",
     "cz-conventional-changelog": "^1.1.5",
