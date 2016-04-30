@@ -11,27 +11,19 @@
       <table>
         <tr>
           <td>Pallet Tray Capacity: </td>
-          <td><input type="text" value="{{capacity}}"/></td>
-        </tr>
-        <tr>
-          <td>Receive/Induct interval (min):</td>
-          <td><input type="text" value="{{receiveInterval}}"/></td>
-        </tr>
-        <tr>
-          <td>Mean interval between pick list arrival (min):</td>
-          <td><input type="text" value="{{meanInterval}}" /></td>
+          <td><input type="text" value="{{capacity::input}}"/></td>
         </tr>
         <tr>
           <td>Mean single pick transaction time (min):</td>
-          <td><input type="text" value="{{singlePickTime}}" /></td>
+          <td><input type="text" value="{{transactionTime::input}}" /></td>
         </tr>
         <tr>
           <td>Random number generation seed:</td>
-          <td><input type="text" value="{{randomSeed}}" /></td>
+          <td><input type="text" value="{{randomSeed::input}}" /></td>
         </tr>
         <tr>
           <td>Simulation time (min):</td>
-          <td><input type="text" value="{{simTime}}"/></td>
+          <td><input type="text" value="{{simTime::input}}"/></td>
         </tr>
       </table>
       <button on-click="_runSimulation">Run Simulation</button>
@@ -39,9 +31,7 @@
       <template is="dom-repeat" items="[[results]]">
         <p>
           Simulation Results for:
-          Pick Capacity = [[item.capacity]],
-          Preparation Time = [[item.preparationTime]]
-          Mean Arrival = [[item.meanArrival]]
+          Pallet Tray Capacity = [[item.capacity]],
           Seed = [[item.randomSeed]]
           Sim time = [[item.simTime]]
           <br>
@@ -61,30 +51,20 @@
             notify: true,
             value: 5
           },
-          preparationTime: {
-            type: Number,
-            notify: true,
-            value: 5
-          },
-          meanInterval: {
-            type: Number,
-            notify: true,
-            value: 1
-          },
           transactionTime: {
             type: Number,
             notify: true,
-            value: 1
+            value: 10
           },
           randomSeed: {
-            type: String,
+            type: Number,
             notify: true,
-            value: '1234'
+            value: 1234
           },
           simTime: {
             type: Number,
             notify: true,
-            value: 240
+            value: 100
           },
           results: {
             type: Array,
@@ -95,74 +75,56 @@
         _runSimulation() {
           var results = pickSimulation(
               this.capacity,
-              this.receiveInterval,
-              this.meanArrival,
               this.transactionTime,
               this.randomSeed,
               this.simTime);
 
-          var msg = {
-            capacity: this.capacity,
-            receiveInterval: this.receiveInterval,
-            meanArrival: this.meanArrival,
-            transactionTime: this.transactionTime,
-            randomSeed: this.randomSeed,
-            simTime: this.simTime,
-            results_0: results[0].toFixed(4),
-            results_2: results[2].toFixed(4)
-          };
-          this.push('results', msg);
+          this.push('results', results);
         },
         _clearResults() {
           this.set('results', []);
         }
       });
       function pickSimulation(
-              BuffetCapacity,
-              ReceiveInterval,
-              MeanArrival,
-              CashierTime,
-              Seed,
-              Simtime)
-      {
+          capacity,
+          transactionTime,
+          randomSeed,
+          simTime) {
           var sim = new Sim.Sim();
-          var  = new Sim.Event('Request');
-          var stats = new Sim.Population();
+          var pjWait = new Sim.Population('Waiting for Pallet Jack');
           var palletJack = new Sim.Facility('Pallet Jack');
-          var palletTray = new Sim.Buffer('Pallet Tray');
-          var station = new Sim.Facility('Stations');
-          var random = new Sim.Random(parseInt(Seed));
+          var palletTray = new Sim.Buffer('Pallet Tray With Product', capacity, capacity);
+          var random = new Sim.Random(randomSeed);
 
+          class Picker extends Sim.Entity {
+            constructor(...args) {
+              super(...args)
+              this.itemCount = 0;
+            }
 
-          class PickLists extends Sim.Entity {
-              start() {
-                this.
-              }
-          };
+            start(name) {
+              if (name) this.name = name;
 
-          class Receiver extends Sim.Entity {
-              start: function () {
-                  this.putBuffer(palletTray, BuffetCapacity - buffet.current());
-                  this.setTimer(ReceiveInterval).done(this.start);
-              }
-          };
+              this.startTime = this.time();
+              this.log(`started picking (total: ${this.itemCount}, left: ${palletTray.current()})`);
 
-          sim.addEntity(Customer);
-          sim.addEntity(Chef);
+              pjWait.enter(this.startTime);
 
-      //  Uncomment these line to display logging information
-      //    sim.setLogger(function (msg) {
-      //        document.write(msg);
-      //    });
+              this.useFacility(palletJack, 10)
+                .done(pjWait.leave, pjWait, [this.startTime, this.time()])
+                .done(this.getBuffer, this, [palletTray, 2])
+                .done(() => this.itemCount += 2)
+                .done(this.start);
+            }
+          }
 
-          sim.simulate(Simtime);
+          sim.setLogger((...args) => console.log(...args));
+          sim.addEntity(Picker, 'Picker 1');
 
-          return [stats.durationSeries.average(),
-                  stats.durationSeries.deviation(),
-                  stats.sizeSeries.average(),
-                  stats.sizeSeries.deviation()];
+          sim.simulate(simTime);
 
-      }
+          return pjWait;
+      };
     </script>
   </dom-module>
   </head>
