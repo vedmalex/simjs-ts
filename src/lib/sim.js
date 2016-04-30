@@ -2,6 +2,113 @@ import { PQueue, Queue } from './queues.js';
 import { Population } from './stats.js';
 import { Request } from './request.js';
 
+
+class Entity {
+  constructor(sim) {
+    this.sim = sim;
+    this.id = sim.entityId++;
+  }
+
+  time() {
+      return this.sim.time();
+  }
+
+  setTimer(duration) {
+      ARG_CHECK(arguments, 1, 1);
+
+      const ro = new Request(
+              this,
+              this.sim.time(),
+              this.sim.time() + duration);
+
+      this.sim.queue.insert(ro);
+      return ro;
+  }
+
+  waitEvent(event) {
+      ARG_CHECK(arguments, 1, 1, Event);
+
+      const ro = new Request(this, this.sim.time(), 0);
+
+      ro.source = event;
+      event.addWaitList(ro);
+      return ro;
+  }
+
+  queueEvent(event) {
+      ARG_CHECK(arguments, 1, 1, Event);
+
+      const ro = new Request(this, this.sim.time(), 0);
+
+      ro.source = event;
+      event.addQueue(ro);
+      return ro;
+  }
+
+  useFacility(facility, duration) {
+      ARG_CHECK(arguments, 2, 2, Facility);
+
+      const ro = new Request(this, this.sim.time(), 0);
+      ro.source = facility;
+      facility.use(duration, ro);
+      return ro;
+  }
+
+  putBuffer(buffer, amount) {
+      ARG_CHECK(arguments, 2, 2, Buffer);
+
+      const ro = new Request(this, this.sim.time(), 0);
+      ro.source = buffer;
+      buffer.put(amount, ro);
+      return ro;
+  }
+
+  getBuffer(buffer, amount) {
+      ARG_CHECK(arguments, 2, 2, Buffer);
+
+      const ro = new Request(this, this.sim.time(), 0);
+      ro.source = buffer;
+      buffer.get(amount, ro);
+      return ro;
+  }
+
+  putStore(store, obj) {
+      ARG_CHECK(arguments, 2, 2, Store);
+
+      const ro = new Request(this, this.sim.time(), 0);
+      ro.source = store;
+      store.put(obj, ro);
+      return ro;
+  }
+
+  getStore(store, filter) {
+      ARG_CHECK(arguments, 1, 2, Store, Function);
+
+      const ro = new Request(this, this.sim.time(), 0);
+      ro.source = store;
+      store.get(filter, ro);
+      return ro;
+  }
+
+  send(message, delay, entities) {
+      ARG_CHECK(arguments, 2, 3);
+
+      const ro = new Request(this.sim, this.time(), this.time() + delay);
+      ro.source = this;
+      ro.msg = message;
+      ro.data = entities;
+      ro.deliver = this.sim.sendMessage;
+
+      this.sim.queue.insert(ro);
+  }
+
+  log(message) {
+      ARG_CHECK(arguments, 1, 1);
+
+      this.sim.log(message, this);
+  }
+}
+
 class Sim {
     constructor() {
         this.simTime = 0;
@@ -41,143 +148,18 @@ class Sim {
         }
     }
 
-    addEntity(proto) {
-        //ARG_CHECK(arguments, 1, 1, Object);
+    addEntity(klass, ...args) {
         // Verify that prototype has start function
-        if (!proto.start) {  // ARG CHECK
-            throw new Error("Entity prototype must have start() function defined"); // ARG CHECK
-        }  // ARG CHECK
-
-        if (!proto.time) {
-            proto.time = function () {
-                return this.sim.time();
-            };
-
-            proto.setTimer = function (duration) {
-                ARG_CHECK(arguments, 1, 1);
-
-                const ro = new Request(
-                        this,
-                        this.sim.time(),
-                        this.sim.time() + duration);
-
-                this.sim.queue.insert(ro);
-                return ro;
-            };
-
-            proto.waitEvent = function (event) {
-                ARG_CHECK(arguments, 1, 1, Event);
-
-                const ro = new Request(this, this.sim.time(), 0);
-
-                ro.source = event;
-                event.addWaitList(ro);
-                return ro;
-            };
-
-            proto.queueEvent = function (event) {
-                ARG_CHECK(arguments, 1, 1, Event);
-
-                const ro = new Request(this, this.sim.time(), 0);
-
-                ro.source = event;
-                event.addQueue(ro);
-                return ro;
-            };
-
-            proto.useFacility = function (facility, duration) {
-                ARG_CHECK(arguments, 2, 2, Facility);
-
-                const ro = new Request(this, this.sim.time(), 0);
-                ro.source = facility;
-                facility.use(duration, ro);
-                return ro;
-            };
-
-            proto.putBuffer = function (buffer, amount) {
-                ARG_CHECK(arguments, 2, 2, Buffer);
-
-                const ro = new Request(this, this.sim.time(), 0);
-                ro.source = buffer;
-                buffer.put(amount, ro);
-                return ro;
-            };
-
-            proto.getBuffer = function (buffer, amount) {
-                ARG_CHECK(arguments, 2, 2, Buffer);
-
-                const ro = new Request(this, this.sim.time(), 0);
-                ro.source = buffer;
-                buffer.get(amount, ro);
-                return ro;
-            };
-
-            proto.putStore = function (store, obj) {
-                ARG_CHECK(arguments, 2, 2, Store);
-
-                const ro = new Request(this, this.sim.time(), 0);
-                ro.source = store;
-                store.put(obj, ro);
-                return ro;
-            };
-
-            proto.getStore = function (store, filter) {
-                ARG_CHECK(arguments, 1, 2, Store, Function);
-
-                const ro = new Request(this, this.sim.time(), 0);
-                ro.source = store;
-                store.get(filter, ro);
-                return ro;
-            };
-
-            proto.send = function (message, delay, entities) {
-                ARG_CHECK(arguments, 2, 3);
-
-                const ro = new Request(this.sim, this.time(), this.time() + delay);
-                ro.source = this;
-                ro.msg = message;
-                ro.data = entities;
-                ro.deliver = this.sim.sendMessage;
-
-                this.sim.queue.insert(ro);
-            };
-
-            proto.log = function (message) {
-                ARG_CHECK(arguments, 1, 1);
-
-                this.sim.log(message, this);
-            };
+        if (!klass.prototype.start) {  // ARG CHECK
+            throw new Error(`Entity class ${klass.name} must have start() function defined`);
         }
 
-        const obj = ((p => {
-            if (p == null) throw TypeError();
-            if (Object.create)
-                return Object.create(p);
-            const t = typeof p;
-            if (t !== "object" && t !== "function") throw TypeError();
+        var entity = new klass(this);
+        this.entities.push(entity);
 
-            function f() {};
-            f.prototype = p;
-            return new f();
-        })(proto));
+        entity.start(...args);
 
-        obj.sim = this;
-        obj.id = this.entityId ++;
-        this.entities.push(obj);
-
-        if (arguments.length > 1) {
-            const args = [];
-            for (let i = 1; i < arguments.length; i ++) {
-                args.push(arguments[i]);
-            }
-            obj.start.apply(obj, args);
-        }
-        else {
-            obj.start();
-        }
-
-
-        return obj;
+        return entity;
     }
 
     simulate(endTime, maxEvents) {
@@ -851,4 +833,4 @@ function ARG_CHECK(found, expMin, expMax) {
 	}   // ARG_CHECK
 }   // ARG_CHECK
 
-export {Sim, Facility, Buffer, Store, Event, ARG_CHECK};
+export {Sim, Facility, Buffer, Store, Event, Entity, ARG_CHECK};

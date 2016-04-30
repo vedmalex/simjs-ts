@@ -1,6 +1,6 @@
 import test from 'ava';
 ;
-import * as Sim from '../index';
+import * as Sim from '../sim';
 
 import 'babel-core/register';
 var entities = 0;
@@ -9,22 +9,22 @@ var finalized = 0;
 test('testTimerPlain', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(10).done(this.onTimeout);
-    },
-    onTimeout: function () {
+    }
+    onTimeout() {
       this.count = 1;
       t.is(this.time(), 10);
-    },
-    finalize: function () {
+    }
+    finalize() {
       t.is(this.count, 1);
       t.is(this.time(), 10);
       finalized ++;
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -32,22 +32,22 @@ test('testTimerPlain', (t) => {
 test('testTimerCustomDone', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(10).done(this.onTimeout);
-    },
-    onTimeout: function () {
+    }
+    onTimeout() {
       this.count = 1;
       t.is(this.time(), 10);
-    },
-    finalize: function () {
+    }
+    finalize() {
       t.is(this.count, 1);
       t.is(this.time(), 10);
       finalized ++;
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -55,21 +55,21 @@ test('testTimerCustomDone', (t) => {
 test('testTimerCustomDoneInline', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(10).done(function (){ 
         t.is(this.time(), 10);
         this.count = 1; 
       });
-    },
-    finalize: function () {
+    }
+    finalize() {
       t.is(this.count, 1);
       t.is(this.time(), 10);
       finalized ++;
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -77,21 +77,25 @@ test('testTimerCustomDoneInline', (t) => {
 test('testTimerRecursive', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       t.is(this.time(), 10 * this.count);
       this.count ++;
       this.setTimer(10).done(this.start);
-    },
-    finalize: function () {
+    }
+    finalize() {
       t.is(this.count, 11);
       t.is(this.time(), 100);
       finalized ++;
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -99,15 +103,15 @@ test('testTimerRecursive', (t) => {
 test('testTimerNoEvent', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {},
-    finalize: function () { 
+  class MyEntity extends Sim.Entity {
+    start() {}
+    finalize() { 
       finalized ++; 
       t.is(this.time(), 0);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -115,19 +119,19 @@ test('testTimerNoEvent', (t) => {
 test('testTimerZero', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(0).done(function () {
         t.is(this.time(), 0);
       });
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized++;
       t.is(this.time(), 0);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -136,8 +140,8 @@ test('testTimerZero', (t) => {
 test('testTimerTimeout1', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(10)
       .done(function () {
         t.fail();
@@ -146,15 +150,15 @@ test('testTimerTimeout1', (t) => {
         t.is(this.time(), 5);
         this.count = 1;
       });
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized++;
       t.is(this.time(), 10);
       t.is(this.count, 1);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -162,8 +166,8 @@ test('testTimerTimeout1', (t) => {
 test('testTimerTimeout2', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(10)
       .done(function () {
         t.is(this.time(), 10);
@@ -172,15 +176,15 @@ test('testTimerTimeout2', (t) => {
       .waitUntil(20, function () {
         t.fail();
       });
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized++;
       t.is(this.count, 1);
       t.is(this.time(), 20);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -188,8 +192,8 @@ test('testTimerTimeout2', (t) => {
 test('testTimerMultipleTimeouts', (t) => {
   var sim = new Sim.Sim();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(50)
       .done(function () {
         t.fail();
@@ -202,15 +206,15 @@ test('testTimerMultipleTimeouts', (t) => {
         this.count = 1;
       });
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized++;
       t.is(this.count, 1);
       t.is(this.time(), 50);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });
@@ -219,8 +223,8 @@ test('testTimerWaitEvent', (t) => {
   var sim = new Sim.Sim();
   var event = new Sim.Event();
 
-  var Entity = {
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    start() {
       this.setTimer(50)
       .done(function () {
         t.fail();
@@ -234,15 +238,15 @@ test('testTimerWaitEvent', (t) => {
         event.fire();
       });
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized++;
       t.is(this.count, 1);
       t.is(this.time(), 50);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities = 1;
 });

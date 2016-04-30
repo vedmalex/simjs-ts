@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as Sim from '../index';
+import * as Sim from '../sim';
 
 import 'babel-core/register';
 var entities = 0;
@@ -9,9 +9,13 @@ test('testStorePut', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 3);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, {a:1}).done(function () {
         t.is(this.time(), 0);
         this.count++;
@@ -32,14 +36,14 @@ test('testStorePut', (t) => {
       });
 
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 3);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -48,9 +52,13 @@ test('testStoreGet', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 3);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, {a:1}).done(function () {
         t.is(this.time(), 0);
         this.count++;
@@ -75,14 +83,14 @@ test('testStoreGet', (t) => {
 
       this.getStore(store).done(t.fail);
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 4);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -91,9 +99,13 @@ test('testStoreGetFilter', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 3);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, {a:1}).done(function () {
         t.is(this.time(), 0);
         this.count++;
@@ -118,14 +130,14 @@ test('testStoreGetFilter', (t) => {
 
       this.getStore(store).done(t.fail);
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 4);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -134,9 +146,13 @@ test('testStorePutProgress', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 2);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, {a:1}).done(function () {
         t.is(this.time(), 0);
         this.count++;
@@ -178,14 +194,14 @@ test('testStorePutProgress', (t) => {
         });
       });
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 6);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -194,9 +210,13 @@ test('testStoreGetProgress', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 2);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.getStore(store).done(function () {
         t.is(this.time(), 10);
         this.count++;
@@ -224,14 +244,14 @@ test('testStoreGetProgress', (t) => {
       });
 
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 4);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -240,9 +260,13 @@ test('testStoreGetCancel', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 2);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.getStore(store).done(t.fail)
       .waitUntil(10, function () {
         t.is(this.time(), 10);
@@ -265,14 +289,14 @@ test('testStoreGetCancel', (t) => {
       });
 
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 3);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -282,9 +306,13 @@ test('testStoreGetEventRenege', (t) => {
   var store = new Sim.Store('a', 100);
   var event = new Sim.Event('a');
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, {a:1});
 
       // wait, since filter function is false
@@ -301,14 +329,14 @@ test('testStoreGetEventRenege', (t) => {
         this.count++;
       });
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 1);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -317,9 +345,13 @@ test('testStoreGetTimeout', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 100);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, {a:1});
 
       // wait, since filter function is false
@@ -334,14 +366,14 @@ test('testStoreGetTimeout', (t) => {
         this.count++;
       });
 
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 1);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -350,9 +382,13 @@ test('testStoreGetCancel', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 100, 40);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       this.putStore(store, 1);
 
       // wait, since filter function is false
@@ -369,14 +405,14 @@ test('testStoreGetCancel', (t) => {
       });
 
       this.setTimer(10).done(ro.cancel, ro);
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 1);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -385,9 +421,13 @@ test('testStoreGetStillWaits', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 100, 100);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       // get waits
       this.getStore(store).done(function () {
         t.is(this.time(), 10);
@@ -414,14 +454,14 @@ test('testStoreGetStillWaits', (t) => {
       this.setTimer(10).done(this.putStore, this, [store, {a:1}]);
       this.setTimer(20).done(this.putStore, this, [store, {a:2}]);
       this.setTimer(30).done(this.putStore, this, [store, {a:3}]);
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 3);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });
@@ -430,9 +470,13 @@ test('testStoreGetFilterWaits', (t) => {
   var sim = new Sim.Sim();
   var store = new Sim.Store('a', 100, 100);
 
-  var Entity = {
-    count: 0,
-    start: function () {
+  class MyEntity extends Sim.Entity {
+    constructor(...args) {
+      super(...args);
+      this.count = 0;
+    }
+
+    start() {
       // get waits
       this.getStore(store, function (o) {
         return o.a == 3;
@@ -458,14 +502,14 @@ test('testStoreGetFilterWaits', (t) => {
       this.setTimer(10).done(this.putStore, this, [store, {a:1}]);
       this.setTimer(20).done(this.putStore, this, [store, {a:2}]);
       this.setTimer(30).done(this.putStore, this, [store, {a:3}]);
-    },
-    finalize: function () {
+    }
+    finalize() {
       finalized ++;
       t.is(this.count, 3);
     }
-  };
+  }
 
-  sim.addEntity(Entity);
+  sim.addEntity(MyEntity);
   sim.simulate(100);
   entities ++;
 });

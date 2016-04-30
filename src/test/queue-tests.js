@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as Sim from '../index';
+import * as Sim from '../sim';
 
 test('testFCFSQueueSimple', (t) => {
 	var q = new Sim.Queue();
