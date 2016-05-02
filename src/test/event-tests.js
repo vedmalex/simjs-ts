@@ -1,12 +1,12 @@
 import test from 'ava';
 import * as Sim from '../sim';
 
-var entities = 0;
-var finalized = 0;
+let entities = 0;
+let finalized = 0;
 
 test('testEventFlash', (t) => {
-  var sim = new Sim.Sim();
-  var event = new Sim.Event('event');
+  const sim = new Sim.Sim();
+  const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -16,27 +16,27 @@ test('testEventFlash', (t) => {
     start() {
       t.is(event.isFired, false);
 
-      this.waitEvent(event).done(function () {
+      this.waitEvent(event).done(() => {
         t.is(event.isFired, false);
         t.is(this.callbackSource, event);
         t.is(this.time(), 10);
         this.count ++;
       });
 
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         t.is(event.isFired, false);
         event.fire();
       });
 
-      this.setTimer(20).done(function () {
+      this.setTimer(20).done(() => {
         t.is(event.isFired, false);
-        this.waitEvent(event).done(function (s) {
+        this.waitEvent(event).done((s) => {
           t.is(this.callbackSource, event);
           t.is(this.time(), 21);
           this.count ++;
         });
       });
-      this.setTimer(21).done(function () {
+      this.setTimer(21).done(() => {
         t.is(event.isFired, false);
         event.fire();
         t.is(event.isFired, false);
@@ -55,8 +55,8 @@ test('testEventFlash', (t) => {
 });
 
 test('testEventSustain', (t) => {
-  var sim = new Sim.Sim();
-  var event = new Sim.Event('event');
+  const sim = new Sim.Sim();
+  const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -66,42 +66,42 @@ test('testEventSustain', (t) => {
     start() {
       t.is(event.isFired, false);
 
-      this.waitEvent(event).done(function (s) {
+      this.waitEvent(event).done((s) => {
         t.is(event.isFired, true);
         t.is(this.callbackSource, event);
         t.is(this.time(), 10);
         this.count ++;
       });
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         t.is(event.isFired, false);
         event.fire(true);
         t.is(event.isFired, true);
       });
 
-      this.setTimer(20).done(function () {
+      this.setTimer(20).done(() => {
         t.is(event.isFired, true);
-        this.waitEvent(event).done(function (s) {
+        this.waitEvent(event).done((s) => {
           t.is(this.callbackSource, event);
           t.is(this.time(), 20);
           this.count ++;
         });
       });
 
-      this.setTimer(30).done(function () {
+      this.setTimer(30).done(() => {
         t.is(event.isFired, true);
         event.clear();
         t.is(event.isFired, false);
       });
-      this.setTimer(40).done(function () {
+      this.setTimer(40).done(() => {
         t.is(event.isFired, false);
-        this.waitEvent(event).done(function (s) {
+        this.waitEvent(event).done((s) => {
           t.is(this.callbackSource, event);
           t.is(this.time(), 41);
           this.count ++;
         });
       });
 
-      this.setTimer(41).done(function () { event.fire(true); });
+      this.setTimer(41).done(() => { event.fire(true); });
 
     }
     finalize() {
@@ -117,17 +117,17 @@ test('testEventSustain', (t) => {
 });
 
 test('testEventWaitQueue', (t) => {
-  var barrier = new Sim.Event('Barrier');
-  var funnel = new Sim.Event('Funnel');
-  var wcount = 0;
-  var qcount = 0;
+  let barrier = new Sim.Event('Barrier');
+  let funnel = new Sim.Event('Funnel');
+  let wcount = 0;
+  let qcount = 0;
   class MyEntity extends Sim.Entity {
     start(master) {
-      this.waitEvent(barrier).done(function () {
+      this.waitEvent(barrier).done(() => {
         wcount++;
       });
 
-      this.queueEvent(funnel).done(function () {
+      this.queueEvent(funnel).done(() => {
         qcount++;
       });
 
@@ -142,9 +142,9 @@ test('testEventWaitQueue', (t) => {
     }
   }
 
-  var sim = new Sim.Sim();
-  var e = [];
-  for (var i = 0; i < 100; i++) {
+  const sim = new Sim.Sim();
+  let e = [];
+  for (let i = 0; i < 100; i++) {
     e.push(sim.addEntity(MyEntity, null, i == 0));
   }
   sim.simulate(100);

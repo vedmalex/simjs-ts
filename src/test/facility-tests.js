@@ -1,12 +1,12 @@
 import test from 'ava';
 import * as Sim from '../sim';
 
-var entities = 0;
-var finalized = 0;
+let entities = 0;
+let finalized = 0;
 
 test('testFacilityFCFSOneServer', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('facility', Sim.FCFS, 1);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('facility', Sim.FCFS, 1);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -18,22 +18,22 @@ test('testFacilityFCFSOneServer', (t) => {
       // at time 0 => [10, 20]
       // at time 4 => [20, 30]
       // at time 40 => [40, 50]
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 10);
         t.is(this.callbackSource, fac);
         t.is(this.callbackMessage, 0);
         this.count ++;
       });
 
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 20);
         t.is(this.callbackSource, fac);
         t.is(this.callbackMessage, 0);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(4).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 30);
           t.is(this.callbackSource, fac);
           t.is(this.callbackMessage, 0);
@@ -41,8 +41,8 @@ test('testFacilityFCFSOneServer', (t) => {
         });
       });
 
-      this.setTimer(40).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(40).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 50);
           t.is(this.callbackSource, fac);
           t.is(this.callbackMessage, 0);
@@ -65,8 +65,8 @@ test('testFacilityFCFSOneServer', (t) => {
 });
 
 test('testFacilityFCFSOOneServerTwoEntities', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('facility');
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('facility');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -81,38 +81,38 @@ test('testFacilityFCFSOOneServerTwoEntities', (t) => {
       // entity 1, at time 50: [50, 60]
       // entity 2, at time 70: [70, 80]
       if (first) {
-        this.useFacility(fac, 10).done(function () {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 10);
           this.count ++;
         });
-        this.setTimer(4).done(function () {
-          this.useFacility(fac, 10).done(function () {
+        this.setTimer(4).done(() => {
+          this.useFacility(fac, 10).done(() => {
             t.is(this.time(), 30);
             this.count ++;
           });
         });
-        this.setTimer(50).done(function () {
-          this.useFacility(fac, 10).done(function () {
+        this.setTimer(50).done(() => {
+          this.useFacility(fac, 10).done(() => {
             t.is(this.time(), 60);
             this.count ++;
           });
         });
 
       } else {
-        this.useFacility(fac, 10).done(function () {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 20);
           this.count ++;
         });
 
-        this.setTimer(4).done(function () {
-          this.useFacility(fac, 10).done(function () {
+        this.setTimer(4).done(() => {
+          this.useFacility(fac, 10).done(() => {
             t.is(this.time(), 40);
             this.count ++;
           });
         });
 
-        this.setTimer(70).done(function () {
-          this.useFacility(fac, 10).done(function () {
+        this.setTimer(70).done(() => {
+          this.useFacility(fac, 10).done(() => {
             t.is(this.time(), 80);
             this.count ++;
           });
@@ -134,8 +134,8 @@ test('testFacilityFCFSOOneServerTwoEntities', (t) => {
 });
 
 test('testFacilityFCFSTwoServers', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('facility', Sim.FCFS, 2);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('facility', Sim.FCFS, 2);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -147,29 +147,29 @@ test('testFacilityFCFSTwoServers', (t) => {
       // at time 0: [0, 10] at server 1
       // at time 0: [10, 20] at server 0
       // at time 14: [14, 24] at server 1
-      this.useFacility(fac, 10).done(function (s, m) {
+      this.useFacility(fac, 10).done((s) => {
         t.is(this.time(), 10);
         t.is(this.callbackSource, fac);
         t.is(this.callbackMessage, 0);
         this.count ++;
       });
 
-      this.useFacility(fac, 10).done(function (s, m) {
+      this.useFacility(fac, 10).done((s) => {
         t.is(this.time(), 10);
         t.is(this.callbackSource, fac);
         t.is(this.callbackMessage, 1);
         this.count ++;
       });
 
-      this.useFacility(fac, 10).done(function (s, m) {
+      this.useFacility(fac, 10).done((s) => {
         t.is(this.time(), 20);
         t.is(this.callbackSource, fac);
         t.is(this.callbackMessage, 0);
         this.count ++;
       });
 
-      this.setTimer(14).done(function () {
-        this.useFacility(fac, 10).done(function (s, m) {
+      this.setTimer(14).done(() => {
+        this.useFacility(fac, 10).done((s) => {
           t.is(this.time(), 24);
           t.is(this.callbackSource, fac);
           t.is(this.callbackMessage, 1);
@@ -192,8 +192,8 @@ test('testFacilityFCFSTwoServers', (t) => {
 
 
 test('testFacilityFCFSDrop0', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('fcfs', Sim.Facility.FCFS, 1, 0);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('fcfs', Sim.Facility.FCFS, 1, 0);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -201,22 +201,22 @@ test('testFacilityFCFSDrop0', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 10);
         t.is(this.callbackMessage, 0);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(4).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 4);
           t.is(this.callbackMessage, -1);
           this.count ++;
         });
       });
 
-      this.setTimer(16).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(16).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 26);
           t.is(this.callbackMessage, 0);
           this.count ++;
@@ -238,8 +238,8 @@ test('testFacilityFCFSDrop0', (t) => {
 });
 
 test('testFacilityFCFSDrop1', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('fcfs', Sim.Facility.FCFS, 1, 1);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('fcfs', Sim.Facility.FCFS, 1, 1);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -247,30 +247,30 @@ test('testFacilityFCFSDrop1', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 10);
         t.is(this.callbackMessage, 0);
         this.count ++;
       });
 
-      this.setTimer(1).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(1).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 20);
           t.is(this.callbackMessage, 0);
           this.count ++;
         });
       });
 
-      this.setTimer(2).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(2).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 2);
           t.is(this.callbackMessage, -1);
           this.count ++;
         });
       });
 
-      this.setTimer(26).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(26).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 36);
           t.is(this.callbackMessage, 0);
           this.count ++;
@@ -292,8 +292,8 @@ test('testFacilityFCFSDrop1', (t) => {
 });
 
 test('testFacilityLCFSSimple', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -301,13 +301,13 @@ test('testFacilityLCFSSimple', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 20);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(4).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 14);
           this.count ++;
         });
@@ -329,8 +329,8 @@ test('testFacilityLCFSSimple', (t) => {
 
 
 test('testFacilityLCFSPreemptTwice', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -338,20 +338,20 @@ test('testFacilityLCFSPreemptTwice', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 30);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(4).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 14);
           this.count ++;
         });
       });
 
-      this.setTimer(16).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(16).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 26);
           this.count ++;
         });
@@ -372,8 +372,8 @@ test('testFacilityLCFSPreemptTwice', (t) => {
 });
 
 test('testFacilityLCFSPreemptTwoLevel', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -381,20 +381,20 @@ test('testFacilityLCFSPreemptTwoLevel', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 30);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(4).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 24);
           this.count ++;
         });
       });
 
-      this.setTimer(6).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(6).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 16);
           this.count ++;
         });
@@ -415,8 +415,8 @@ test('testFacilityLCFSPreemptTwoLevel', (t) => {
 });
 
 test('testFacilityTimeoutDuringUsage', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.FCFS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.FCFS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -424,27 +424,27 @@ test('testFacilityTimeoutDuringUsage', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 10);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(4).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.fail();
         })
-        .waitUntil(4, function () {
+        .waitUntil(4, () => {
           t.is(this.time(), 8);
           this.count ++;
         });
       });
 
-      this.setTimer(6).done(function () {
-        this.useFacility(fac, 10).done(function () {
+      this.setTimer(6).done(() => {
+        this.useFacility(fac, 10).done(() => {
           t.is(this.time(), 20);
           this.count ++;
         })
-        .waitUntil(5, function () {
+        .waitUntil(5, () => {
           t.fail();
         });
       });
@@ -463,8 +463,8 @@ test('testFacilityTimeoutDuringUsage', (t) => {
 });
 
 test('testFacilityCancelDuringUsage', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.FCFS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.FCFS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -472,7 +472,7 @@ test('testFacilityCancelDuringUsage', (t) => {
       this.count = 0;
     }
     start() {
-      this.ro = this.useFacility(fac, 10).done(function () {
+      this.ro = this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 10);
         this.count ++;
       });
@@ -480,12 +480,12 @@ test('testFacilityCancelDuringUsage', (t) => {
       this.ro2 = this.useFacility(fac, 10).done(t.fail);
       this.setTimer(2).done(this.ro2.cancel, this.ro2);
 
-      this.useFacility(fac, 10).done(function () {
+      this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 20);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
+      this.setTimer(4).done(() => {
         this.ro.cancel();
       });
 
@@ -504,9 +504,9 @@ test('testFacilityCancelDuringUsage', (t) => {
 });
 
 test('testFacilityLCFSImmuneToRenege', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.LCFS);
-  var event = new Sim.Event('a');
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.LCFS);
+  const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -515,7 +515,7 @@ test('testFacilityLCFSImmuneToRenege', (t) => {
     }
     start() {
       this.ro = this.useFacility(fac, 10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 10);
         this.count ++;
       })
@@ -524,7 +524,7 @@ test('testFacilityLCFSImmuneToRenege', (t) => {
 
       event.fire(true);
 
-      this.setTimer(4).done(function () {
+      this.setTimer(4).done(() => {
         this.ro.cancel();
       });
 
@@ -543,8 +543,8 @@ test('testFacilityLCFSImmuneToRenege', (t) => {
 });
 
 test('testFacilityPSOne', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -553,7 +553,7 @@ test('testFacilityPSOne', (t) => {
     }
     start() {
       this.useFacility(fac, 10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 10);
         this.count ++;
       });
@@ -573,8 +573,8 @@ test('testFacilityPSOne', (t) => {
 });
 
 test('testFacilityPSTwoIdentical', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -583,12 +583,12 @@ test('testFacilityPSTwoIdentical', (t) => {
     }
     start() {
       this.useFacility(fac, 10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 20);
         this.count ++;
       });
       this.useFacility(fac, 10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 20);
         this.count ++;
       });
@@ -608,8 +608,8 @@ test('testFacilityPSTwoIdentical', (t) => {
 });
 
 test('testFacilityPSTwoIdenticalLater', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -617,17 +617,17 @@ test('testFacilityPSTwoIdenticalLater', (t) => {
       this.count = 0;
     }
     start() {
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         this.useFacility(fac, 10)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 30);
           this.count ++;
         });
       });
 
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         this.useFacility(fac, 10)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 30);
           this.count ++;
         });
@@ -648,8 +648,8 @@ test('testFacilityPSTwoIdenticalLater', (t) => {
 });
 
 test('testFacilityPSTwoOverlapPartial', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -657,17 +657,17 @@ test('testFacilityPSTwoOverlapPartial', (t) => {
       this.count = 0;
     }
     start() {
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         this.useFacility(fac, 10)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 25);
           this.count ++;
         });
       });
 
-      this.setTimer(15).done(function () {
+      this.setTimer(15).done(() => {
         this.useFacility(fac, 10)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 30);
           this.count ++;
         });
@@ -688,8 +688,8 @@ test('testFacilityPSTwoOverlapPartial', (t) => {
 });
 
 test('testFacilityPSTwoOverlapFull', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -697,17 +697,17 @@ test('testFacilityPSTwoOverlapFull', (t) => {
       this.count = 0;
     }
     start() {
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         this.useFacility(fac, 20)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 35);
           this.count ++;
         });
       });
 
-      this.setTimer(15).done(function () {
+      this.setTimer(15).done(() => {
         this.useFacility(fac, 5)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 25);
           this.count ++;
         });
@@ -728,8 +728,8 @@ test('testFacilityPSTwoOverlapFull', (t) => {
 });
 
 test('testFacilityPSTwoNoOverlap', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -738,16 +738,16 @@ test('testFacilityPSTwoNoOverlap', (t) => {
     }
     start() {
 
-      this.setTimer(0).done(function () {
+      this.setTimer(0).done(() => {
         this.useFacility(fac, 1)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 1);
           this.count ++;
         });
       });
-      this.setTimer(1).done(function () {
+      this.setTimer(1).done(() => {
         this.useFacility(fac, 1)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 2);
           this.count ++;
         });
@@ -769,8 +769,8 @@ test('testFacilityPSTwoNoOverlap', (t) => {
 });
 
 test('testFacilityPSTenNoOverlap', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -778,11 +778,11 @@ test('testFacilityPSTenNoOverlap', (t) => {
       this.count = 0;
     }
     start() {
-      for (var i = 0; i < 10; i++) {
-        this.setTimer(i).done(function () {
+      for (let i = 0; i < 10; i++) {
+        this.setTimer(i).done(() => {
 
           this.useFacility(fac, 1)
-          .done(function (j) {
+          .done((j) => {
             t.is(this.time(), j);
             this.count ++;
           }, null, this.callbackData);
@@ -804,8 +804,8 @@ test('testFacilityPSTenNoOverlap', (t) => {
 });
 
 test('testFacilityPSTenSmall', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -814,17 +814,17 @@ test('testFacilityPSTenSmall', (t) => {
     }
     start() {
       this.useFacility(fac, 10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 20);
         this.count ++;
       });
 
 
-      for (var i = 0; i < 10; i++) {
-        this.setTimer(2 * i).done(function () {
+      for (let i = 0; i < 10; i++) {
+        this.setTimer(2 * i).done(() => {
 
           this.useFacility(fac, 1)
-          .done(function (j) {
+          .done((j) => {
             t.is(this.time(), j);
             this.count ++;
           }, null, this.callbackData);
@@ -845,8 +845,8 @@ test('testFacilityPSTenSmall', (t) => {
 });
 
 test('testFacilityPSTen', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -855,9 +855,9 @@ test('testFacilityPSTen', (t) => {
     }
     start() {
 
-      for (var i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         this.useFacility(fac, 1)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 10);
           this.count ++;
         });
@@ -877,8 +877,8 @@ test('testFacilityPSTen', (t) => {
 });
 
 test('testFacilityPSRampUpDown', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -887,25 +887,25 @@ test('testFacilityPSRampUpDown', (t) => {
     }
     start() {
 
-      this.setTimer(0).done(function () {
+      this.setTimer(0).done(() => {
         this.useFacility(fac, 4)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 7);
           this.count ++;
         });
       });
 
-      this.setTimer(1).done(function () {
+      this.setTimer(1).done(() => {
         this.useFacility(fac, 2)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 6);
           this.count ++;
         });
       });
 
-      this.setTimer(2).done(function () {
+      this.setTimer(2).done(() => {
         this.useFacility(fac, 1)
-        .done(function () {
+        .done(() => {
           t.is(this.time(), 5);
           this.count ++;
         });
@@ -925,9 +925,9 @@ test('testFacilityPSRampUpDown', (t) => {
 });
 
 test('testFacilityPSImmuneToRenege', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
-  var event = new Sim.Event('a');
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -936,7 +936,7 @@ test('testFacilityPSImmuneToRenege', (t) => {
     }
     start() {
       this.ro = this.useFacility(fac, 10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 10);
         this.count ++;
       })
@@ -945,7 +945,7 @@ test('testFacilityPSImmuneToRenege', (t) => {
 
       event.fire(true);
 
-      this.setTimer(4).done(function () {
+      this.setTimer(4).done(() => {
         this.ro.cancel();
       });
 
@@ -964,8 +964,8 @@ test('testFacilityPSImmuneToRenege', (t) => {
 });
 
 test('testFacilityPSCancelDuringUsage', (t) => {
-  var sim = new Sim.Sim();
-  var fac = new Sim.Facility('simple', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -973,12 +973,12 @@ test('testFacilityPSCancelDuringUsage', (t) => {
       this.count = 0;
     }
     start() {
-      this.ro = this.useFacility(fac, 10).done(function () {
+      this.ro = this.useFacility(fac, 10).done(() => {
         t.is(this.time(), 10);
         this.count ++;
       });
 
-      this.setTimer(4).done(function () {
+      this.setTimer(4).done(() => {
         this.ro.cancel();
       });
 
@@ -998,8 +998,8 @@ test('testFacilityPSCancelDuringUsage', (t) => {
 
 
 test('testFacilityPSDocExample', (t) => {
-  var sim = new Sim.Sim();
-  var network = new Sim.Facility('Network Cable', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  let network = new Sim.Facility('Network Cable', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -1008,14 +1008,14 @@ test('testFacilityPSDocExample', (t) => {
     }
     start() {
       // make request at time 0, to use network for 10 sec
-      this.useFacility(network, 10).done(function () {
+      this.useFacility(network, 10).done(() => {
         this.count++;
         t.is(this.time(), 11);
       });
 
       // make request at time 5, to use the network for 1 sec
-      this.setTimer(5).done(function () {
-        this.useFacility(network, 1).done(function () {
+      this.setTimer(5).done(() => {
+        this.useFacility(network, 1).done(() => {
           this.count++;
           t.is(this.time(), 7);
         });
@@ -1036,8 +1036,8 @@ test('testFacilityPSDocExample', (t) => {
 });
 
 test('testFacilityPSNested', (t) => {
-  var sim = new Sim.Sim();
-  var network = new Sim.Facility('abcd', Sim.Facility.PS);
+  const sim = new Sim.Sim();
+  let network = new Sim.Facility('abcd', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -1045,10 +1045,10 @@ test('testFacilityPSNested', (t) => {
       this.count = 0;
     }
     start() {
-      this.useFacility(network, 1).done(function () {
+      this.useFacility(network, 1).done(() => {
         this.count ++;
         t.is(this.time(), 1);
-        this.useFacility(network, 1).done(function () {
+        this.useFacility(network, 1).done(() => {
           this.count++;
           t.is(this.time(), 2);
         });

@@ -2,12 +2,12 @@ import test from 'ava';
 import * as Sim from '../sim';
 
 import 'babel-core/register';
-var entities = 0;
-var finalized = 0;
+let entities = 0;
+let finalized = 0;
 
 test('testStorePut', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(3, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(3, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -16,22 +16,22 @@ test('testStorePut', (t) => {
     }
 
     start() {
-      this.putStore(store, { a:1 }).done(() => {
+      this.putStore(store, { a: 1 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:1 }).done(function () {
+      this.putStore(store, { a: 1 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:1 }).done(function () {
+      this.putStore(store, { a: 1 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:1 }).done(function () {
+      this.putStore(store, { a: 1 }).done(() => {
         t.fail();
       });
 
@@ -49,8 +49,8 @@ test('testStorePut', (t) => {
 });
 
 test('testStoreGet', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(3, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(3, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -59,23 +59,23 @@ test('testStoreGet', (t) => {
     }
 
     start() {
-      this.putStore(store, { a:1 }).done(function () {
+      this.putStore(store, { a: 1 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:10 }).done(function () {
+      this.putStore(store, { a: 10 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 0);
         this.count++;
         t.is(this.callbackMessage.a, 1);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 0);
         this.count++;
         t.is(this.callbackMessage.a, 10);
@@ -96,8 +96,8 @@ test('testStoreGet', (t) => {
 });
 
 test('testStoreGetFilter', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(3, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(3, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -106,23 +106,23 @@ test('testStoreGetFilter', (t) => {
     }
 
     start() {
-      this.putStore(store, { a:1 }).done(function () {
+      this.putStore(store, { a: 1 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:10 }).done(function () {
+      this.putStore(store, { a: 10 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.getStore(store, function (obj) { return obj.a == 10; }).done(function () {
+      this.getStore(store, (obj) => { return obj.a == 10; }).done(() => {
         t.is(this.time(), 0);
         this.count++;
         t.is(this.callbackMessage.a, 10);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 0);
         this.count++;
         t.is(this.callbackMessage.a, 1);
@@ -143,8 +143,8 @@ test('testStoreGetFilter', (t) => {
 });
 
 test('testStorePutProgress', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(2, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(2, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -153,32 +153,32 @@ test('testStorePutProgress', (t) => {
     }
 
     start() {
-      this.putStore(store, { a:1 }).done(function () {
+      this.putStore(store, { a: 1 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:2 }).done(function () {
+      this.putStore(store, { a: 2 }).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
-      this.putStore(store, { a:3 }).done(function () {
+      this.putStore(store, { a: 3 }).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
-      this.putStore(store, { a:4 }).done(function () {
+      this.putStore(store, { a: 4 }).done(() => {
         t.is(this.time(), 20);
         this.count++;
       });
 
-      this.putStore(store, { a:5 }).done(function () {
+      this.putStore(store, { a: 5 }).done(() => {
         t.fail();
       });
 
-      this.setTimer(10).done(function () {
-        this.getStore(store).done(function () {
+      this.setTimer(10).done(() => {
+        this.getStore(store).done(() => {
           t.is(this.time(), 10);
           this.count++;
           t.is(this.callbackMessage.a, 1);
@@ -186,8 +186,8 @@ test('testStorePutProgress', (t) => {
       });
 
 
-      this.setTimer(20).done(function () {
-        this.getStore(store).done(function () {
+      this.setTimer(20).done(() => {
+        this.getStore(store).done(() => {
           t.is(this.time(), 20);
           this.count++;
           t.is(this.callbackMessage.a, 2);
@@ -207,8 +207,8 @@ test('testStorePutProgress', (t) => {
 });
 
 test('testStoreGetProgress', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(2, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(2, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -217,27 +217,27 @@ test('testStoreGetProgress', (t) => {
     }
 
     start() {
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 10);
         this.count++;
         t.is(this.callbackMessage.a, 1);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 20);
         this.count++;
         t.is(this.callbackMessage.a, 2);
       });
 
-      this.setTimer(10).done(function () {
-        this.putStore(store, { a:1 }).done(function () {
+      this.setTimer(10).done(() => {
+        this.putStore(store, { a: 1 }).done(() => {
           t.is(this.time(), 10);
           this.count++;
         });
       });
 
-      this.setTimer(20).done(function () {
-        this.putStore(store, { a:2 }).done(function () {
+      this.setTimer(20).done(() => {
+        this.putStore(store, { a: 2 }).done(() => {
           t.is(this.time(), 20);
           this.count++;
         });
@@ -257,8 +257,8 @@ test('testStoreGetProgress', (t) => {
 });
 
 test('testStoreGetCancel', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(2, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(2, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -268,12 +268,12 @@ test('testStoreGetCancel', (t) => {
 
     start() {
       this.getStore(store).done(t.fail)
-      .waitUntil(10, function () {
+      .waitUntil(10, () => {
         t.is(this.time(), 10);
         this.count++;
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 20);
         this.count++;
         t.is(this.callbackMessage.a, 1);
@@ -281,8 +281,8 @@ test('testStoreGetCancel', (t) => {
 
 
 
-      this.setTimer(20).done(function () {
-        this.putStore(store, { a:1 }).done(function () {
+      this.setTimer(20).done(() => {
+        this.putStore(store, { a: 1 }).done(() => {
           t.is(this.time(), 20);
           this.count++;
         });
@@ -302,9 +302,9 @@ test('testStoreGetCancel', (t) => {
 });
 
 test('testStoreGetEventRenege', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(100, 'a');
-  var event = new Sim.Event('a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(100, 'a');
+  const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -313,10 +313,10 @@ test('testStoreGetEventRenege', (t) => {
     }
 
     start() {
-      this.putStore(store, { a:1 });
+      this.putStore(store, { a: 1 });
 
       // wait, since filter function is false
-      this.getStore(store, function () { return false; })
+      this.getStore(store, () => { return false; })
       .done(t.fail)
       .unlessEvent(event);
 
@@ -324,7 +324,7 @@ test('testStoreGetEventRenege', (t) => {
 
 
       // wait since there is request is front
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -342,8 +342,8 @@ test('testStoreGetEventRenege', (t) => {
 });
 
 test('testStoreGetTimeout', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(100, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -352,16 +352,16 @@ test('testStoreGetTimeout', (t) => {
     }
 
     start() {
-      this.putStore(store, { a:1 });
+      this.putStore(store, { a: 1 });
 
       // wait, since filter function is false
-      var ro = this.getStore(store, function () { return false; })
+      let ro = this.getStore(store, () => { return false; })
       .done(t.fail).
       waitUntil(10);
 
 
       // wait since there is request is front
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -379,8 +379,8 @@ test('testStoreGetTimeout', (t) => {
 });
 
 test('testStoreGetCancel', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(100, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -392,14 +392,14 @@ test('testStoreGetCancel', (t) => {
       this.putStore(store, 1);
 
       // wait, since filter function is false
-      var ro = this.getStore(store, function () { return false; })
-      .done(function () {
+      let ro = this.getStore(store, () => { return false; })
+      .done(() => {
         t.fail;
       });
 
 
       // get wait since there is request is front
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -418,8 +418,8 @@ test('testStoreGetCancel', (t) => {
 });
 
 test('testStoreGetStillWaits', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(100, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -429,31 +429,31 @@ test('testStoreGetStillWaits', (t) => {
 
     start() {
       // get waits
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 10);
         this.count++;
         t.is(this.callbackMessage.a, 1);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 20);
         this.count++;
         t.is(this.callbackMessage.a, 2);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 30);
         this.count++;
         t.is(this.callbackMessage.a, 3);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.fail();
       });
 
-      this.setTimer(10).done(this.putStore, this, [store, { a:1 }]);
-      this.setTimer(20).done(this.putStore, this, [store, { a:2 }]);
-      this.setTimer(30).done(this.putStore, this, [store, { a:3 }]);
+      this.setTimer(10).done(this.putStore, this, [store, { a: 1 }]);
+      this.setTimer(20).done(this.putStore, this, [store, { a: 2 }]);
+      this.setTimer(30).done(this.putStore, this, [store, { a: 3 }]);
     }
     finalize() {
       finalized++;
@@ -467,8 +467,8 @@ test('testStoreGetStillWaits', (t) => {
 });
 
 test('testStoreGetFilterWaits', (t) => {
-  var sim = new Sim.Sim();
-  var store = new Sim.Store(100, 'a');
+  const sim = new Sim.Sim();
+  const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -478,30 +478,30 @@ test('testStoreGetFilterWaits', (t) => {
 
     start() {
       // get waits
-      this.getStore(store, function (o) {
+      this.getStore(store, (o) => {
         return o.a == 3;
-      }).done(function () {
+      }).done(() => {
         t.is(this.time(), 30);
         this.count++;
         t.is(this.callbackMessage.a, 3);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 30);
         this.count++;
         t.is(this.callbackMessage.a, 1);
       });
 
-      this.getStore(store).done(function () {
+      this.getStore(store).done(() => {
         t.is(this.time(), 30);
         this.count++;
         t.is(this.callbackMessage.a, 2);
       });
 
 
-      this.setTimer(10).done(this.putStore, this, [store, { a:1 }]);
-      this.setTimer(20).done(this.putStore, this, [store, { a:2 }]);
-      this.setTimer(30).done(this.putStore, this, [store, { a:3 }]);
+      this.setTimer(10).done(this.putStore, this, [store, { a: 1 }]);
+      this.setTimer(20).done(this.putStore, this, [store, { a: 2 }]);
+      this.setTimer(30).done(this.putStore, this, [store, { a: 3 }]);
     }
     finalize() {
       finalized++;

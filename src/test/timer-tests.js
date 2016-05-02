@@ -3,11 +3,11 @@ import test from 'ava';
 import * as Sim from '../sim';
 
 import 'babel-core/register';
-var entities = 0;
-var finalized = 0;
+let entities = 0;
+let finalized = 0;
 
 test('testTimerPlain', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
@@ -30,7 +30,7 @@ test('testTimerPlain', (t) => {
 });
 
 test('testTimerCustomDone', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
@@ -53,11 +53,11 @@ test('testTimerCustomDone', (t) => {
 });
 
 test('testTimerCustomDoneInline', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         t.is(this.time(), 10);
         this.count = 1;
       });
@@ -75,7 +75,7 @@ test('testTimerCustomDoneInline', (t) => {
 });
 
 test('testTimerRecursive', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -101,7 +101,7 @@ test('testTimerRecursive', (t) => {
 });
 
 test('testTimerNoEvent', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {}
@@ -117,11 +117,11 @@ test('testTimerNoEvent', (t) => {
 });
 
 test('testTimerZero', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
-      this.setTimer(0).done(function () {
+      this.setTimer(0).done(() => {
         t.is(this.time(), 0);
       });
     }
@@ -138,15 +138,15 @@ test('testTimerZero', (t) => {
 
 
 test('testTimerTimeout1', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
       this.setTimer(10)
-      .done(function () {
+      .done(() => {
         t.fail();
       })
-      .waitUntil(5, function () {
+      .waitUntil(5, () => {
         t.is(this.time(), 5);
         this.count = 1;
       });
@@ -164,16 +164,16 @@ test('testTimerTimeout1', (t) => {
 });
 
 test('testTimerTimeout2', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
       this.setTimer(10)
-      .done(function () {
+      .done(() => {
         t.is(this.time(), 10);
         this.count = 1;
       })
-      .waitUntil(20, function () {
+      .waitUntil(20, () => {
         t.fail();
       });
     }
@@ -190,18 +190,18 @@ test('testTimerTimeout2', (t) => {
 });
 
 test('testTimerMultipleTimeouts', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start() {
       this.setTimer(50)
-      .done(function () {
+      .done(() => {
         t.fail();
       })
-      .waitUntil(20, function () {
+      .waitUntil(20, () => {
         t.fail();
       })
-      .waitUntil(10, function () {
+      .waitUntil(10, () => {
         t.is(this.time(), 10);
         this.count = 1;
       });
@@ -220,21 +220,21 @@ test('testTimerMultipleTimeouts', (t) => {
 });
 
 test('testTimerWaitEvent', (t) => {
-  var sim = new Sim.Sim();
-  var event = new Sim.Event();
+  const sim = new Sim.Sim();
+  const event = new Sim.Event();
 
   class MyEntity extends Sim.Entity {
     start() {
       this.setTimer(50)
-      .done(function () {
+      .done(() => {
         t.fail();
       })
-      .unlessEvent(event, function () {
+      .unlessEvent(event, () => {
         t.is(this.time(), 10);
         this.count = 1;
       });
 
-      this.setTimer(10).done(function () {
+      this.setTimer(10).done(() => {
         event.fire();
       });
 

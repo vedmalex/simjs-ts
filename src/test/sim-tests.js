@@ -3,7 +3,7 @@ import * as Sim from '../sim';
 import 'babel-core/register';
 
 test('testStartArguments', (t) => {
-  var sim = new Sim.Sim();
+  const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
     start(a, b) {

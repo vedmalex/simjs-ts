@@ -2,12 +2,12 @@ import test from 'ava';
 import * as Sim from '../sim';
 
 import 'babel-core/register';
-var entities = 0;
-var finalized = 0;
+let entities = 0;
+let finalized = 0;
 
 test('testBufferBlockedPuts', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -17,25 +17,25 @@ test('testBufferBlockedPuts', (t) => {
 
     start() {
       // at time 0, put 60 units -- succeed
-      this.putBuffer(buffer, 60).done(function () {
+      this.putBuffer(buffer, 60).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
       // put 60 units -- wait, since not enough space
-      this.putBuffer(buffer, 60).done(function () {
+      this.putBuffer(buffer, 60).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.putBuffer(buffer, 15).done(function () {
+      this.putBuffer(buffer, 15).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.putBuffer(buffer, 10).done(function () {
+      this.putBuffer(buffer, 10).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -54,8 +54,8 @@ test('testBufferBlockedPuts', (t) => {
 });
 
 test('testBufferBlockedGet', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100, 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100, 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -65,25 +65,25 @@ test('testBufferBlockedGet', (t) => {
 
     start() {
       // at time 0, put 60 units -- succeed
-      this.getBuffer(buffer, 60).done(function () {
+      this.getBuffer(buffer, 60).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
       // put 60 units -- wait, since not enough space
-      this.getBuffer(buffer, 60).done(function () {
+      this.getBuffer(buffer, 60).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.getBuffer(buffer, 15).done(function () {
+      this.getBuffer(buffer, 15).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.getBuffer(buffer, 10).done(function () {
+      this.getBuffer(buffer, 10).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -102,8 +102,8 @@ test('testBufferBlockedGet', (t) => {
 });
 
 test('BufferPutStillWaits', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -113,25 +113,25 @@ test('BufferPutStillWaits', (t) => {
 
     start() {
       // at time 0, put 60 units -- succeed
-      this.putBuffer(buffer, 60).done(function () {
+      this.putBuffer(buffer, 60).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
       // put 60 units -- wait, since not enough space
-      this.putBuffer(buffer, 60).done(function () {
+      this.putBuffer(buffer, 60).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.putBuffer(buffer, 60).done(function () {
+      this.putBuffer(buffer, 60).done(() => {
         t.is(this.time(), 20);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.putBuffer(buffer, 60).done(function () {
+      this.putBuffer(buffer, 60).done(() => {
         t.is(this.time(), 30);
         this.count++;
       });
@@ -152,8 +152,8 @@ test('BufferPutStillWaits', (t) => {
 });
 
 test('BufferGetStillWaits', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100, 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100, 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -163,25 +163,25 @@ test('BufferGetStillWaits', (t) => {
 
     start() {
       // at time 0, put 60 units -- succeed
-      this.getBuffer(buffer, 60).done(function () {
+      this.getBuffer(buffer, 60).done(() => {
         t.is(this.time(), 0);
         this.count++;
       });
 
       // put 60 units -- wait, since not enough space
-      this.getBuffer(buffer, 60).done(function () {
+      this.getBuffer(buffer, 60).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.getBuffer(buffer, 60).done(function () {
+      this.getBuffer(buffer, 60).done(() => {
         t.is(this.time(), 20);
         this.count++;
       });
 
       // put 60 units -- wait, since there is a request already waiting
-      this.getBuffer(buffer, 60).done(function () {
+      this.getBuffer(buffer, 60).done(() => {
         t.is(this.time(), 30);
         this.count++;
       });
@@ -203,8 +203,8 @@ test('BufferGetStillWaits', (t) => {
 
 
 test('BufferGetCancel', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100, 40);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100, 40);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -214,13 +214,13 @@ test('BufferGetCancel', (t) => {
 
     start() {
       // at time 0, get 60 units -- waits
-      var ro = this.getBuffer(buffer, 60).done(function () {
+      let ro = this.getBuffer(buffer, 60).done(() => {
         t.fail;
       });
 
 
       // get 30, wait since there is request is front
-      this.getBuffer(buffer, 30).done(function () {
+      this.getBuffer(buffer, 30).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -239,8 +239,8 @@ test('BufferGetCancel', (t) => {
 });
 
 test('BufferPutCancel', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -250,13 +250,13 @@ test('BufferPutCancel', (t) => {
 
     start() {
       // at time 0, put 110 units -- waits
-      var ro = this.putBuffer(buffer, 110).done(function () {
+      let ro = this.putBuffer(buffer, 110).done(() => {
         t.fail;
       });
 
 
       // put 30, wait since there is request is front
-      this.putBuffer(buffer, 30).done(function () {
+      this.putBuffer(buffer, 30).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -275,8 +275,8 @@ test('BufferPutCancel', (t) => {
 });
 
 test('BufferPutTimeout', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -286,13 +286,13 @@ test('BufferPutTimeout', (t) => {
 
     start() {
       // at time 0, put 110 units -- waits
-      var ro = this.putBuffer(buffer, 110)
+      let ro = this.putBuffer(buffer, 110)
       .done(t.fail).
       waitUntil(10);
 
 
       // put 30, wait since there is request in front
-      this.putBuffer(buffer, 30).done(function () {
+      this.putBuffer(buffer, 30).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -310,9 +310,9 @@ test('BufferPutTimeout', (t) => {
 });
 
 test('BufferPutEventRenege', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100);
-  var event = new Sim.Event('a');
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100);
+  const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -322,7 +322,7 @@ test('BufferPutEventRenege', (t) => {
 
     start() {
       // at time 0, put 110 units -- waits
-      var ro = this.putBuffer(buffer, 110)
+      let ro = this.putBuffer(buffer, 110)
       .done(t.fail)
       .unlessEvent(event);
 
@@ -330,7 +330,7 @@ test('BufferPutEventRenege', (t) => {
 
 
       // put 30, wait since there is request is front
-      this.putBuffer(buffer, 30).done(function () {
+      this.putBuffer(buffer, 30).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -348,8 +348,8 @@ test('BufferPutEventRenege', (t) => {
 });
 
 test('BufferGetTimeout', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100, 100);
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100, 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -359,13 +359,13 @@ test('BufferGetTimeout', (t) => {
 
     start() {
       // at time 0, get 110 units -- waits
-      var ro = this.getBuffer(buffer, 110)
+      let ro = this.getBuffer(buffer, 110)
       .done(t.fail).
       waitUntil(10);
 
 
       // get 30, wait since there is request is front
-      this.getBuffer(buffer, 30).done(function () {
+      this.getBuffer(buffer, 30).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
@@ -383,9 +383,9 @@ test('BufferGetTimeout', (t) => {
 });
 
 test('BufferGetEventRenege', (t) => {
-  var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer('a', 100, 100);
-  var event = new Sim.Event('a');
+  const sim = new Sim.Sim();
+  let buffer = new Sim.Buffer('a', 100, 100);
+  const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -395,7 +395,7 @@ test('BufferGetEventRenege', (t) => {
 
     start() {
       // at time 0, get 110 units -- waits
-      var ro = this.getBuffer(buffer, 110)
+      let ro = this.getBuffer(buffer, 110)
       .done(t.fail)
       .unlessEvent(event);
 
@@ -403,7 +403,7 @@ test('BufferGetEventRenege', (t) => {
 
 
       // get 30, wait since there is request is front
-      this.getBuffer(buffer, 30).done(function () {
+      this.getBuffer(buffer, 30).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });

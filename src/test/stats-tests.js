@@ -3,11 +3,11 @@ import { assertAlmost } from './utils';
 import * as Sim from '../sim';
 import 'babel-core/register';
 
-test('testDataSeries', (t) => {
+test('testDataSeries', () => {
   // ai = i, wi = 0
-  var m = new Sim.DataSeries();
+  const m = new Sim.DataSeries();
 
-  for (var i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 100; i++) {
     m.record(i);
   }
   assertAlmost(m.average(), 50.5);
@@ -21,7 +21,7 @@ test('testDataSeries', (t) => {
 
   // ai = i, wi = 1 / i
   m.reset();
-  for (var i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 100; i++) {
     m.record(i, 1.0 / i);
   }
   assertAlmost(m.average(), 19.277563597396004);
@@ -33,7 +33,7 @@ test('testDataSeries', (t) => {
   assertAlmost(m.sum(), 5050.0);
 
   m.reset();
-  for (var i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 100; i++) {
     m.record(i, 2.0 * i);
   }
   assertAlmost(m.average(), 67.0);
@@ -44,11 +44,11 @@ test('testDataSeries', (t) => {
   assertAlmost(m.sum(), 5050.0);
 });
 
-test('testTimeSeries', (t) => {
-  var m = new Sim.TimeSeries();
+test('testTimeSeries', () => {
+  let m = new Sim.TimeSeries();
 
   // ai = i, ti = i
-  for (var i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 100; i++) {
     m.record(i, i);
   }
 
@@ -63,7 +63,7 @@ test('testTimeSeries', (t) => {
 
   // ai = 1, ti = i
   m.reset();
-  for (var i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 100; i++) {
     m.record(1, i);
   }
   m.finalize(100);
@@ -83,7 +83,8 @@ test('testTimeSeries', (t) => {
   assertAlmost(m.average(), 90.0);
 
   // with zero intervals
-  var m = new Sim.TimeSeries();
+  m = new Sim.TimeSeries();
+
   m.reset();
   m.record(1, 0);
   m.record(100, 1);
@@ -92,11 +93,11 @@ test('testTimeSeries', (t) => {
   assertAlmost(m.average(), 1.0);
 });
 
-test('testPopulation', (t) => {
-  var m = new Sim.Population();
+test('testPopulation', () => {
+  const m = new Sim.Population();
 
   // test basic
-  for (var i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i++) {
     m.enter(i);
     m.leave(i, i + 1);
   }
@@ -107,7 +108,7 @@ test('testPopulation', (t) => {
 
   // test reset
   m.reset();
-  for (var i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i++) {
     m.enter(i);
     m.leave(i, i + 1);
   }
@@ -116,7 +117,7 @@ test('testPopulation', (t) => {
 
   // ai arrive at i and leave at 100
   m.reset();
-  for (var i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i++) {
     m.enter(i);
     m.leave(i, 100);
   }
@@ -155,15 +156,16 @@ test('testPopulation', (t) => {
 });
 
 test('testHistogram', (t) => {
-  var m = new Sim.DataSeries();
+  const m = new Sim.DataSeries();
 
   m.setHistogram(0.5, 99.5, 99);
-  for (var i = 0; i <= 100; i++) {
+  for (let i = 0; i <= 100; i++) {
     m.record(i);
   }
 
-  var h = m.getHistogram();
-  for (var i = 0; i <= 100; i++) {
+  const h = m.getHistogram();
+
+  for (let i = 0; i <= 100; i++) {
     t.is(h[i], 1);
   }
 });
