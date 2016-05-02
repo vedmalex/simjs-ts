@@ -12,7 +12,7 @@ class Request {
 
   cancel() {
         // Ask the main request to handle cancellation
-    if (this.group && this.group[0] != this) {
+    if (this.group && this.group[0] !== this) {
       return this.group[0].cancel();
     }
 
@@ -25,7 +25,7 @@ class Request {
         // set flag
     this.cancelled = true;
 
-    if (this.deliverAt == 0) {
+    if (this.deliverAt === 0) {
       this.deliverAt = this.entity.time();
     }
 
@@ -41,8 +41,9 @@ class Request {
       return;
     }
     for (let i = 1; i < this.group.length; i++) {
+
       this.group[i].cancelled = true;
-      if (this.group[i].deliverAt == 0) {
+      if (this.group[i].deliverAt === 0) {
         this.group[i].deliverAt = this.entity.time();
       }
     }
@@ -60,6 +61,7 @@ class Request {
     if (this.noRenege) return this;
 
     const ro = this._addRequest(this.scheduledAt + delay, callback, context, argument);
+
     this.entity.sim.queue.insert(ro);
     return this;
   }
@@ -75,6 +77,7 @@ class Request {
 
     } else if (event instanceof Array) {
       for (let i = 0; i < event.length; i++) {
+
         var ro = this._addRequest(0, callback, context, argument);
         ro.msg = event[i];
         event[i].addWaitList(ro);
@@ -112,13 +115,14 @@ class Request {
         // this.unlessEvent = this.Null;
     this.noRenege = true;
 
-    if (!this.group || this.group[0] != this) {
+    if (!this.group || this.group[0] !== this) {
       return;
     }
 
     for (let i = 1; i < this.group.length; i++) {
+
       this.group[i].cancelled = true;
-      if (this.group[i].deliverAt == 0) {
+      if (this.group[i].deliverAt === 0) {
         this.group[i].deliverAt = this.entity.time();
       }
     }
@@ -130,6 +134,7 @@ class Request {
 
   _addRequest(deliverAt, callback, context, argument) {
     const ro = new Request(
+
                 this.entity,
                 this.scheduledAt,
                 deliverAt);
@@ -147,10 +152,13 @@ class Request {
 
   _doCallback(source, msg, data) {
     for (let i = 0; i < this.callbacks.length; i++) {
+
       const callback = this.callbacks[i][0];
+
       if (!callback) continue;
 
       let context = this.callbacks[i][1];
+
       if (!context) context = this.entity;
 
       const argument = this.callbacks[i][2];

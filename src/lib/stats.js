@@ -17,6 +17,7 @@ class DataSeries {
 
     if (this.histogram) {
       for (let i = 0; i < this.histogram.length; i++) {
+
         this.histogram[i] = 0;
       }
     }
@@ -30,6 +31,7 @@ class DataSeries {
     this.hBucketSize = (upper - lower) / nbuckets;
     this.histogram = new Array(nbuckets + 2);
     for (let i = 0; i < this.histogram.length; i++) {
+
       this.histogram[i] = 0;
     }
   }
@@ -42,6 +44,7 @@ class DataSeries {
     ARG_CHECK(arguments, 1, 2);
 
     const w = (weight === undefined) ? 1 : weight;
+
         // document.write("Data series recording " + value + " (weight = " + w + ")\n");
 
     if (value > this.Max) this.Max = value;
@@ -56,6 +59,7 @@ class DataSeries {
         this.histogram[this.histogram.length - 1] += w;
       } else {
         const index = Math.floor((value - this.hLower) / this.hBucketSize) + 1;
+
         this.histogram[index] += w;
       }
     }
@@ -69,6 +73,7 @@ class DataSeries {
 
         // Ai = Ai-1 + wi/Wi * (xi - Ai-1)
     const lastA = this.A;
+
     this.A = lastA + (w / this.W) * (value - lastA);
 
         // Qi = Qi-1 + wi(xi - Ai-1)(xi - Ai)

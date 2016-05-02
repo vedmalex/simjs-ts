@@ -195,7 +195,7 @@ test('testRequestCallbackData', (t) => {
     }
 
     fn1(v) {
-      if (this.time() == 0) {
+      if (this.time() === 0) {
         t.is(v, 1);
         t.is(typeof this.callbackMessage, 'undefined');
       } else {
@@ -430,7 +430,7 @@ test('testRequestPool', (t) => {
 
       this.setTimer(1).done(() => {this.freePool(pool, 50); });
 
-      if (this.time() == 0) {
+      if (this.time() === 0) {
         this.setTimer(10).done(this.start);
       }
 
@@ -662,9 +662,9 @@ test('testRequestBuffer', (t) => {
 test('testRequestEvents', (t) => {
   const sim = new Sim.Sim();
 
-  let event1 = new Sim.Event('event1');
+  const event1 = new Sim.Event('event1');
 
-  let event2 = new Sim.Event('event2');
+  const event2 = new Sim.Event('event2');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -712,9 +712,9 @@ test('testRequestEvents', (t) => {
 test('testRequestEventRepeat', (t) => {
   const sim = new Sim.Sim();
 
-  let event1 = new Sim.Event('event1');
+  const event1 = new Sim.Event('event1');
 
-  let event2 = new Sim.Event('event2');
+  const event2 = new Sim.Event('event2');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {

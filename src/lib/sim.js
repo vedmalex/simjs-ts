@@ -18,6 +18,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 1, 1);
 
     const ro = new Request(
+
               this,
               this.sim.time(),
               this.sim.time() + duration);
@@ -50,6 +51,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 2, 2, Facility);
 
     const ro = new Request(this, this.sim.time(), 0);
+
     ro.source = facility;
     facility.use(duration, ro);
     return ro;
@@ -59,6 +61,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 2, 2, Buffer);
 
     const ro = new Request(this, this.sim.time(), 0);
+
     ro.source = buffer;
     buffer.put(amount, ro);
     return ro;
@@ -68,6 +71,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 2, 2, Buffer);
 
     const ro = new Request(this, this.sim.time(), 0);
+
     ro.source = buffer;
     buffer.get(amount, ro);
     return ro;
@@ -77,6 +81,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 2, 2, Store);
 
     const ro = new Request(this, this.sim.time(), 0);
+
     ro.source = store;
     store.put(obj, ro);
     return ro;
@@ -86,6 +91,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 1, 2, Store, Function);
 
     const ro = new Request(this, this.sim.time(), 0);
+
     ro.source = store;
     store.get(filter, ro);
     return ro;
@@ -95,6 +101,7 @@ class Entity extends Model {
     ARG_CHECK(arguments, 2, 3);
 
     const ro = new Request(this.sim, this.time(), this.time() + delay);
+
     ro.source = this;
     ro.msg = message;
     ro.data = entities;
@@ -125,8 +132,11 @@ class Sim {
 
   sendMessage() {
     const sender = this.source;
+
     const message = this.msg;
+
     const entities = this.data;
+
     const sim = sender.sim;
 
     if (!entities) {
@@ -176,8 +186,7 @@ class Sim {
       const ro = this.queue.remove();
 
             // If there are no more events, we are done with simulation here.
-      if (ro == undefined) break;
-
+      if (ro === undefined) break;
 
             // Uh oh.. we are out of time now
       if (ro.deliverAt > endTime) break;
@@ -198,6 +207,7 @@ class Sim {
   step() {
     while (true) {
       const ro = this.queue.remove();
+
       if (!ro) return false;
       this.simTime = ro.deliverAt;
       if (ro.cancelled) continue;
@@ -209,6 +219,7 @@ class Sim {
 
   finalize() {
     for (let i = 0; i < this.entities.length; i++) {
+
       if (this.entities[i].finalize) {
         this.entities[i].finalize();
       }
@@ -225,6 +236,7 @@ class Sim {
 
     if (!this.logger) return;
     let entityMsg = '';
+
     if (entity !== undefined) {
       if (entity.name) {
         entityMsg = ` [${entity.name}]`;
@@ -261,6 +273,7 @@ class Facility extends Model {
       this.freeServers = new Array(this.servers);
       this.queue = new Queue();
       for (let i = 0; i < this.freeServers.length; i++) {
+
         this.freeServers[i] = true;
       }
     }
@@ -306,6 +319,7 @@ class Facility extends Model {
 
     ro.duration = duration;
     const now = ro.entity.time();
+
     this.stats.enter(now);
     this.queue.push(ro, now);
     this.useFCFSSchedule(now);
@@ -316,10 +330,12 @@ class Facility extends Model {
 
     while (this.free > 0 && !this.queue.empty()) {
       const ro = this.queue.shift(timestamp); // TODO
+
       if (ro.cancelled) {
         continue;
       }
       for (let i = 0; i < this.freeServers.length; i++) {
+
         if (this.freeServers[i]) {
           this.freeServers[i] = false;
           ro.msg = i;
@@ -334,6 +350,7 @@ class Facility extends Model {
       ro.cancelRenegeClauses();
 
       const newro = new Request(this, timestamp, timestamp + ro.duration);
+
       newro.done(this.useFCFSCallback, this, ro);
 
       ro.entity.sim.queue.insert(newro);
@@ -388,9 +405,10 @@ class Facility extends Model {
 
   useLCFSCallback() {
     const ro = this;
+
     const facility = ro.source;
 
-    if (ro != facility.currentRO) return;
+    if (ro !== facility.currentRO) return;
     facility.currentRO = null;
 
         // stats
@@ -405,6 +423,7 @@ class Facility extends Model {
         // see if there are pending requests
     if (!facility.queue.empty()) {
       const obj = facility.queue.pop(ro.entity.time());
+
       facility.useLCFS(obj.remaining, obj);
     }
   }
@@ -419,8 +438,11 @@ class Facility extends Model {
 
   useProcessorSharingSchedule(ro, isAdded) {
     const current = ro.entity.time();
+
     const size = this.queue.length;
+
     const multiplier = isAdded ? ((size + 1.0) / size) : ((size - 1.0) / size);
+
     const newQueue = [];
 
     if (this.queue.length === 0) {
@@ -428,7 +450,9 @@ class Facility extends Model {
     }
 
     for (let i = 0; i < size; i++) {
+
       const ev = this.queue[i];
+
       if (ev.ro === ro) {
         continue;
       }
@@ -456,13 +480,14 @@ class Facility extends Model {
     this.queue = newQueue;
 
         // usage statistics
-    if (this.queue.length == 0) {
+    if (this.queue.length === 0) {
       this.busyDuration += (current - this.lastIssued);
     }
   }
 
   useProcessorSharingCallback() {
     const ev = this;
+
     const fac = ev.source;
 
     if (ev.cancelled) return;
@@ -540,6 +565,7 @@ class Buffer extends Model {
 
   progressGetQueue() {
     let obj;
+
     while (obj = this.getQueue.top()) {
             // if obj is cancelled.. remove it.
       if (obj.cancelled) {
@@ -563,6 +589,7 @@ class Buffer extends Model {
 
   progressPutQueue() {
     let obj;
+
     while (obj = this.putQueue.top()) {
             // if obj is cancelled.. remove it.
       if (obj.cancelled) {
@@ -617,11 +644,14 @@ class Store extends Model {
 
     if (this.getQueue.empty() && this.current() > 0) {
       let found = false;
+
       let obj;
+
             // TODO: refactor this code out
             // it is repeated in progressGetQueue
       if (filter) {
         for (let i = 0; i < this.objects.length; i++) {
+
           obj = this.objects[i];
           if (filter(obj)) {
             found = true;
@@ -676,6 +706,7 @@ class Store extends Model {
 
   progressGetQueue() {
     let ro;
+
     while (ro = this.getQueue.top()) {
             // if obj is cancelled.. remove it.
       if (ro.cancelled) {
@@ -686,11 +717,14 @@ class Store extends Model {
             // see if this request can be satisfied
       if (this.current() > 0) {
         const filter = ro.filter;
+
         let found = false;
+
         let obj;
 
         if (filter) {
           for (let i = 0; i < this.objects.length; i++) {
+
             obj = this.objects[i];
             if (filter(obj)) {
               found = true;
@@ -724,6 +758,7 @@ class Store extends Model {
 
   progressPutQueue() {
     let ro;
+
     while (ro = this.putQueue.top()) {
             // if obj is cancelled.. remove it.
       if (ro.cancelled) {
@@ -796,13 +831,16 @@ class Event extends Model {
 
         // Dispatch all waiting entities
     const tmpList = this.waitList;
+
     this.waitList = [];
     for (let i = 0; i < tmpList.length; i++) {
+
       tmpList[i].deliver();
     }
 
         // Dispatch one queued entity
     const lucky = this.queue.shift();
+
     if (lucky) {
       lucky.deliver();
     }
@@ -821,6 +859,7 @@ function ARG_CHECK(found, expMin, expMax) {
 
 
   for (let i = 0; i < found.length; i++) {   // ARG_CHECK
+
     if (!arguments[i + 3] || !found[i]) continue;   // ARG_CHECK
 
 //    print("TEST " + found[i] + " " + arguments[i + 3]   // ARG_CHECK

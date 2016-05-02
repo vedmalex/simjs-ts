@@ -154,7 +154,7 @@ test('testEventWaitQueue', (t) => {
 
   for (let i = 0; i < 100; i++) {
 
-    e.push(sim.addEntity(MyEntity, null, i == 0));
+    e.push(sim.addEntity(MyEntity, null, i === 0));
   }
   sim.simulate(100);
   entities = 100;

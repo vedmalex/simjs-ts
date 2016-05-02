@@ -38,6 +38,7 @@ class Queue extends Model {
     ARG_CHECK(arguments, 1, 1);
 
     const value = this.data.shift();
+
     const enqueuedAt = this.timestamp.shift();
 
     this.stats.leave(enqueuedAt, timestamp);
@@ -48,6 +49,7 @@ class Queue extends Model {
     ARG_CHECK(arguments, 1, 1);
 
     const value = this.data.pop();
+
     const enqueuedAt = this.timestamp.pop();
 
     this.stats.leave(enqueuedAt, timestamp);
@@ -83,7 +85,7 @@ class Queue extends Model {
   }
 
   empty() {
-    return this.data.length == 0;
+    return this.data.length === 0;
   }
 
   size() {
@@ -100,7 +102,7 @@ class PQueue extends Model {
 
   greater(ro1, ro2) {
     if (ro1.deliverAt > ro2.deliverAt) return true;
-    if (ro1.deliverAt == ro2.deliverAt)
+    if (ro1.deliverAt === ro2.deliverAt)
       return ro1.order > ro2.order;
     return false;
   }
@@ -110,15 +112,18 @@ class PQueue extends Model {
     ro.order = this.order ++;
 
     let index = this.data.length;
+
     this.data.push(ro);
 
         // insert into data at the end
     const a = this.data;
+
     const node = a[index];
 
         // heap up
     while (index > 0) {
       const parentIndex = Math.floor((index - 1) / 2);
+
       if (this.greater(a[parentIndex], ro)) {
         a[index] = a[parentIndex];
         index = parentIndex;
@@ -131,27 +136,33 @@ class PQueue extends Model {
 
   remove() {
     const a = this.data;
+
     let len = a.length;
+
     if (len <= 0) {
       return undefined;
     }
-    if (len == 1) {
+    if (len === 1) {
       return this.data.pop();
     }
     const top = a[0];
+
         // move the last node up
     a[0] = a.pop();
     len--;
 
         // heap down
     let index = 0;
+
     const node = a[index];
 
     while (index < Math.floor(len / 2)) {
       const leftChildIndex = 2 * index + 1;
+
       const rightChildIndex = 2 * index + 2;
 
       const smallerChildIndex = rightChildIndex < len
+
               && !this.greater(a[rightChildIndex], a[leftChildIndex])
                     ? rightChildIndex : leftChildIndex;
 

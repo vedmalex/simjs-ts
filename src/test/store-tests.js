@@ -119,7 +119,7 @@ test('testStoreGetFilter', (t) => {
         this.count++;
       });
 
-      this.getStore(store, (obj) => { return obj.a == 10; }).done(() => {
+      this.getStore(store, (obj) => { return obj.a === 10; }).done(() => {
         t.is(this.time(), 0);
         this.count++;
         t.is(this.callbackMessage.a, 10);
@@ -493,7 +493,7 @@ test('testStoreGetFilterWaits', (t) => {
     start() {
       // get waits
       this.getStore(store, (o) => {
-        return o.a == 3;
+        return o.a === 3;
       }).done(() => {
         t.is(this.time(), 30);
         this.count++;
