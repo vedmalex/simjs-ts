@@ -40,14 +40,14 @@ test('testEventFlash', (t) => {
         t.is(event.isFired, false);
         event.fire();
         t.is(event.isFired, false);
-        });
+      });
     }
     finalize() {
       finalized++;
       t.is(this.time(), 21);
       t.is(this.count, 2);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -60,8 +60,8 @@ test('testEventSustain', (t) => {
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
-      super(...args)
-      this.count = 0
+      super(...args);
+      this.count = 0;
     }
     start() {
       t.is(event.isFired, false);
@@ -76,7 +76,7 @@ test('testEventSustain', (t) => {
         t.is(event.isFired, false);
         event.fire(true);
         t.is(event.isFired, true);
-        });
+      });
 
       this.setTimer(20).done(function () {
         t.is(event.isFired, true);
@@ -91,7 +91,7 @@ test('testEventSustain', (t) => {
         t.is(event.isFired, true);
         event.clear();
         t.is(event.isFired, false);
-        });
+      });
       this.setTimer(40).done(function () {
         t.is(event.isFired, false);
         this.waitEvent(event).done(function (s) {
@@ -109,7 +109,7 @@ test('testEventSustain', (t) => {
       t.is(this.time(), 41);
       t.is(this.count, 3);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -122,30 +122,30 @@ test('testEventWaitQueue', (t) => {
   var wcount = 0;
   var qcount = 0;
   class MyEntity extends Sim.Entity {
-      start(master) {
-          this.waitEvent(barrier).done(function () {
-              wcount++;
-          });
+    start(master) {
+      this.waitEvent(barrier).done(function () {
+        wcount++;
+      });
 
-          this.queueEvent(funnel).done(function () {
-              qcount++;
-          });
+      this.queueEvent(funnel).done(function () {
+        qcount++;
+      });
 
-          if (master) {
-              this.setTimer(10)
+      if (master) {
+        this.setTimer(10)
               .done(barrier.fire, barrier)
               .done(funnel.fire, funnel);
-          }
       }
-      finalize() {
-        finalized ++;
-      }
-  };
+    }
+    finalize() {
+      finalized++;
+    }
+  }
 
   var sim = new Sim.Sim();
   var e = [];
   for (var i = 0; i < 100; i++) {
-      e.push(sim.addEntity(MyEntity, null, i == 0));
+    e.push(sim.addEntity(MyEntity, null, i == 0));
   }
   sim.simulate(100);
   entities = 100;

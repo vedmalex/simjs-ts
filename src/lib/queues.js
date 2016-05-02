@@ -3,168 +3,168 @@ import { Population } from './stats.js';
 import { Model } from './model.js';
 
 class Queue extends Model {
-    constructor(name) {
-        super(name);
-        this.data = [];
-        this.timestamp = [];
-        this.stats = new Population();
-    }
+  constructor(name) {
+    super(name);
+    this.data = [];
+    this.timestamp = [];
+    this.stats = new Population();
+  }
 
-    top() {
-        return this.data[0];
-    }
+  top() {
+    return this.data[0];
+  }
 
-    back() {
-        return (this.data.length) ? this.data[this.data.length - 1] : undefined;
-    }
+  back() {
+    return (this.data.length) ? this.data[this.data.length - 1] : undefined;
+  }
 
-    push(value, timestamp) {
-        ARG_CHECK(arguments, 2, 2);
-        this.data.push(value);
-        this.timestamp.push(timestamp);
+  push(value, timestamp) {
+    ARG_CHECK(arguments, 2, 2);
+    this.data.push(value);
+    this.timestamp.push(timestamp);
 
-        this.stats.enter(timestamp);
-    }
+    this.stats.enter(timestamp);
+  }
 
-    unshift(value, timestamp) {
-        ARG_CHECK(arguments, 2, 2);
-        this.data.unshift(value);
-        this.timestamp.unshift(timestamp);
+  unshift(value, timestamp) {
+    ARG_CHECK(arguments, 2, 2);
+    this.data.unshift(value);
+    this.timestamp.unshift(timestamp);
 
-        this.stats.enter(timestamp);
-    }
+    this.stats.enter(timestamp);
+  }
 
-    shift(timestamp) {
-        ARG_CHECK(arguments, 1, 1);
+  shift(timestamp) {
+    ARG_CHECK(arguments, 1, 1);
 
-        const value = this.data.shift();
-        const enqueuedAt = this.timestamp.shift();
+    const value = this.data.shift();
+    const enqueuedAt = this.timestamp.shift();
 
-        this.stats.leave(enqueuedAt, timestamp);
-        return value;
-    }
+    this.stats.leave(enqueuedAt, timestamp);
+    return value;
+  }
 
-    pop(timestamp) {
-        ARG_CHECK(arguments, 1, 1);
+  pop(timestamp) {
+    ARG_CHECK(arguments, 1, 1);
 
-        const value = this.data.pop();
-        const enqueuedAt = this.timestamp.pop();
+    const value = this.data.pop();
+    const enqueuedAt = this.timestamp.pop();
 
-        this.stats.leave(enqueuedAt, timestamp);
-        return value;
-    }
+    this.stats.leave(enqueuedAt, timestamp);
+    return value;
+  }
 
-    passby(timestamp) {
-        ARG_CHECK(arguments, 1, 1);
+  passby(timestamp) {
+    ARG_CHECK(arguments, 1, 1);
 
-        this.stats.enter(timestamp);
-        this.stats.leave(timestamp, timestamp);
-    }
+    this.stats.enter(timestamp);
+    this.stats.leave(timestamp, timestamp);
+  }
 
-    finalize(timestamp) {
-        ARG_CHECK(arguments, 1, 1);
+  finalize(timestamp) {
+    ARG_CHECK(arguments, 1, 1);
 
-        this.stats.finalize(timestamp);
-    }
+    this.stats.finalize(timestamp);
+  }
 
-    reset() {
-        this.stats.reset();
-    }
+  reset() {
+    this.stats.reset();
+  }
 
-    clear() {
-        this.reset();
-        this.data = [];
-        this.timestamp = [];
-    }
+  clear() {
+    this.reset();
+    this.data = [];
+    this.timestamp = [];
+  }
 
-    report() {
-        return [this.stats.sizeSeries.average(),
+  report() {
+    return [this.stats.sizeSeries.average(),
                 this.stats.durationSeries.average()];
-    }
+  }
 
-    empty() {
-        return this.data.length == 0;
-    }
+  empty() {
+    return this.data.length == 0;
+  }
 
-    size() {
-        return this.data.length;
-    }
+  size() {
+    return this.data.length;
+  }
 }
 
 class PQueue extends Model {
-    constructor(name) {
-        super(name);
-        this.data = [];
-        this.order = 0;
-    }
+  constructor(name) {
+    super(name);
+    this.data = [];
+    this.order = 0;
+  }
 
-    greater(ro1, ro2) {
-        if (ro1.deliverAt > ro2.deliverAt) return true;
-        if (ro1.deliverAt == ro2.deliverAt)
-            return ro1.order > ro2.order;
-        return false;
-    }
+  greater(ro1, ro2) {
+    if (ro1.deliverAt > ro2.deliverAt) return true;
+    if (ro1.deliverAt == ro2.deliverAt)
+      return ro1.order > ro2.order;
+    return false;
+  }
 
-    insert(ro) {
-        ARG_CHECK(arguments, 1, 1);
-        ro.order = this.order ++;
+  insert(ro) {
+    ARG_CHECK(arguments, 1, 1);
+    ro.order = this.order ++;
 
-        let index = this.data.length;
-        this.data.push(ro);
+    let index = this.data.length;
+    this.data.push(ro);
 
         // insert into data at the end
-        const a = this.data;
-        const node = a[index];
+    const a = this.data;
+    const node = a[index];
 
         // heap up
-        while (index > 0) {
-            const parentIndex = Math.floor((index - 1) / 2);
-            if (this.greater(a[parentIndex], ro)) {
-                a[index] = a[parentIndex];
-                index = parentIndex;
-            } else {
-                break;
-            }
-        }
-        a[index] = node;
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this.greater(a[parentIndex], ro)) {
+        a[index] = a[parentIndex];
+        index = parentIndex;
+      } else {
+        break;
+      }
     }
+    a[index] = node;
+  }
 
-    remove() {
-        const a = this.data;
-        let len = a.length;
-        if (len <= 0) {
-            return undefined;
-        }
-        if (len == 1) {
-            return this.data.pop();
-        }
-        const top = a[0];
+  remove() {
+    const a = this.data;
+    let len = a.length;
+    if (len <= 0) {
+      return undefined;
+    }
+    if (len == 1) {
+      return this.data.pop();
+    }
+    const top = a[0];
         // move the last node up
-        a[0] = a.pop();
-        len --;
+    a[0] = a.pop();
+    len--;
 
         // heap down
-        let index = 0;
-        const node = a[index];
+    let index = 0;
+    const node = a[index];
 
-        while (index < Math.floor(len / 2)) {
-            const leftChildIndex = 2 * index + 1;
-            const rightChildIndex = 2 * index + 2;
+    while (index < Math.floor(len / 2)) {
+      const leftChildIndex = 2 * index + 1;
+      const rightChildIndex = 2 * index + 2;
 
-            const smallerChildIndex = rightChildIndex < len
+      const smallerChildIndex = rightChildIndex < len
               && !this.greater(a[rightChildIndex], a[leftChildIndex])
                     ? rightChildIndex : leftChildIndex;
 
-            if (this.greater(a[smallerChildIndex], node)) {
-                break;
-            }
+      if (this.greater(a[smallerChildIndex], node)) {
+        break;
+      }
 
-            a[index] = a[smallerChildIndex];
-            index = smallerChildIndex;
-        }
-        a[index] = node;
-        return top;
+      a[index] = a[smallerChildIndex];
+      index = smallerChildIndex;
     }
+    a[index] = node;
+    return top;
+  }
 }
 
 export { Queue, PQueue };

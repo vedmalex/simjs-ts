@@ -57,7 +57,7 @@ test('testFacilityFCFSOneServer', (t) => {
       t.is(this.count, 4);
       t.is(fac.usage(), 40);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -125,7 +125,7 @@ test('testFacilityFCFSOOneServerTwoEntities', (t) => {
       t.is(this.time(), 80);
       t.is(this.count, 3);
     }
-  };
+  }
 
   sim.addEntity(MyEntity, null, true);
   sim.addEntity(MyEntity, null, false);
@@ -183,7 +183,7 @@ test('testFacilityFCFSTwoServers', (t) => {
       t.is(this.time(), 24);
       t.is(this.count, 4);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -230,7 +230,7 @@ test('testFacilityFCFSDrop0', (t) => {
       t.is(this.count, 3);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -284,7 +284,7 @@ test('testFacilityFCFSDrop1', (t) => {
       t.is(this.count, 4);
       t.is(fac.usage(), 30);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -320,7 +320,7 @@ test('testFacilityLCFSSimple', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -364,7 +364,7 @@ test('testFacilityLCFSPreemptTwice', (t) => {
       t.is(this.count, 3);
       t.is(fac.usage(), 30);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -407,7 +407,7 @@ test('testFacilityLCFSPreemptTwoLevel', (t) => {
       t.is(this.count, 3);
       t.is(fac.usage(), 30);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -455,7 +455,7 @@ test('testFacilityTimeoutDuringUsage', (t) => {
       t.is(this.time(), 20);
       t.is(this.count, 3);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -496,7 +496,7 @@ test('testFacilityCancelDuringUsage', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -535,7 +535,7 @@ test('testFacilityLCFSImmuneToRenege', (t) => {
       t.is(this.count, 1);
       t.is(fac.usage(), 10);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -565,7 +565,7 @@ test('testFacilityPSOne', (t) => {
       t.is(this.count, 1);
       t.is(fac.usage(), 10);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -600,7 +600,7 @@ test('testFacilityPSTwoIdentical', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -640,7 +640,7 @@ test('testFacilityPSTwoIdenticalLater', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -680,7 +680,7 @@ test('testFacilityPSTwoOverlapPartial', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -720,7 +720,7 @@ test('testFacilityPSTwoOverlapFull', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 25);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -761,7 +761,7 @@ test('testFacilityPSTwoNoOverlap', (t) => {
       t.is(this.count, 2);
       t.is(fac.usage(), 2);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -778,7 +778,7 @@ test('testFacilityPSTenNoOverlap', (t) => {
       this.count = 0;
     }
     start() {
-      for (var i = 0; i < 10; i ++) {
+      for (var i = 0; i < 10; i++) {
         this.setTimer(i).done(function () {
 
           this.useFacility(fac, 1)
@@ -796,7 +796,7 @@ test('testFacilityPSTenNoOverlap', (t) => {
       t.is(this.count, 10);
       t.is(fac.usage(), 10);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -820,15 +820,15 @@ test('testFacilityPSTenSmall', (t) => {
       });
 
 
-      for (var i = 0; i < 10; i ++) {
-        this.setTimer(2*i).done(function () {
+      for (var i = 0; i < 10; i++) {
+        this.setTimer(2 * i).done(function () {
 
           this.useFacility(fac, 1)
           .done(function (j) {
             t.is(this.time(), j);
             this.count ++;
           }, null, this.callbackData);
-        }).setData(2*i + 2);
+        }).setData(2 * i + 2);
       }
 
     }
@@ -837,7 +837,7 @@ test('testFacilityPSTenSmall', (t) => {
       t.is(this.count, 11);
       t.is(fac.usage(), 20);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -855,13 +855,13 @@ test('testFacilityPSTen', (t) => {
     }
     start() {
 
-      for (var i = 0; i < 10; i ++) {
+      for (var i = 0; i < 10; i++) {
         this.useFacility(fac, 1)
         .done(function () {
           t.is(this.time(), 10);
           this.count ++;
         });
-    }
+      }
 
     }
     finalize() {
@@ -869,7 +869,7 @@ test('testFacilityPSTen', (t) => {
       t.is(this.count, 10);
       t.is(fac.usage(), 10);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -917,7 +917,7 @@ test('testFacilityPSRampUpDown', (t) => {
       t.is(this.count, 3);
       t.is(fac.usage(), 7);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -956,7 +956,7 @@ test('testFacilityPSImmuneToRenege', (t) => {
       t.is(this.count, 1);
       t.is(fac.usage(), 10);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -989,7 +989,7 @@ test('testFacilityPSCancelDuringUsage', (t) => {
       t.is(this.count, 1);
       t.is(fac.usage(), 10);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
@@ -999,7 +999,7 @@ test('testFacilityPSCancelDuringUsage', (t) => {
 
 test('testFacilityPSDocExample', (t) => {
   var sim = new Sim.Sim();
-  var network = new Sim.Facility("Network Cable", Sim.Facility.PS);
+  var network = new Sim.Facility('Network Cable', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -1027,7 +1027,7 @@ test('testFacilityPSDocExample', (t) => {
       t.is(this.count, 2);
       t.is(network.usage(), 11);
     }
-  };
+  }
 
 
   sim.addEntity(MyEntity);
@@ -1037,7 +1037,7 @@ test('testFacilityPSDocExample', (t) => {
 
 test('testFacilityPSNested', (t) => {
   var sim = new Sim.Sim();
-  var network = new Sim.Facility("abcd", Sim.Facility.PS);
+  var network = new Sim.Facility('abcd', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -1059,7 +1059,7 @@ test('testFacilityPSNested', (t) => {
       t.is(this.count, 2);
       t.is(this.time(), 2);
     }
-  };
+  }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);

@@ -43,14 +43,14 @@ test('testBufferBlockedPuts', (t) => {
       this.setTimer(10).done(this.getBuffer, this, [buffer, 60]);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 4);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testBufferBlockedGet', (t) => {
@@ -91,14 +91,14 @@ test('testBufferBlockedGet', (t) => {
       this.setTimer(10).done(this.putBuffer, this, [buffer, 60]);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 4);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferPutStillWaits', (t) => {
@@ -141,14 +141,14 @@ test('BufferPutStillWaits', (t) => {
       this.setTimer(30).done(this.getBuffer, this, [buffer, 60]);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 4);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferGetStillWaits', (t) => {
@@ -191,14 +191,14 @@ test('BufferGetStillWaits', (t) => {
       this.setTimer(30).done(this.putBuffer, this, [buffer, 60]);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 4);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 
@@ -228,14 +228,14 @@ test('BufferGetCancel', (t) => {
       this.setTimer(10).done(ro.cancel, ro);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferPutCancel', (t) => {
@@ -264,14 +264,14 @@ test('BufferPutCancel', (t) => {
       this.setTimer(10).done(ro.cancel, ro);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferPutTimeout', (t) => {
@@ -299,14 +299,14 @@ test('BufferPutTimeout', (t) => {
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferPutEventRenege', (t) => {
@@ -337,14 +337,14 @@ test('BufferPutEventRenege', (t) => {
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferGetTimeout', (t) => {
@@ -372,14 +372,14 @@ test('BufferGetTimeout', (t) => {
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('BufferGetEventRenege', (t) => {
@@ -410,12 +410,12 @@ test('BufferGetEventRenege', (t) => {
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });

@@ -15,21 +15,21 @@ test('testMessageSendOne', (t) => {
     }
     init() {
       if (this.master) {
-        this.send("message", 10, this.other);
+        this.send('message', 10, this.other);
       }
     }
     onMessage(source, message) {
       t.is(source, this.other);
-      t.is(message, "message");
+      t.is(message, 'message');
       t.is(this.time(), 10);
       t.is(this.master, undefined);
-      count ++;
+      count++;
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
     }
-  };
+  }
 
   var o1 = sim.addEntity(MyEntity, true, null);
   var o2 = sim.addEntity(MyEntity, false, o1);
@@ -51,21 +51,21 @@ test('testMessageSendAll', (t) => {
     start() {}
     init() {
       if (this.master) {
-        this.send("message", 10);
+        this.send('message', 10);
       }
     }
     onMessage(source, message) {
       t.is(source, this.other);
-      t.is(message, "message");
+      t.is(message, 'message');
       t.is(this.time(), 10);
       t.is(this.master, undefined);
-      count ++;
+      count++;
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
     }
-  };
+  }
 
   var o1 = sim.addEntity(MyEntity);
   var o2 = sim.addEntity(MyEntity);
@@ -88,21 +88,21 @@ test('testMessageSendArray', (t) => {
     start() {}
     init() {
       if (this.master) {
-        this.send("message", 10, this.array);
+        this.send('message', 10, this.array);
       }
     }
     onMessage(source, message) {
       t.is(source, this.other);
-      t.is(message, "message");
+      t.is(message, 'message');
       t.is(this.time(), 10);
       t.is(this.master, undefined);
-      count ++;
+      count++;
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
     }
-  };
+  }
 
   var o1 = sim.addEntity(MyEntity);
   var o2 = sim.addEntity(MyEntity);
@@ -123,17 +123,17 @@ test('testMessageNoCallback', (t) => {
   var count = 0;
 
   class MyEntity extends Sim.Entity {
-    start(){}
+    start() {}
     init() {
       if (this.master) {
-        this.send("message", 10, this.other);
+        this.send('message', 10, this.other);
       }
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
     }
-  };
+  }
 
   var o1 = sim.addEntity(MyEntity);
   var o2 = sim.addEntity(MyEntity);
@@ -154,21 +154,21 @@ test('testMessageDelayedSendOne', (t) => {
     start() {}
     init() {
       if (this.master) {
-        this.setTimer(10).done(this.send, this, ["message", 10, this.other]);
+        this.setTimer(10).done(this.send, this, ['message', 10, this.other]);
       }
     }
     onMessage(source, message) {
       t.is(source, this.other);
-      t.is(message, "message");
+      t.is(message, 'message');
       t.is(this.time(), 20);
       t.is(this.master, undefined);
-      count ++;
+      count++;
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
     }
-  };
+  }
 
   var o1 = sim.addEntity(MyEntity);
   var o2 = sim.addEntity(MyEntity);
@@ -189,21 +189,21 @@ test('testMessageZeroDelay', (t) => {
     start() {}
     init() {
       if (this.master) {
-        this.setTimer(10).done(this.send, this, ["message", 0, this.other]);
+        this.setTimer(10).done(this.send, this, ['message', 0, this.other]);
       }
     }
     onMessage(source, message) {
       t.is(source, this.other);
-      t.is(message, "message");
+      t.is(message, 'message');
       t.is(this.time(), 10);
       t.is(this.master, undefined);
-      count ++;
+      count++;
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
     }
-  };
+  }
 
   var o1 = sim.addEntity(MyEntity);
   var o2 = sim.addEntity(MyEntity);

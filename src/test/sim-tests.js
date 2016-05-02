@@ -10,9 +10,9 @@ test('testStartArguments', (t) => {
       t.is(a, 10),
       t.is(b.a, 20);
     }
-  };
+  }
 
-  sim.addEntity(MyEntity, null, 10, {a: 20});
+  sim.addEntity(MyEntity, null, 10, { a: 20 });
   sim.simulate(100);
 });
 

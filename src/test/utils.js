@@ -1,18 +1,18 @@
 import test from 'ava';
 
 function assertAlmost(a, b, eps) {
-	eps = (eps === undefined) ? 1e-7 : eps;
-	if (isNaN(a) || isNaN(b) || (Math.abs(a - b) > eps)) {
-		console.log("Error: Values " + a + " and " + b + " are not almost equal");
-		console.trace();
-		throw new Error("Stopped on failure");
-	}
+  eps = (eps === undefined) ? 1e-7 : eps;
+  if (isNaN(a) || isNaN(b) || (Math.abs(a - b) > eps)) {
+    console.log('Error: Values ' + a + ' and ' + b + ' are not almost equal');
+    console.trace();
+    throw new Error('Stopped on failure');
+  }
 }
 
 function assertFail() {
-	console.log("Error: Failed");
-	console.trace();
-	throw new Error("Stopped on failure");
+  console.log('Error: Failed');
+  console.trace();
+  throw new Error('Stopped on failure');
 }
 
 test('testAssertAlmost', (t) => {

@@ -1,4 +1,4 @@
-import { Sim, Entity, Event, Buffer, Facility, Store, ARG_CHECK } from './lib/sim.js'
+import { Sim, Entity, Event, Buffer, Facility, Store, ARG_CHECK } from './lib/sim.js';
 import { DataSeries, TimeSeries, Population } from './lib/stats.js';
 import { Request } from './lib/request.js';
 import { PQueue, Queue } from './lib/queues.js';
@@ -8,7 +8,7 @@ import { Model } from './lib/model.js';
 export { Sim, Entity, Event, Buffer, Facility, Store };
 export { DataSeries, TimeSeries, Population };
 export { Request };
-export { PQueue, Queue, ARG_CHECK};
+export { PQueue, Queue, ARG_CHECK };
 export { Random };
 export { Model };
 

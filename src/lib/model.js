@@ -4,13 +4,13 @@ class Model {
     this.name = name || `${this.constructor.name} ${this.id}`;
   }
 
-  static get count() {
-    return !this._count ? 0 : this._count;
+  static get totalInstances() {
+    return !this._totalInstances ? 0 : this._totalInstances;
   }
 
   static _nextId() {
-    this._count = this.count + 1;
-    return this._count;
+    this._totalInstances = this.totalInstances + 1;
+    return this._totalInstances;
   }
 }
 

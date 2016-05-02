@@ -1,5 +1,5 @@
 import test from 'ava';
-;
+
 import * as Sim from '../sim';
 
 import 'babel-core/register';
@@ -20,7 +20,7 @@ test('testTimerPlain', (t) => {
     finalize() {
       t.is(this.count, 1);
       t.is(this.time(), 10);
-      finalized ++;
+      finalized++;
     }
   }
 
@@ -43,7 +43,7 @@ test('testTimerCustomDone', (t) => {
     finalize() {
       t.is(this.count, 1);
       t.is(this.time(), 10);
-      finalized ++;
+      finalized++;
     }
   }
 
@@ -57,15 +57,15 @@ test('testTimerCustomDoneInline', (t) => {
 
   class MyEntity extends Sim.Entity {
     start() {
-      this.setTimer(10).done(function (){ 
+      this.setTimer(10).done(function () {
         t.is(this.time(), 10);
-        this.count = 1; 
+        this.count = 1;
       });
     }
     finalize() {
       t.is(this.count, 1);
       t.is(this.time(), 10);
-      finalized ++;
+      finalized++;
     }
   }
 
@@ -91,7 +91,7 @@ test('testTimerRecursive', (t) => {
     finalize() {
       t.is(this.count, 11);
       t.is(this.time(), 100);
-      finalized ++;
+      finalized++;
     }
   }
 
@@ -105,8 +105,8 @@ test('testTimerNoEvent', (t) => {
 
   class MyEntity extends Sim.Entity {
     start() {}
-    finalize() { 
-      finalized ++; 
+    finalize() {
+      finalized++;
       t.is(this.time(), 0);
     }
   }
@@ -229,12 +229,12 @@ test('testTimerWaitEvent', (t) => {
       .done(function () {
         t.fail();
       })
-      .unlessEvent(event, function() {
+      .unlessEvent(event, function () {
         t.is(this.time(), 10);
         this.count = 1;
       });
 
-      this.setTimer(10).done(function() {
+      this.setTimer(10).done(function () {
         event.fire();
       });
 

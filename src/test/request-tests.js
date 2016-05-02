@@ -10,26 +10,26 @@ test('testRequestZeroDelayTimeout', (t) => {
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
-      this.string = "start";
+      this.string = 'start';
     }
 
     start() {
       this.setTimer(0)
-      .done(function() {
-        this.string += "-second";
+      .done(function () {
+        this.string += '-second';
       });
-      this.string += "-first";
+      this.string += '-first';
     }
 
     finalize() {
-      finalized ++;
-      t.is(this.string, "start-first-second");
+      finalized++;
+      t.is(this.string, 'start-first-second');
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestZeroDelayPutBuffer', (t) => {
@@ -38,26 +38,26 @@ test('testRequestZeroDelayPutBuffer', (t) => {
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
-      this.string = "start";
+      this.string = 'start';
     }
 
     start() {
       this.putBuffer(buffer, 10)
-      .done(function() {
-        this.string += "-second";
+      .done(function () {
+        this.string += '-second';
       });
-      this.string += "-first";
+      this.string += '-first';
     }
 
     finalize() {
-      finalized ++;
-      t.is(this.string, "start-first-second");
+      finalized++;
+      t.is(this.string, 'start-first-second');
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestZeroDelayEventWait', (t) => {
@@ -67,28 +67,28 @@ test('testRequestZeroDelayEventWait', (t) => {
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
-      this.string = "start";
+      this.string = 'start';
     }
 
     start() {
       event.fire(true);
 
       this.waitEvent(event)
-      .done(function() {
-        this.string += "-second";
+      .done(function () {
+        this.string += '-second';
       });
-      this.string += "-first";
+      this.string += '-first';
     }
 
     finalize() {
-      finalized ++;
-      t.is(this.string, "start-first-second");
+      finalized++;
+      t.is(this.string, 'start-first-second');
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestZeroDelayEventQueue', (t) => {
@@ -98,28 +98,28 @@ test('testRequestZeroDelayEventQueue', (t) => {
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
-      this.string = "start";
+      this.string = 'start';
     }
 
     start() {
       event.fire(true);
 
       this.queueEvent(event)
-      .done(function() {
-        this.string += "-second";
+      .done(function () {
+        this.string += '-second';
       });
-      this.string += "-first";
+      this.string += '-first';
     }
 
     finalize() {
-      finalized ++;
-      t.is(this.string, "start-first-second");
+      finalized++;
+      t.is(this.string, 'start-first-second');
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestZeroDelayFacility', (t) => {
@@ -129,31 +129,31 @@ test('testRequestZeroDelayFacility', (t) => {
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
-      this.string = "start";
+      this.string = 'start';
     }
 
     start() {
       this.useFacility(fac, 10)
-      .done(function() {
-        this.string += "-second";
+      .done(function () {
+        this.string += '-second';
       });
-      this.string += "-first";
+      this.string += '-first';
     }
 
     finalize() {
-      finalized ++;
-      t.is(this.string, "start-first-second");
+      finalized++;
+      t.is(this.string, 'start-first-second');
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestCallbackData', (t) => {
   var sim = new Sim.Sim();
-  var buffer = new Sim.Buffer("buffer", 100);
+  var buffer = new Sim.Buffer('buffer', 100);
   var event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -196,7 +196,7 @@ test('testRequestCallbackData', (t) => {
       }
       t.is(this.callbackSource, buffer);
       t.is(this.callbackData, 'my data');
-        this.count ++;
+      this.count ++;
     }
 
     fn2(v) {
@@ -204,19 +204,19 @@ test('testRequestCallbackData', (t) => {
       t.is(v, 3);
       t.is(this.callbackSource, buffer);
       t.is(this.callbackMessage, undefined);
-        t.is(this.callbackData, 'my data');
-        this.count ++;
+      t.is(this.callbackData, 'my data');
+      this.count ++;
     }
 
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 3);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestSetTimer', (t) => {
@@ -249,7 +249,7 @@ test('testRequestSetTimer', (t) => {
         this.count ++;
       }).setData(1);
 
-      this.obj = {a: 1, b: 2};
+      this.obj = { a: 1, b: 2 };
       this.setTimer(clock++).setData(this.obj).done(function (r, m, d) {
         t.is(this.callbackSource, undefined);
         t.is(this.callbackMessage, undefined);
@@ -303,7 +303,7 @@ test('testRequestSetTimer', (t) => {
       // timers bailed out on event
       this.setTimer(clock++)
       .setData('event')
-      .done(function (d) {t.fail();})
+      .done(function (d) { t.fail(); })
       .unlessEvent(event, function (d) {
         t.is(this.callbackSource, undefined);
         t.is(this.callbackMessage, event);
@@ -316,7 +316,7 @@ test('testRequestSetTimer', (t) => {
 
       this.setTimer(clock++)
       .setData('event')
-      .done(function (d) {t.fail();})
+      .done(function (d) { t.fail(); })
       .unlessEvent(event, function (d) {
         t.is(this.callbackSource, undefined);
         t.is(this.callbackMessage, event);
@@ -327,7 +327,7 @@ test('testRequestSetTimer', (t) => {
 
       this.setTimer(clock++)
       .setData('event')
-      .done(function (d, e) {t.fail();})
+      .done(function (d, e) { t.fail(); })
       .unlessEvent(event, function (d, e) {
         t.is(this.callbackSource, undefined);
         t.is(this.callbackMessage, event);
@@ -339,14 +339,14 @@ test('testRequestSetTimer', (t) => {
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 11);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 /*
@@ -525,7 +525,7 @@ test('testRequestBuffer', (t) => {
       this.setTimer(50).done(function () {
         t.is(buffer.available, 0);
         this.getBuffer(buffer, 10)
-        .done(function () { t.fail();})
+        .done(function () { t.fail(); })
         .waitUntil(1, function (d) {
           t.is(this.callbackSource, buffer);
           t.is(this.callbackMessage, undefined);
@@ -542,7 +542,7 @@ test('testRequestBuffer', (t) => {
       this.setTimer(60).done(function () {
         t.is(buffer.available, 0);
         this.putBuffer(buffer, 1000)
-        .done(function () { t.fail();})
+        .done(function () { t.fail(); })
         .waitUntil(1, function (d) {
           t.is(this.callbackSource, buffer);
           t.is(this.callbackMessage, undefined);
@@ -559,7 +559,7 @@ test('testRequestBuffer', (t) => {
         t.is(buffer.available, 0);
         event.clear();
         this.getBuffer(buffer, 10)
-        .done(function () { t.fail();})
+        .done(function () { t.fail(); })
         .unlessEvent(event, function (d) {
           t.is(this.callbackSource, buffer);
           t.is(this.callbackMessage, event);
@@ -571,13 +571,13 @@ test('testRequestBuffer', (t) => {
         })
         .setData('abcde');
       });
-      this.setTimer(71).done(function() {event.fire();});
+      this.setTimer(71).done(function () { event.fire(); });
 
       this.setTimer(80).done(function () {
         t.is(buffer.available, 0);
         event.clear();
         this.putBuffer(buffer, 1000)
-        .done(function () { t.fail();})
+        .done(function () { t.fail(); })
         .unlessEvent(event, function (d) {
           t.is(this.callbackSource, buffer);
           t.is(this.callbackMessage, event);
@@ -592,12 +592,12 @@ test('testRequestBuffer', (t) => {
       this.setTimer(81).done(event.fire, event);
 
       // put request is satisfied later by get
-      this.setTimer(90).done(function() {
+      this.setTimer(90).done(function () {
         t.is(buffer.available, 0);
         this.putBuffer(buffer, 80);
         t.is(buffer.available, 80);
       });
-      this.setTimer(91).done(function() {
+      this.setTimer(91).done(function () {
         t.is(buffer.available, 80);
         this.putBuffer(buffer, 50)
         .done(function (d) {
@@ -617,7 +617,7 @@ test('testRequestBuffer', (t) => {
       });
 
       // get request is satisfied later by put
-      this.setTimer(100).done(function() {
+      this.setTimer(100).done(function () {
         t.is(buffer.available, 0);
         this.getBuffer(buffer, 50)
         .done(function (d) {
@@ -634,7 +634,7 @@ test('testRequestBuffer', (t) => {
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(buffer.available, 0);
       t.is(this.count, 10);
     }
@@ -642,7 +642,7 @@ test('testRequestBuffer', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(300);
-  entities ++;
+  entities++;
 });
 
 
@@ -679,19 +679,19 @@ test('testRequestEvents', (t) => {
         .setData('abcd');
       });
 
-    this.setTimer(5).done(event1.fire, event1);
-    this.setTimer(20).done(event2.fire, event2);
+      this.setTimer(5).done(event1.fire, event1);
+      this.setTimer(20).done(event2.fire, event2);
 
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 2);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 test('testRequestEventRepeat', (t) => {
@@ -712,18 +712,18 @@ test('testRequestEventRepeat', (t) => {
       .unlessEvent([event1, event2], this.inc);
 
 
-    this.setTimer(5).done(event1.fire, event1);
+      this.setTimer(5).done(event1.fire, event1);
     }
     inc() { this.count++; }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 1);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 
@@ -775,14 +775,14 @@ test('testRequestCancel', (t) => {
       this.setTimer(10).done(ro5.cancel, ro5);
     }
     finalize() {
-      finalized ++;
+      finalized++;
       t.is(this.count, 0);
     }
   }
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities ++;
+  entities++;
 });
 
 // unlessEvent(e1).unlessEvent(e1)

@@ -7,7 +7,7 @@ test('testDataSeries', (t) => {
   // ai = i, wi = 0
   var m = new Sim.DataSeries();
 
-  for (var i = 1; i <= 100; i ++) {
+  for (var i = 1; i <= 100; i++) {
     m.record(i);
   }
   assertAlmost(m.average(), 50.5);
@@ -21,8 +21,8 @@ test('testDataSeries', (t) => {
 
   // ai = i, wi = 1 / i
   m.reset();
-  for (var i = 1; i <= 100; i ++) {
-    m.record(i, 1.0/i);
+  for (var i = 1; i <= 100; i++) {
+    m.record(i, 1.0 / i);
   }
   assertAlmost(m.average(), 19.277563597396004);
   assertAlmost(m.variance(), 601.89250341685056);
@@ -33,8 +33,8 @@ test('testDataSeries', (t) => {
   assertAlmost(m.sum(), 5050.0);
 
   m.reset();
-  for (var i = 1; i <= 100; i ++) {
-    m.record(i, 2.0 *i);
+  for (var i = 1; i <= 100; i++) {
+    m.record(i, 2.0 * i);
   }
   assertAlmost(m.average(), 67.0);
   assertAlmost(m.variance(), 561.0);
@@ -98,7 +98,7 @@ test('testPopulation', (t) => {
   // test basic
   for (var i = 0; i < 100; i++) {
     m.enter(i);
-    m.leave(i, i+1);
+    m.leave(i, i + 1);
   }
   assertAlmost(m.sizeSeries.average(), 1.0);
   assertAlmost(m.durationSeries.average(), 1.0);
@@ -109,7 +109,7 @@ test('testPopulation', (t) => {
   m.reset();
   for (var i = 0; i < 100; i++) {
     m.enter(i);
-    m.leave(i, i+1);
+    m.leave(i, i + 1);
   }
   assertAlmost(m.sizeSeries.average(), 1.0);
   assertAlmost(m.durationSeries.average(), 1.0);
@@ -140,7 +140,7 @@ test('testPopulation', (t) => {
   m.leave(1, 2);
   m.leave(0, 3);
   m.finalize(3);
-  assertAlmost(m.sizeSeries.average(), 4.0/3);
+  assertAlmost(m.sizeSeries.average(), 4.0 / 3);
   assertAlmost(m.durationSeries.average(), 2.0);
 
   // overlapped enter leave
@@ -150,7 +150,7 @@ test('testPopulation', (t) => {
   m.leave(0, 2);
   m.leave(1, 3);
   m.finalize(3);
-  assertAlmost(m.sizeSeries.average(), 4.0/3);
+  assertAlmost(m.sizeSeries.average(), 4.0 / 3);
   assertAlmost(m.durationSeries.average(), 2.0);
 });
 
