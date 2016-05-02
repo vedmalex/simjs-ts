@@ -235,6 +235,11 @@ class Random {
         }
     }
 
+    /**
+    * All floats between lower and upper are equally likely. This is the
+    * theoretical distribution model for a balanced coin, an unbiased die, a
+    * casino roulette, or the first card of a well-shuffled deck.
+    */
     uniform(lower, upper) {
         if (arguments.length != 2) {                         // ARG_CHECK
             throw new SyntaxError(`uniform() must be called with lower and upper parameters`);    // ARG_CHECK

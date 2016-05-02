@@ -127,8 +127,8 @@ test('testFacilityFCFSOOneServerTwoEntities', (t) => {
     }
   };
 
-  sim.addEntity(MyEntity, true);
-  sim.addEntity(MyEntity, false);
+  sim.addEntity(MyEntity, null, true);
+  sim.addEntity(MyEntity, null, false);
   sim.simulate(100);
   entities = 2;
 });
@@ -1060,7 +1060,6 @@ test('testFacilityPSNested', (t) => {
       t.is(this.time(), 2);
     }
   };
-
 
   sim.addEntity(MyEntity);
   sim.simulate(100);

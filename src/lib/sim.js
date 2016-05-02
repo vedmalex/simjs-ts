@@ -1,12 +1,13 @@
 import { PQueue, Queue } from './queues.js';
 import { Population } from './stats.js';
 import { Request } from './request.js';
+import { Model } from './model.js';
 
 
-class Entity {
-  constructor(sim) {
+class Entity extends Model {
+  constructor(sim, name) {
+    super(name);
     this.sim = sim;
-    this.id = sim.entityId++;
   }
 
   time() {
@@ -148,13 +149,13 @@ class Sim {
         }
     }
 
-    addEntity(klass, ...args) {
+    addEntity(klass, name, ...args) {
         // Verify that prototype has start function
         if (!klass.prototype.start) {  // ARG CHECK
             throw new Error(`Entity class ${klass.name} must have start() function defined`);
         }
 
-        var entity = new klass(this);
+        var entity = new klass(this, name);
         this.entities.push(entity);
 
         entity.start(...args);
@@ -235,8 +236,9 @@ class Sim {
     }
 }
 
-class Facility {
+class Facility extends Model{
     constructor(name, discipline, servers, maxqlen) {
+        super(name);
         ARG_CHECK(arguments, 1, 4);
 
         this.free = servers ? servers : 1;
@@ -476,11 +478,11 @@ Facility.LCFS = 2;
 Facility.PS = 3;
 Facility.NumDisciplines = 4;
 
-class Buffer {
+class Buffer extends Model{
     constructor(name, capacity, initial) {
+        super(name);
         ARG_CHECK(arguments, 2, 3);
 
-        this.name = name;
         this.capacity = capacity;
         this.available = (initial === undefined) ? 0 : initial;
         this.putQueue = new Queue();
@@ -591,11 +593,11 @@ class Buffer {
     }
 }
 
-class Store {
-    constructor(name, capacity) {
-        ARG_CHECK(arguments, 2, 3);
+class Store extends Model {
+    constructor(capacity, name=null) {
+        super(name);
+        ARG_CHECK(arguments, 1, 2);
 
-        this.name = name;
         this.capacity = capacity;
         this.objects = [];
         this.putQueue = new Queue();
@@ -753,11 +755,11 @@ class Store {
     }
 }
 
-class Event {
+class Event extends Model{
     constructor(name) {
+        super(name);
         ARG_CHECK(arguments, 0, 1);
 
-        this.name = name;
         this.waitList = [];
         this.queue = [];
         this.isFired = false;

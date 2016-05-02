@@ -12,7 +12,7 @@ test('testStartArguments', (t) => {
     }
   };
 
-  sim.addEntity(MyEntity, 10, {a: 20});
+  sim.addEntity(MyEntity, null, 10, {a: 20});
   sim.simulate(100);
 });
 

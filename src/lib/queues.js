@@ -1,9 +1,10 @@
 import { ARG_CHECK } from './sim.js';
 import { Population } from './stats.js';
+import { Model } from './model.js';
 
-class Queue {
+class Queue extends Model {
     constructor(name) {
-        this.name = name;
+        super(name);
         this.data = [];
         this.timestamp = [];
         this.stats = new Population();
@@ -90,8 +91,9 @@ class Queue {
     }
 }
 
-class PQueue {
-    constructor() {
+class PQueue extends Model {
+    constructor(name) {
+        super(name);
         this.data = [];
         this.order = 0;
     }

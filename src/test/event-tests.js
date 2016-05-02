@@ -145,7 +145,7 @@ test('testEventWaitQueue', (t) => {
   var sim = new Sim.Sim();
   var e = [];
   for (var i = 0; i < 100; i++) {
-      e.push(sim.addEntity(MyEntity, i == 0));
+      e.push(sim.addEntity(MyEntity, null, i == 0));
   }
   sim.simulate(100);
   entities = 100;
