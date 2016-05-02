@@ -18,7 +18,6 @@ class Entity extends Model {
     ARG_CHECK(arguments, 1, 1);
 
     const ro = new Request(
-
               this,
               this.sim.time(),
               this.sim.time() + duration);
@@ -329,7 +328,7 @@ class Facility extends Model {
     ARG_CHECK(arguments, 1, 1);
 
     while (this.free > 0 && !this.queue.empty()) {
-      const ro = this.queue.shift(timestamp); // TODO
+      const ro = this.queue.shift(timestamp);
 
       if (ro.cancelled) {
         continue;

@@ -60,7 +60,8 @@ class Request {
     ARG_CHECK(arguments, 1, 4, undefined, Function, Object);
     if (this.noRenege) return this;
 
-    const ro = this._addRequest(this.scheduledAt + delay, callback, context, argument);
+    const ro = this._addRequest(
+      this.scheduledAt + delay, callback, context, argument);
 
     this.entity.sim.queue.insert(ro);
     return this;
@@ -134,7 +135,6 @@ class Request {
 
   _addRequest(deliverAt, callback, context, argument) {
     const ro = new Request(
-
                 this.entity,
                 this.scheduledAt,
                 deliverAt);

@@ -162,7 +162,6 @@ class PQueue extends Model {
       const rightChildIndex = 2 * index + 2;
 
       const smallerChildIndex = rightChildIndex < len
-
               && !this.greater(a[rightChildIndex], a[leftChildIndex])
                     ? rightChildIndex : leftChildIndex;
 
