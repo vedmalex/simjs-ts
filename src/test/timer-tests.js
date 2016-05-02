@@ -221,6 +221,7 @@ test('testTimerMultipleTimeouts', (t) => {
 
 test('testTimerWaitEvent', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event();
 
   class MyEntity extends Sim.Entity {

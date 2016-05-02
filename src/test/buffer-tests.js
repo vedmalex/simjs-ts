@@ -7,6 +7,7 @@ let finalized = 0;
 
 test('testBufferBlockedPuts', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
@@ -55,6 +56,7 @@ test('testBufferBlockedPuts', (t) => {
 
 test('testBufferBlockedGet', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100, 100);
 
   class MyEntity extends Sim.Entity {
@@ -103,6 +105,7 @@ test('testBufferBlockedGet', (t) => {
 
 test('BufferPutStillWaits', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
@@ -153,6 +156,7 @@ test('BufferPutStillWaits', (t) => {
 
 test('BufferGetStillWaits', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100, 100);
 
   class MyEntity extends Sim.Entity {
@@ -204,6 +208,7 @@ test('BufferGetStillWaits', (t) => {
 
 test('BufferGetCancel', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100, 40);
 
   class MyEntity extends Sim.Entity {
@@ -215,6 +220,7 @@ test('BufferGetCancel', (t) => {
     start() {
       // at time 0, get 60 units -- waits
       let ro = this.getBuffer(buffer, 60).done(() => {
+
         t.fail;
       });
 
@@ -240,6 +246,7 @@ test('BufferGetCancel', (t) => {
 
 test('BufferPutCancel', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
@@ -251,6 +258,7 @@ test('BufferPutCancel', (t) => {
     start() {
       // at time 0, put 110 units -- waits
       let ro = this.putBuffer(buffer, 110).done(() => {
+
         t.fail;
       });
 
@@ -276,6 +284,7 @@ test('BufferPutCancel', (t) => {
 
 test('BufferPutTimeout', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
@@ -287,6 +296,7 @@ test('BufferPutTimeout', (t) => {
     start() {
       // at time 0, put 110 units -- waits
       let ro = this.putBuffer(buffer, 110)
+
       .done(t.fail).
       waitUntil(10);
 
@@ -311,7 +321,9 @@ test('BufferPutTimeout', (t) => {
 
 test('BufferPutEventRenege', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100);
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -323,6 +335,7 @@ test('BufferPutEventRenege', (t) => {
     start() {
       // at time 0, put 110 units -- waits
       let ro = this.putBuffer(buffer, 110)
+
       .done(t.fail)
       .unlessEvent(event);
 
@@ -349,6 +362,7 @@ test('BufferPutEventRenege', (t) => {
 
 test('BufferGetTimeout', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100, 100);
 
   class MyEntity extends Sim.Entity {
@@ -360,6 +374,7 @@ test('BufferGetTimeout', (t) => {
     start() {
       // at time 0, get 110 units -- waits
       let ro = this.getBuffer(buffer, 110)
+
       .done(t.fail).
       waitUntil(10);
 
@@ -384,7 +399,9 @@ test('BufferGetTimeout', (t) => {
 
 test('BufferGetEventRenege', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100, 100);
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -396,6 +413,7 @@ test('BufferGetEventRenege', (t) => {
     start() {
       // at time 0, get 110 units -- waits
       let ro = this.getBuffer(buffer, 110)
+
       .done(t.fail)
       .unlessEvent(event);
 

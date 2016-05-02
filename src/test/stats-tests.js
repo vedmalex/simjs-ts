@@ -8,6 +8,7 @@ test('testDataSeries', () => {
   const m = new Sim.DataSeries();
 
   for (let i = 1; i <= 100; i++) {
+
     m.record(i);
   }
   assertAlmost(m.average(), 50.5);
@@ -22,6 +23,7 @@ test('testDataSeries', () => {
   // ai = i, wi = 1 / i
   m.reset();
   for (let i = 1; i <= 100; i++) {
+
     m.record(i, 1.0 / i);
   }
   assertAlmost(m.average(), 19.277563597396004);
@@ -34,6 +36,7 @@ test('testDataSeries', () => {
 
   m.reset();
   for (let i = 1; i <= 100; i++) {
+
     m.record(i, 2.0 * i);
   }
   assertAlmost(m.average(), 67.0);
@@ -49,6 +52,7 @@ test('testTimeSeries', () => {
 
   // ai = i, ti = i
   for (let i = 1; i <= 100; i++) {
+
     m.record(i, i);
   }
 
@@ -64,6 +68,7 @@ test('testTimeSeries', () => {
   // ai = 1, ti = i
   m.reset();
   for (let i = 1; i <= 100; i++) {
+
     m.record(1, i);
   }
   m.finalize(100);
@@ -98,6 +103,7 @@ test('testPopulation', () => {
 
   // test basic
   for (let i = 0; i < 100; i++) {
+
     m.enter(i);
     m.leave(i, i + 1);
   }
@@ -109,6 +115,7 @@ test('testPopulation', () => {
   // test reset
   m.reset();
   for (let i = 0; i < 100; i++) {
+
     m.enter(i);
     m.leave(i, i + 1);
   }
@@ -118,6 +125,7 @@ test('testPopulation', () => {
   // ai arrive at i and leave at 100
   m.reset();
   for (let i = 0; i < 100; i++) {
+
     m.enter(i);
     m.leave(i, 100);
   }
@@ -160,12 +168,14 @@ test('testHistogram', (t) => {
 
   m.setHistogram(0.5, 99.5, 99);
   for (let i = 0; i <= 100; i++) {
+
     m.record(i);
   }
 
   const h = m.getHistogram();
 
   for (let i = 0; i <= 100; i++) {
+
     t.is(h[i], 1);
   }
 });

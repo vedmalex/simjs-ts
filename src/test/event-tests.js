@@ -6,6 +6,7 @@ let finalized = 0;
 
 test('testEventFlash', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -56,6 +57,7 @@ test('testEventFlash', (t) => {
 
 test('testEventSustain', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -118,9 +120,13 @@ test('testEventSustain', (t) => {
 
 test('testEventWaitQueue', (t) => {
   let barrier = new Sim.Event('Barrier');
+
   let funnel = new Sim.Event('Funnel');
+
   let wcount = 0;
+
   let qcount = 0;
+
   class MyEntity extends Sim.Entity {
     start(master) {
       this.waitEvent(barrier).done(() => {
@@ -143,8 +149,11 @@ test('testEventWaitQueue', (t) => {
   }
 
   const sim = new Sim.Sim();
+
   let e = [];
+
   for (let i = 0; i < 100; i++) {
+
     e.push(sim.addEntity(MyEntity, null, i == 0));
   }
   sim.simulate(100);

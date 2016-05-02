@@ -7,6 +7,7 @@ let finalized = 0;
 
 test('testStorePut', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(3, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -50,6 +51,7 @@ test('testStorePut', (t) => {
 
 test('testStoreGet', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(3, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -97,6 +99,7 @@ test('testStoreGet', (t) => {
 
 test('testStoreGetFilter', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(3, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -144,6 +147,7 @@ test('testStoreGetFilter', (t) => {
 
 test('testStorePutProgress', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(2, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -208,6 +212,7 @@ test('testStorePutProgress', (t) => {
 
 test('testStoreGetProgress', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(2, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -258,6 +263,7 @@ test('testStoreGetProgress', (t) => {
 
 test('testStoreGetCancel', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(2, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -303,7 +309,9 @@ test('testStoreGetCancel', (t) => {
 
 test('testStoreGetEventRenege', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(100, 'a');
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -343,6 +351,7 @@ test('testStoreGetEventRenege', (t) => {
 
 test('testStoreGetTimeout', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -356,6 +365,7 @@ test('testStoreGetTimeout', (t) => {
 
       // wait, since filter function is false
       let ro = this.getStore(store, () => { return false; })
+
       .done(t.fail).
       waitUntil(10);
 
@@ -380,6 +390,7 @@ test('testStoreGetTimeout', (t) => {
 
 test('testStoreGetCancel', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -393,6 +404,7 @@ test('testStoreGetCancel', (t) => {
 
       // wait, since filter function is false
       let ro = this.getStore(store, () => { return false; })
+
       .done(() => {
         t.fail;
       });
@@ -419,6 +431,7 @@ test('testStoreGetCancel', (t) => {
 
 test('testStoreGetStillWaits', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {
@@ -468,6 +481,7 @@ test('testStoreGetStillWaits', (t) => {
 
 test('testStoreGetFilterWaits', (t) => {
   const sim = new Sim.Sim();
+
   const store = new Sim.Store(100, 'a');
 
   class MyEntity extends Sim.Entity {

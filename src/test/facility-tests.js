@@ -6,6 +6,7 @@ let finalized = 0;
 
 test('testFacilityFCFSOneServer', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('facility', Sim.FCFS, 1);
 
   class MyEntity extends Sim.Entity {
@@ -66,6 +67,7 @@ test('testFacilityFCFSOneServer', (t) => {
 
 test('testFacilityFCFSOOneServerTwoEntities', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('facility');
 
   class MyEntity extends Sim.Entity {
@@ -135,6 +137,7 @@ test('testFacilityFCFSOOneServerTwoEntities', (t) => {
 
 test('testFacilityFCFSTwoServers', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('facility', Sim.FCFS, 2);
 
   class MyEntity extends Sim.Entity {
@@ -193,6 +196,7 @@ test('testFacilityFCFSTwoServers', (t) => {
 
 test('testFacilityFCFSDrop0', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('fcfs', Sim.Facility.FCFS, 1, 0);
 
   class MyEntity extends Sim.Entity {
@@ -239,6 +243,7 @@ test('testFacilityFCFSDrop0', (t) => {
 
 test('testFacilityFCFSDrop1', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('fcfs', Sim.Facility.FCFS, 1, 1);
 
   class MyEntity extends Sim.Entity {
@@ -293,6 +298,7 @@ test('testFacilityFCFSDrop1', (t) => {
 
 test('testFacilityLCFSSimple', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
 
   class MyEntity extends Sim.Entity {
@@ -330,6 +336,7 @@ test('testFacilityLCFSSimple', (t) => {
 
 test('testFacilityLCFSPreemptTwice', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
 
   class MyEntity extends Sim.Entity {
@@ -373,6 +380,7 @@ test('testFacilityLCFSPreemptTwice', (t) => {
 
 test('testFacilityLCFSPreemptTwoLevel', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('lcfs', Sim.Facility.LCFS);
 
   class MyEntity extends Sim.Entity {
@@ -416,6 +424,7 @@ test('testFacilityLCFSPreemptTwoLevel', (t) => {
 
 test('testFacilityTimeoutDuringUsage', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.FCFS);
 
   class MyEntity extends Sim.Entity {
@@ -464,6 +473,7 @@ test('testFacilityTimeoutDuringUsage', (t) => {
 
 test('testFacilityCancelDuringUsage', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.FCFS);
 
   class MyEntity extends Sim.Entity {
@@ -505,7 +515,9 @@ test('testFacilityCancelDuringUsage', (t) => {
 
 test('testFacilityLCFSImmuneToRenege', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.LCFS);
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -544,6 +556,7 @@ test('testFacilityLCFSImmuneToRenege', (t) => {
 
 test('testFacilityPSOne', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -574,6 +587,7 @@ test('testFacilityPSOne', (t) => {
 
 test('testFacilityPSTwoIdentical', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -609,6 +623,7 @@ test('testFacilityPSTwoIdentical', (t) => {
 
 test('testFacilityPSTwoIdenticalLater', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -649,6 +664,7 @@ test('testFacilityPSTwoIdenticalLater', (t) => {
 
 test('testFacilityPSTwoOverlapPartial', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -689,6 +705,7 @@ test('testFacilityPSTwoOverlapPartial', (t) => {
 
 test('testFacilityPSTwoOverlapFull', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -729,6 +746,7 @@ test('testFacilityPSTwoOverlapFull', (t) => {
 
 test('testFacilityPSTwoNoOverlap', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -770,6 +788,7 @@ test('testFacilityPSTwoNoOverlap', (t) => {
 
 test('testFacilityPSTenNoOverlap', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -779,6 +798,7 @@ test('testFacilityPSTenNoOverlap', (t) => {
     }
     start() {
       for (let i = 0; i < 10; i++) {
+
         this.setTimer(i).done(() => {
 
           this.useFacility(fac, 1)
@@ -805,6 +825,7 @@ test('testFacilityPSTenNoOverlap', (t) => {
 
 test('testFacilityPSTenSmall', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -821,6 +842,7 @@ test('testFacilityPSTenSmall', (t) => {
 
 
       for (let i = 0; i < 10; i++) {
+
         this.setTimer(2 * i).done(() => {
 
           this.useFacility(fac, 1)
@@ -846,6 +868,7 @@ test('testFacilityPSTenSmall', (t) => {
 
 test('testFacilityPSTen', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -856,6 +879,7 @@ test('testFacilityPSTen', (t) => {
     start() {
 
       for (let i = 0; i < 10; i++) {
+
         this.useFacility(fac, 1)
         .done(() => {
           t.is(this.time(), 10);
@@ -878,6 +902,7 @@ test('testFacilityPSTen', (t) => {
 
 test('testFacilityPSRampUpDown', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -926,7 +951,9 @@ test('testFacilityPSRampUpDown', (t) => {
 
 test('testFacilityPSImmuneToRenege', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -965,6 +992,7 @@ test('testFacilityPSImmuneToRenege', (t) => {
 
 test('testFacilityPSCancelDuringUsage', (t) => {
   const sim = new Sim.Sim();
+
   const fac = new Sim.Facility('simple', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -999,6 +1027,7 @@ test('testFacilityPSCancelDuringUsage', (t) => {
 
 test('testFacilityPSDocExample', (t) => {
   const sim = new Sim.Sim();
+
   let network = new Sim.Facility('Network Cable', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {
@@ -1037,6 +1066,7 @@ test('testFacilityPSDocExample', (t) => {
 
 test('testFacilityPSNested', (t) => {
   const sim = new Sim.Sim();
+
   let network = new Sim.Facility('abcd', Sim.Facility.PS);
 
   class MyEntity extends Sim.Entity {

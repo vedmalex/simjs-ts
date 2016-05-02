@@ -7,6 +7,7 @@ let finalized = 0;
 
 test('testMessageSendOne', (t) => {
   const sim = new Sim.Sim();
+
   let count = 0;
 
   class MyEntity extends Sim.Entity {
@@ -32,7 +33,9 @@ test('testMessageSendOne', (t) => {
   }
 
   const o1 = sim.addEntity(MyEntity, true, null);
+
   const o2 = sim.addEntity(MyEntity, false, o1);
+
   o1.master = true;
   o1.other = o2;
   o2.other = o1;
@@ -45,6 +48,7 @@ test('testMessageSendOne', (t) => {
 
 test('testMessageSendAll', (t) => {
   const sim = new Sim.Sim();
+
   let count = 0;
 
   class MyEntity extends Sim.Entity {
@@ -68,8 +72,11 @@ test('testMessageSendAll', (t) => {
   }
 
   const o1 = sim.addEntity(MyEntity);
+
   const o2 = sim.addEntity(MyEntity);
+
   const o3 = sim.addEntity(MyEntity);
+
   o1.master = true;
   o2.other = o1;
   o3.other = o1;
@@ -82,6 +89,7 @@ test('testMessageSendAll', (t) => {
 
 test('testMessageSendArray', (t) => {
   const sim = new Sim.Sim();
+
   let count = 0;
 
   class MyEntity extends Sim.Entity {
@@ -105,8 +113,11 @@ test('testMessageSendArray', (t) => {
   }
 
   const o1 = sim.addEntity(MyEntity);
+
   const o2 = sim.addEntity(MyEntity);
+
   const o3 = sim.addEntity(MyEntity);
+
   o1.master = true;
   o1.array = [o2, o3, o1];
   o2.other = o1;
@@ -120,6 +131,7 @@ test('testMessageSendArray', (t) => {
 
 test('testMessageNoCallback', (t) => {
   const sim = new Sim.Sim();
+
   let count = 0;
 
   class MyEntity extends Sim.Entity {
@@ -136,7 +148,9 @@ test('testMessageNoCallback', (t) => {
   }
 
   const o1 = sim.addEntity(MyEntity);
+
   const o2 = sim.addEntity(MyEntity);
+
   o1.master = true;
   o1.other = o2;
   o2.other = o1;
@@ -148,6 +162,7 @@ test('testMessageNoCallback', (t) => {
 
 test('testMessageDelayedSendOne', (t) => {
   const sim = new Sim.Sim();
+
   let count = 0;
 
   class MyEntity extends Sim.Entity {
@@ -171,7 +186,9 @@ test('testMessageDelayedSendOne', (t) => {
   }
 
   const o1 = sim.addEntity(MyEntity);
+
   const o2 = sim.addEntity(MyEntity);
+
   o1.master = true;
   o1.other = o2;
   o2.other = o1;
@@ -183,6 +200,7 @@ test('testMessageDelayedSendOne', (t) => {
 
 test('testMessageZeroDelay', (t) => {
   const sim = new Sim.Sim();
+
   let count = 0;
 
   class MyEntity extends Sim.Entity {
@@ -206,7 +224,9 @@ test('testMessageZeroDelay', (t) => {
   }
 
   const o1 = sim.addEntity(MyEntity);
+
   const o2 = sim.addEntity(MyEntity);
+
   o1.master = true;
   o1.other = o2;
   o2.other = o1;

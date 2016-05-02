@@ -7,6 +7,7 @@ let finalized = 0;
 
 test('testRequestZeroDelayTimeout', (t) => {
   const sim = new Sim.Sim();
+
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
@@ -34,7 +35,9 @@ test('testRequestZeroDelayTimeout', (t) => {
 
 test('testRequestZeroDelayPutBuffer', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('a', 100);
+
   class MyEntity extends Sim.Entity {
     constructor(...args) {
       super(...args);
@@ -62,6 +65,7 @@ test('testRequestZeroDelayPutBuffer', (t) => {
 
 test('testRequestZeroDelayEventWait', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -93,6 +97,7 @@ test('testRequestZeroDelayEventWait', (t) => {
 
 test('testRequestZeroDelayEventQueue', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event('a');
 
   class MyEntity extends Sim.Entity {
@@ -124,6 +129,7 @@ test('testRequestZeroDelayEventQueue', (t) => {
 
 test('testRequestZeroDelayFacility', (t) => {
   const sim = new Sim.Sim();
+
   let fac = new Sim.Facility('a');
 
   class MyEntity extends Sim.Entity {
@@ -153,7 +159,9 @@ test('testRequestZeroDelayFacility', (t) => {
 
 test('testRequestCallbackData', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('buffer', 100);
+
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -221,6 +229,7 @@ test('testRequestCallbackData', (t) => {
 
 test('testRequestSetTimer', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -352,7 +361,9 @@ test('testRequestSetTimer', (t) => {
 /*
 test('testRequestPool', (t) => {
   const sim = new Sim.Sim();
+
   let pool = new Sim.Pool("pool", 100);
+
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -440,7 +451,9 @@ test('testRequestPool', (t) => {
 
 test('testRequestBuffer', (t) => {
   const sim = new Sim.Sim();
+
   let buffer = new Sim.Buffer('buffer', 100);
+
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
@@ -648,7 +661,9 @@ test('testRequestBuffer', (t) => {
 
 test('testRequestEvents', (t) => {
   const sim = new Sim.Sim();
+
   let event1 = new Sim.Event('event1');
+
   let event2 = new Sim.Event('event2');
 
   class MyEntity extends Sim.Entity {
@@ -696,7 +711,9 @@ test('testRequestEvents', (t) => {
 
 test('testRequestEventRepeat', (t) => {
   const sim = new Sim.Sim();
+
   let event1 = new Sim.Event('event1');
+
   let event2 = new Sim.Event('event2');
 
   class MyEntity extends Sim.Entity {
@@ -729,8 +746,11 @@ test('testRequestEventRepeat', (t) => {
 
 test('testRequestCancel', (t) => {
   const sim = new Sim.Sim();
+
   const event = new Sim.Event('event1');
+
   let fac = new Sim.Facility('facility');
+
   let buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
@@ -741,16 +761,19 @@ test('testRequestCancel', (t) => {
 
     start() {
       const ro1 = this.setTimer(50)
+
         .done(t.fail)
         .waitUntil(20, t.fail)
         .unlessEvent(event, t.fail);
 
       const ro2 = this.waitEvent(event)
+
       .done(t.fail)
       .waitUntil(20, t.fail)
       .unlessEvent(event, t.fail);
 
       const ro3 = this.putBuffer(buffer, 110)
+
       .done(t.fail)
       .waitUntil(20, t.fail)
       .unlessEvent(event, t.fail);
@@ -759,11 +782,13 @@ test('testRequestCancel', (t) => {
       this.useFacility(fac, 20);
 
       const ro4 = this.useFacility(fac, 10)
+
       .done(t.fail)
       .waitUntil(20, t.fail)
       .unlessEvent(event, t.fail);
 
       const ro5 = this.getBuffer(buffer, 110)
+
       .done(t.fail)
       .waitUntil(20, t.fail)
       .unlessEvent(event, t.fail);
