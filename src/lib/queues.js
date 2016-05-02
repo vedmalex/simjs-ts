@@ -1,4 +1,4 @@
-import { ARG_CHECK } from './sim.js';
+import { argCheck } from './sim.js';
 import { Population } from './stats.js';
 import { Model } from './model.js';
 
@@ -15,11 +15,11 @@ class Queue extends Model {
   }
 
   back() {
-    return (this.data.length) ? this.data[this.data.length - 1] : undefined;
+    return (this.data.length) ? this.data[this.data.length - 1] : null;
   }
 
   push(value, timestamp) {
-    ARG_CHECK(arguments, 2, 2);
+    argCheck(arguments, 2, 2);
     this.data.push(value);
     this.timestamp.push(timestamp);
 
@@ -27,7 +27,7 @@ class Queue extends Model {
   }
 
   unshift(value, timestamp) {
-    ARG_CHECK(arguments, 2, 2);
+    argCheck(arguments, 2, 2);
     this.data.unshift(value);
     this.timestamp.unshift(timestamp);
 
@@ -35,7 +35,7 @@ class Queue extends Model {
   }
 
   shift(timestamp) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
 
     const value = this.data.shift();
 
@@ -46,7 +46,7 @@ class Queue extends Model {
   }
 
   pop(timestamp) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
 
     const value = this.data.pop();
 
@@ -57,14 +57,14 @@ class Queue extends Model {
   }
 
   passby(timestamp) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
 
     this.stats.enter(timestamp);
     this.stats.leave(timestamp, timestamp);
   }
 
   finalize(timestamp) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
 
     this.stats.finalize(timestamp);
   }
@@ -102,13 +102,12 @@ class PQueue extends Model {
 
   greater(ro1, ro2) {
     if (ro1.deliverAt > ro2.deliverAt) return true;
-    if (ro1.deliverAt === ro2.deliverAt)
-      return ro1.order > ro2.order;
+    if (ro1.deliverAt === ro2.deliverAt) return ro1.order > ro2.order;
     return false;
   }
 
   insert(ro) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
     ro.order = this.order ++;
 
     let index = this.data.length;
@@ -140,7 +139,7 @@ class PQueue extends Model {
     let len = a.length;
 
     if (len <= 0) {
-      return undefined;
+      return null;
     }
     if (len === 1) {
       return this.data.pop();

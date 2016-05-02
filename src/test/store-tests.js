@@ -285,17 +285,14 @@ test('testStoreGetCancel', (t) => {
         t.is(this.callbackMessage.a, 1);
       });
 
-
-
       this.setTimer(20).done(() => {
         this.putStore(store, { a: 1 }).done(() => {
           t.is(this.time(), 20);
           this.count++;
         });
       });
-
-
     }
+
     finalize() {
       finalized++;
       t.is(this.count, 3);
@@ -364,19 +361,17 @@ test('testStoreGetTimeout', (t) => {
       this.putStore(store, { a: 1 });
 
       // wait, since filter function is false
-      let ro = this.getStore(store, () => { return false; })
-
-      .done(t.fail).
-      waitUntil(10);
-
+      this.getStore(store, () => { return false; })
+        .done(t.fail)
+        .waitUntil(10);
 
       // wait since there is request is front
       this.getStore(store).done(() => {
         t.is(this.time(), 10);
         this.count++;
       });
-
     }
+
     finalize() {
       finalized++;
       t.is(this.count, 1);
@@ -403,12 +398,8 @@ test('testStoreGetCancel', (t) => {
       this.putStore(store, 1);
 
       // wait, since filter function is false
-      let ro = this.getStore(store, () => { return false; })
-
-      .done(() => {
-        t.fail;
-      });
-
+      const ro = this.getStore(store, () => false)
+        .done(() => t.fail);
 
       // get wait since there is request is front
       this.getStore(store).done(() => {

@@ -1,4 +1,4 @@
-import { ARG_CHECK, Store, Buffer, Event } from './sim.js';
+import { argCheck, Store, Buffer, Event } from './sim.js';
 
 class Request {
   constructor(entity, currentTime, deliverAt) {
@@ -32,8 +32,8 @@ class Request {
     if (this.source) {
       if ((this.source instanceof Buffer)
                     || (this.source instanceof Store)) {
-        this.source.progressPutQueue.call(this.source);
-        this.source.progressGetQueue.call(this.source);
+        this.source.progressPutQueue();
+        this.source.progressGetQueue();
       }
     }
 
@@ -50,14 +50,14 @@ class Request {
   }
 
   done(callback, context, argument) {
-    ARG_CHECK(arguments, 0, 3, Function, Object);
+    argCheck(arguments, 0, 3, Function, Object);
 
     this.callbacks.push([callback, context, argument]);
     return this;
   }
 
   waitUntil(delay, callback, context, argument) {
-    ARG_CHECK(arguments, 1, 4, undefined, Function, Object);
+    argCheck(arguments, 1, 4, null, Function, Object);
     if (this.noRenege) return this;
 
     const ro = this._addRequest(
@@ -68,18 +68,20 @@ class Request {
   }
 
   unlessEvent(event, callback, context, argument) {
-    ARG_CHECK(arguments, 1, 4, undefined, Function, Object);
+    argCheck(arguments, 1, 4, null, Function, Object);
     if (this.noRenege) return this;
 
     if (event instanceof Event) {
-      var ro = this._addRequest(0, callback, context, argument);
+      const ro = this._addRequest(0, callback, context, argument);
+
       ro.msg = event;
       event.addWaitList(ro);
 
     } else if (event instanceof Array) {
       for (let i = 0; i < event.length; i++) {
 
-        var ro = this._addRequest(0, callback, context, argument);
+        const ro = this._addRequest(0, callback, context, argument);
+
         ro.msg = event[i];
         event[i].addWaitList(ro);
       }

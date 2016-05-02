@@ -1,4 +1,4 @@
-import { ARG_CHECK } from './sim.js';
+import { argCheck } from './sim.js';
 
 class DataSeries {
   constructor(name) {
@@ -24,7 +24,7 @@ class DataSeries {
   }
 
   setHistogram(lower, upper, nbuckets) {
-    ARG_CHECK(arguments, 3, 3);
+    argCheck(arguments, 3, 3);
 
     this.hLower = lower;
     this.hUpper = upper;
@@ -41,9 +41,9 @@ class DataSeries {
   }
 
   record(value, weight) {
-    ARG_CHECK(arguments, 1, 2);
+    argCheck(arguments, 1, 2);
 
-    const w = (weight === undefined) ? 1 : weight;
+    const w = (typeof weight === 'undefined') ? 1 : weight;
 
         // document.write("Data series recording " + value + " (weight = " + w + ")\n");
 
@@ -54,8 +54,7 @@ class DataSeries {
     if (this.histogram) {
       if (value < this.hLower) {
         this.histogram[0] += w;
-      }
-      else if (value > this.hUpper) {
+      } else if (value > this.hUpper) {
         this.histogram[this.histogram.length - 1] += w;
       } else {
         const index = Math.floor((value - this.hLower) / this.hBucketSize) + 1;
@@ -130,7 +129,7 @@ class TimeSeries {
   }
 
   setHistogram(lower, upper, nbuckets) {
-    ARG_CHECK(arguments, 3, 3);
+    argCheck(arguments, 3, 3);
     this.dataSeries.setHistogram(lower, upper, nbuckets);
   }
 
@@ -139,7 +138,7 @@ class TimeSeries {
   }
 
   record(value, timestamp) {
-    ARG_CHECK(arguments, 2, 2);
+    argCheck(arguments, 2, 2);
 
     if (!isNaN(this.lastTimestamp)) {
       this.dataSeries.record(this.lastValue, timestamp - this.lastTimestamp);
@@ -150,7 +149,7 @@ class TimeSeries {
   }
 
   finalize(timestamp) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
 
     this.record(NaN, timestamp);
   }
@@ -203,14 +202,14 @@ class Population {
   }
 
   enter(timestamp) {
-    ARG_CHECK(arguments, 1, 1);
+    argCheck(arguments, 1, 1);
 
     this.population ++;
     this.sizeSeries.record(this.population, timestamp);
   }
 
   leave(arrivalAt, leftAt) {
-    ARG_CHECK(arguments, 2, 2);
+    argCheck(arguments, 2, 2);
 
     this.population --;
     this.sizeSeries.record(this.population, leftAt);

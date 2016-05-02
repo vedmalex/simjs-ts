@@ -1,7 +1,6 @@
 import test from 'ava';
 import * as Sim from '../sim';
 
-let entities = 0;
 let finalized = 0;
 
 
@@ -11,9 +10,8 @@ test('testMessageSendOne', (t) => {
   let count = 0;
 
   class MyEntity extends Sim.Entity {
-    start() {
+    start() {}  // eslint-disable-line no-empty-function
 
-    }
     init() {
       if (this.master) {
         this.send('message', 10, this.other);
@@ -42,7 +40,6 @@ test('testMessageSendOne', (t) => {
   o1.init();
   o2.init();
   sim.simulate(100);
-  entities = 2;
   t.is(count, 1);
 });
 
@@ -52,7 +49,8 @@ test('testMessageSendAll', (t) => {
   let count = 0;
 
   class MyEntity extends Sim.Entity {
-    start() {}
+    start() {}  // eslint-disable-line no-empty-function
+
     init() {
       if (this.master) {
         this.send('message', 10);
@@ -83,7 +81,6 @@ test('testMessageSendAll', (t) => {
   o1.init(); o2.init();
 
   sim.simulate(100);
-  entities = 3;
   t.is(count, 2);
 });
 
@@ -93,12 +90,14 @@ test('testMessageSendArray', (t) => {
   let count = 0;
 
   class MyEntity extends Sim.Entity {
-    start() {}
+    start() {}  // eslint-disable-line no-empty-function
+
     init() {
       if (this.master) {
         this.send('message', 10, this.array);
       }
     }
+
     onMessage(source, message) {
       t.is(source, this.other);
       t.is(message, 'message');
@@ -125,17 +124,15 @@ test('testMessageSendArray', (t) => {
   o1.init(); o2.init(); o3.init();
 
   sim.simulate(100);
-  entities = 3;
   t.is(count, 2);
 });
 
 test('testMessageNoCallback', (t) => {
   const sim = new Sim.Sim();
 
-  let count = 0;
-
   class MyEntity extends Sim.Entity {
-    start() {}
+    start() {}  // eslint-disable-line no-empty-function
+
     init() {
       if (this.master) {
         this.send('message', 10, this.other);
@@ -156,7 +153,6 @@ test('testMessageNoCallback', (t) => {
   o2.other = o1;
   o1.init(); o2.init();
   sim.simulate(100);
-  entities = 2;
   t.is(sim.time(), 10);
 });
 
@@ -166,7 +162,8 @@ test('testMessageDelayedSendOne', (t) => {
   let count = 0;
 
   class MyEntity extends Sim.Entity {
-    start() {}
+    start() {}  // eslint-disable-line no-empty-function
+
     init() {
       if (this.master) {
         this.setTimer(10).done(this.send, this, ['message', 10, this.other]);
@@ -194,7 +191,6 @@ test('testMessageDelayedSendOne', (t) => {
   o2.other = o1;
   o1.init(); o2.init();
   sim.simulate(100);
-  entities = 2;
   t.is(count, 1);
 });
 
@@ -204,7 +200,8 @@ test('testMessageZeroDelay', (t) => {
   let count = 0;
 
   class MyEntity extends Sim.Entity {
-    start() {}
+    start() {}  // eslint-disable-line no-empty-function
+
     init() {
       if (this.master) {
         this.setTimer(10).done(this.send, this, ['message', 0, this.other]);
@@ -232,6 +229,5 @@ test('testMessageZeroDelay', (t) => {
   o2.other = o1;
   o1.init(); o2.init();
   sim.simulate(100);
-  entities = 2;
   t.is(count, 1);
 });

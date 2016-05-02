@@ -1,7 +1,6 @@
 import test from 'ava';
 import * as Sim from '../sim';
 
-let entities = 0;
 let finalized = 0;
 
 test('testEventFlash', (t) => {
@@ -31,7 +30,7 @@ test('testEventFlash', (t) => {
 
       this.setTimer(20).done(() => {
         t.is(event.isFired, false);
-        this.waitEvent(event).done((s) => {
+        this.waitEvent(event).done(() => {
           t.is(this.callbackSource, event);
           t.is(this.time(), 21);
           this.count ++;
@@ -52,7 +51,6 @@ test('testEventFlash', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testEventSustain', (t) => {
@@ -68,7 +66,7 @@ test('testEventSustain', (t) => {
     start() {
       t.is(event.isFired, false);
 
-      this.waitEvent(event).done((s) => {
+      this.waitEvent(event).done(() => {
         t.is(event.isFired, true);
         t.is(this.callbackSource, event);
         t.is(this.time(), 10);
@@ -82,7 +80,7 @@ test('testEventSustain', (t) => {
 
       this.setTimer(20).done(() => {
         t.is(event.isFired, true);
-        this.waitEvent(event).done((s) => {
+        this.waitEvent(event).done(() => {
           t.is(this.callbackSource, event);
           t.is(this.time(), 20);
           this.count ++;
@@ -96,7 +94,7 @@ test('testEventSustain', (t) => {
       });
       this.setTimer(40).done(() => {
         t.is(event.isFired, false);
-        this.waitEvent(event).done((s) => {
+        this.waitEvent(event).done(() => {
           t.is(this.callbackSource, event);
           t.is(this.time(), 41);
           this.count ++;
@@ -115,13 +113,12 @@ test('testEventSustain', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testEventWaitQueue', (t) => {
-  let barrier = new Sim.Event('Barrier');
+  const barrier = new Sim.Event('Barrier');
 
-  let funnel = new Sim.Event('Funnel');
+  const funnel = new Sim.Event('Funnel');
 
   let wcount = 0;
 
@@ -150,14 +147,13 @@ test('testEventWaitQueue', (t) => {
 
   const sim = new Sim.Sim();
 
-  let e = [];
+  const e = [];
 
   for (let i = 0; i < 100; i++) {
 
     e.push(sim.addEntity(MyEntity, null, i === 0));
   }
   sim.simulate(100);
-  entities = 100;
   t.is(wcount, 100);
   t.is(qcount, 1);
 });

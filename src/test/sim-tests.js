@@ -7,7 +7,7 @@ test('testStartArguments', (t) => {
 
   class MyEntity extends Sim.Entity {
     start(a, b) {
-      t.is(a, 10),
+      t.is(a, 10);
       t.is(b.a, 20);
     }
   }

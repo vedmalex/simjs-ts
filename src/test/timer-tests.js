@@ -3,7 +3,6 @@ import test from 'ava';
 import * as Sim from '../sim';
 
 import 'babel-core/register';
-let entities = 0;
 let finalized = 0;
 
 test('testTimerPlain', (t) => {
@@ -26,7 +25,6 @@ test('testTimerPlain', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerCustomDone', (t) => {
@@ -49,7 +47,6 @@ test('testTimerCustomDone', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerCustomDoneInline', (t) => {
@@ -71,7 +68,6 @@ test('testTimerCustomDoneInline', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerRecursive', (t) => {
@@ -97,14 +93,13 @@ test('testTimerRecursive', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerNoEvent', (t) => {
   const sim = new Sim.Sim();
 
   class MyEntity extends Sim.Entity {
-    start() {}
+    start() {} // eslint-disable-line no-empty-function
     finalize() {
       finalized++;
       t.is(this.time(), 0);
@@ -113,7 +108,6 @@ test('testTimerNoEvent', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerZero', (t) => {
@@ -133,7 +127,6 @@ test('testTimerZero', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 
@@ -160,7 +153,6 @@ test('testTimerTimeout1', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerTimeout2', (t) => {
@@ -186,7 +178,6 @@ test('testTimerTimeout2', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerMultipleTimeouts', (t) => {
@@ -216,7 +207,6 @@ test('testTimerMultipleTimeouts', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 
 test('testTimerWaitEvent', (t) => {
@@ -249,6 +239,5 @@ test('testTimerWaitEvent', (t) => {
 
   sim.addEntity(MyEntity);
   sim.simulate(100);
-  entities = 1;
 });
 

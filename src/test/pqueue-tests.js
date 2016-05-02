@@ -2,14 +2,6 @@ import test from 'ava';
 import * as Sim from '../sim';
 
 test('testPQueue', (t) => {
-  function printpq(arr) {
-    for (let i = 0; i < arr.length; i++) {
-
-      print(arr[i].deliverAt + ', ');
-    }
-    print('\n');
-  }
-
   function assertArrays(a, b) {
     t.is(a.length, b.length);
 
@@ -19,7 +11,7 @@ test('testPQueue', (t) => {
     }
   }
 
-  let dataset = [[],
+  const dataset = [[],
 
                  [0],
                  [1],
@@ -37,22 +29,22 @@ test('testPQueue', (t) => {
 
   for (let i = 0; i < dataset.length; i++) {
 
-    let arr = dataset[i];
+    const arr = dataset[i];
 
     // insert
-    let pq = new Sim.PQueue();
+    const pq = new Sim.PQueue();
 
     for (let j = 0; j < arr.length; j++) {
 
       pq.insert(new Sim.Request(0, 0, arr[j]));
     }
 
-    let out = [];
+    const out = [];
 
-    while (true) {
-      let a = pq.remove();
+    while (true) {  // eslint-disable-line no-constant-condition
+      const a = pq.remove();
 
-      if (a === undefined) break;
+      if (a === null) break;
       out.push(a.deliverAt);
     }
 

@@ -36,7 +36,7 @@ test('testRequestZeroDelayTimeout', (t) => {
 test('testRequestZeroDelayPutBuffer', (t) => {
   const sim = new Sim.Sim();
 
-  let buffer = new Sim.Buffer('a', 100);
+  const buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -130,7 +130,7 @@ test('testRequestZeroDelayEventQueue', (t) => {
 test('testRequestZeroDelayFacility', (t) => {
   const sim = new Sim.Sim();
 
-  let fac = new Sim.Facility('a');
+  const fac = new Sim.Facility('a');
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
@@ -160,19 +160,19 @@ test('testRequestZeroDelayFacility', (t) => {
 test('testRequestCallbackData', (t) => {
   const sim = new Sim.Sim();
 
-  let buffer = new Sim.Buffer('buffer', 100);
+  const buffer = new Sim.Buffer('buffer', 100);
 
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
-    constructor(sim) {
-      super(sim);
+    constructor(simInstance) {
+      super(simInstance);
       this.count = 0;
     }
 
     start() {
       this.putBuffer(buffer, 10)
-      .done(this.fn1, undefined, 1)
+      .done(this.fn1, null, 1)
       .unlessEvent(event, this.fn2, null, 2)
       .waitUntil(10, this.fn1, null, 3)
       .setData('my data');
@@ -312,7 +312,7 @@ test('testRequestSetTimer', (t) => {
       // timers bailed out on event
       this.setTimer(clock++)
       .setData('event')
-      .done((d) => { t.fail(); })
+      .done(() => { t.fail(); })
       .unlessEvent(event, (d) => {
         t.is(typeof this.callbackSource, 'undefined');
         t.is(this.callbackMessage, event);
@@ -325,7 +325,7 @@ test('testRequestSetTimer', (t) => {
 
       this.setTimer(clock++)
       .setData('event')
-      .done((d) => { t.fail(); })
+      .done(() => { t.fail(); })
       .unlessEvent(event, (d) => {
         t.is(typeof this.callbackSource, 'undefined');
         t.is(this.callbackMessage, event);
@@ -336,7 +336,7 @@ test('testRequestSetTimer', (t) => {
 
       this.setTimer(clock++)
       .setData('event')
-      .done((d, e) => { t.fail(); })
+      .done(() => t.fail())
       .unlessEvent(event, (d, e) => {
         t.is(typeof this.callbackSource, 'undefined');
         t.is(this.callbackMessage, event);
@@ -452,7 +452,7 @@ test('testRequestPool', (t) => {
 test('testRequestBuffer', (t) => {
   const sim = new Sim.Sim();
 
-  let buffer = new Sim.Buffer('buffer', 100);
+  const buffer = new Sim.Buffer('buffer', 100);
 
   const event = new Sim.Event('event');
 
@@ -749,9 +749,9 @@ test('testRequestCancel', (t) => {
 
   const event = new Sim.Event('event1');
 
-  let fac = new Sim.Facility('facility');
+  const fac = new Sim.Facility('facility');
 
-  let buffer = new Sim.Buffer('a', 100);
+  const buffer = new Sim.Buffer('a', 100);
 
   class MyEntity extends Sim.Entity {
     constructor(...args) {
