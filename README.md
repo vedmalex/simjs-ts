@@ -2,11 +2,11 @@
 
 <p align="center">
   <a href="https://npmjs.org/package/simjs-updated">
-    <img src="https://img.shields.io/npm/v/simjs-updated.svg" alt="NPM Version">
+    <img src="https://img.shields.io/npm/v/simjs.svg" alt="NPM Version">
   </a>
 
   <a href="https://opensource.org/licenses/LGPL-3.0">
-    <img src="https://img.shields.io/npm/l/simjs-updated.svg" alt="License">
+    <img src="https://img.shields.io/npm/l/simjs.svg" alt="License">
   </a>
 
   <a href="https://github.com/btelles/simjs-updated/issues">
@@ -21,7 +21,7 @@
 
 
   <a href="https://coveralls.io/github/btelles/simjs-updated">
-    <img src="https://img.shields.io/coveralls/btelles/simjs-updated.svg" alt="Coveralls">
+    <img src="https://coveralls.io/repos/github/btelles/simjs-updated/badge.svg?branch=2.0.1" alt="Coveralls">
   </a>
 
 
