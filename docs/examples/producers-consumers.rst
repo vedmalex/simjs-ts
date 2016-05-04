@@ -5,7 +5,7 @@ We would like to study what is the average wait times for the producers and the 
 We create the common buffer as:
 
 .. code-block:: js
-    
+
     var buffer = new Sim.Buffer("buffer", bufferSize);
 
 We model the producers as entities that generate one token every *t* seconds, where *t* is exponential random number will mean *productionRate*.
@@ -13,13 +13,13 @@ We model the producers as entities that generate one token every *t* seconds, wh
 .. code-block:: js
 
     Random rand = new Random(SEED);
-    
-    var Producer = {
-        start: function () {
+
+    class Producer extends Sim.Entity {
+        start() {
             var timeToProduce = rand.exponential(1.0 / productionRate);
-            
+
             // Set timer to self (models the time spend in production)
-            this.setTimer(timeToProduce).done(function () {
+            this.setTimer(timeToProduce).done(() => {
                 // Timer expires => item is ready to be stored in buffer.
                 // When the item is successfully stored in buffer, we repeat
                 //     the process by recursively calling the same function.
@@ -32,16 +32,16 @@ We model the consumers as entities that retrieve tokens from the buffers, and pr
 
 .. code-block:: js
 
-    var Consumer = {
-        start: function () {
+    class Consumer extends Sim.Entity {
+        start() {
             // Retrieve one token from buffer
-            this.getBuffer(buffer, 1).done(function () {
+            this.getBuffer(buffer, 1).done(() => {
                 // After an item has been retrieved, wait for some time
                 //   to model the consumption time.
                 // After the waiting period is over, we repeat by
                 //   recursively calling this same function.
                 var timeToConsume = rand.exponential(1.0 / consumptionRate);
-                
+
                 this.setTimer(timeToConsume).done(this.start);
             });
         }
@@ -53,16 +53,16 @@ Finally we create the simulation and entity objects, and start the simulation.
 .. code-block:: js
 
     // Create simulator
-    var sim = new Simulator("Producer Consumer Problem");
-    
+    var sim = new Sim.Sim();
+
     // Create producer entities
     for (var i = 0; i < nProducers; i++) sim.addEntity(Producer);
 
     // Create consumer entities
     for (var i = 0; i < nConsumers; i++) sim.addEntity(Consumer);
-    
+
     // Start simulation
     sim.simulate(SIMTIME);
-    
+
     // statistics
     buffer.report();

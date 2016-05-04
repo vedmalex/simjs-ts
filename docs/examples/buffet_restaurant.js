@@ -1,30 +1,30 @@
 function buffetRestaurantSimulation(
-		BuffetCapacity, 
-		PreparationTime, 
-		MeanArrival, 
-		CashierTime, 
-		Seed, 
-		Simtime) 
+		BuffetCapacity,
+		PreparationTime,
+		MeanArrival,
+		CashierTime,
+		Seed,
+		Simtime)
 {
-	var sim = new Sim(); 
+	var sim = new Sim.Sim();
 	var stats = new Sim.Population();
 	var cashier = new Sim.Facility('Cashier');
 	var buffet = new Sim.Buffer('Buffet', BuffetCapacity);
 	var random = new Random(Seed);
-	
-	var Customer = {
-		start: function () {
+
+	class Customer extends Sim.Entity {
+		start() {
 			this.order();
-			
-			var nextCustomerAt = random.exponential (1.0 / MeanArrival); 
+
+			var nextCustomerAt = random.exponential (1.0 / MeanArrival);
 			this.setTimer(nextCustomerAt).done(this.start);
 		},
-		
-		order: function () {
+
+		order() {
 			sim.log("Customer ENTER at " + this.time());
 			stats.enter(this.time());
-			
-			this.getBuffer(buffet, 1).done(function () {
+
+			this.getBuffer(buffet, 1).done(() => {
 				sim.log("Customer at CASHIER " + this.time() + " (entered at " + this.callbackData + ")");
 				var serviceTime = random.exponential(1.0 / CashierTime);
 				this.useFacility(cashier, serviceTime).done(function () {
@@ -34,27 +34,27 @@ function buffetRestaurantSimulation(
 			}).setData(this.time());
 		}
 	};
-	
-	var Chef = {
-		start: function () {
+
+	class Chef extends Sim.Entity {
+		start() {
 			this.putBuffer(buffet, BuffetCapacity - buffet.current());
 			this.setTimer(PreparationTime).done(this.start);
 		}
 	};
-	
+
 	sim.addEntity(Customer);
 	sim.addEntity(Chef);
-	
+
 //  Uncomment these line to display logging information
 //	sim.setLogger(function (msg) {
 //		document.write(msg);
 //	});
-	
+
 	sim.simulate(Simtime);
-	
+
 	return [stats.durationSeries.average(),
             stats.durationSeries.deviation(),
             stats.sizeSeries.average(),
             stats.sizeSeries.deviation()];
-	
+
 }

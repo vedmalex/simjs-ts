@@ -33,7 +33,7 @@ We begin by creating an instance of simulator:
 
 .. code-block:: js
 
-    var sim = new Sim();
+    var sim = new Sim.Sim();
 
 Next we create two events to model the traffic lights and give them descriptive names:
 
@@ -47,7 +47,7 @@ To monitor the statistics, we create an object of Population class:
 .. code-block:: js
 
     var stats = new Sim.Population("Waiting at Intersection");
-    
+
 Of course, we create a random number generator:
 
 .. code-block:: js
@@ -60,9 +60,9 @@ The traffic light controller periodically turns off lights in one direction and 
 
 .. code-block:: js
 
-    var LightController = {
+    class LightController extends Sim.Entity {
         currentLight: 0,  // the light that is turned on currently
-        start: function () {
+        start() {
             // Logging
             sim.log(trafficLights[this.currentLight].name + " OFF"
                             + ", " + trafficLights[1 - this.currentLight].name + " ON");
@@ -70,14 +70,14 @@ The traffic light controller periodically turns off lights in one direction and 
 
             // turn off the current light
             trafficLights[this.currentLight].clear();
-            
+
             // turn on the other light.
             // Note the true parameter: the event must "sustain"
             trafficLights[1 - this.currentLight].fire(true);
-            
+
             // update the currentLight variable
             this.currentLight = 1 - this.currentLight;
-            
+
             // Repeat every GREEN_TIME interval
             this.setTimer(GREEN_TIME).done(this.start);
         }
@@ -85,7 +85,7 @@ The traffic light controller periodically turns off lights in one direction and 
 
 Quite a few things are happening here. Lets dissect the code now:
 
-* What we have defined above is an ``Entity Prototype`` object (think of this as equivalent to *class* in C++ or Java). Later on we will use the :func:`Sim.addEntity` function to create ``Entity objects``. Of course, more than one objects can be created from the same ``Entity Prototype`` object (although in this example we create only one entity object).
+* First we create a JavaScript class (which is mostly interchangeable with prototype) that inherits all the behavior of Sim.Entity, and implements the :func:`start` function. Later on we will use the :func:`Sim.addEntity` function to create ``Entity objects``. Of course, more than one objects can be created from the same ``Entity Prototype`` object (although in this example we create only one entity object).
 * When we call the :func:`Sim.addEntity` the simulator kernel adds other functions and attributes to the Entity prototype object. We call this new object as ``Extended Entity Prototype`` object. For example, :func:`this.setTimer` was added by the simulator. Refer to :ref:`entity-prototype` for a complete list of extended functions and attributes. The simulator now creates a new object with the extended entity prototype object as the *prototype*.
 * The ``Entity prototype`` object **must** define a *start* function. This function is called by the simulator when the simulation starts.
 * Notice that the events are fired with *true* argument, which indicates that the events must remain in 'fired state' until explicitly cleared. The default behavior is that the events fire for an instant only and go back to passive state immediately.
@@ -96,8 +96,8 @@ Moving on to the entity to generate traffic. Lets look at the code first:
 
 .. code-block:: js
 
-    var Traffic = {
-        start: function () {
+    class Traffic extends Sim.Entity {
+        start() {
             this.generateTraffic("North", trafficLights[0]); // traffic for North -> South
             this.generateTraffic("South", trafficLights[0]); // traffic for South -> North
             this.generateTraffic("East", trafficLights[1]); // traffic for East -> West
@@ -109,29 +109,29 @@ Moving on to the entity to generate traffic. Lets look at the code first:
 
             // STATS: record that vehicle as entered the intersection
             stats.enter(this.time());
-            
-            // wait on the light. 
-            // The done() function will be called when the event fires 
+
+            // wait on the light.
+            // The done() function will be called when the event fires
             // (i.e. the light turns green).
-            this.waitEvent(light).done(function () {
+            this.waitEvent(light).done(() => {
                 var arrivedAt = this.callbackData;
-    
+
                 // Logging
                 sim.log("Leave for " + direction + " (arrived at " + arrivedAt.toFixed(6) + ")");
 
                 // STATS: record that vehicle has left the intersection
                 stats.leave(arrivedAt, this.time());
             }).setData(this.time());
-            
+
             // Repeat for the next car. Call this function again.
             var nextArrivalAt = random.exponential(1.0 / MEAN_ARRIVAL);
             this.setTimer(nextArrivalAt).done(this.generateTraffic, this, [direction, light]);
         }
     }
-    
+
 Lets follow this code:
 
-* As before, we create an ``Entity prototype`` object with a :func:`start` function.
+* As before, we subclass ``Sim.Entity`` and implement a :func:`start` function.
 * We also notice that :func:`this.time()`, :func:`this.setTimer` and :func:`this.waitEvent` are added by the simulator to this entity prototype object.
 * The :func:`generateTraffic` function generates traffic for one street for one direction. We call this function four times in our start function.
 * :func:`this.waitEvent` illustrates the most typical design pattern for requesting resources. The entity first make a request (in this case, wait for the event -- the traffic light -- to fire) which returns a :ref:`Request <request-main>` object. The entities then call the :class:`~Sim.Request` class functions to fine tune the request. Each of these function return the request object back, so the functions can be chained together. In this case we call two functions on request object:
@@ -149,12 +149,12 @@ Lets follow this code:
     .done(fn2, this, 'data to fn2 only')
     .waitUntil(fn3, this, 'data to fn3 only')
     .unlessEvent(fn4, this, 'data to fn4 only');
-    
+
     fn1 = function(arg) {
         assert(arg == 'data to fn1 only');
         assert(this.callbackData == 'Data to all callback functions');
     }
-    
+
     fn2 = function(arg) {
         assert(arg == 'data to fn2 only');
         assert(this.callbackData == 'Data to all callback functions');
@@ -163,7 +163,7 @@ Lets follow this code:
 Having created the entity prototype objects we create the actual entity objects
 
 .. code-block:: js
-    
+
     sim.addEntity(LightController);
     sim.addEntity(Traffic);
 
@@ -172,7 +172,7 @@ And finally, we start simulation:
 .. code-block:: js
 
     // simulate for SIMTIME time
-    sim.simulate(SIMTIME); 
+    sim.simulate(SIMTIME);
 
 `View the complete source code <traffic_lights.js>`_.
 
@@ -193,13 +193,13 @@ We will run our model as a web page on a web browser. For this we have created t
     <html>
     <head>
         <title>Tutorial: Simulation of Traffic Lights at Intersection</title>
-  
+
         <script type="text/javascript" src="sim-0.1.js"></script>
         <script type="text/javascript" src="traffic-light.js"></script>
     </head>
     <body></body>
     </html>
-        
+
 
 
 Tracing Simulation Runs
@@ -284,7 +284,7 @@ Next we enable the logging statement in the Traffic entity. We show only some se
     10.000000   Leave for East (arrived at 9.277087)
     10.000000   Leave for West (arrived at 9.963535)
     <lines omitted>
-    
+
 Note the first four arrival lines. Only the East- and West-bound vehicles leave the intersection. Notice also at 5.0 minutes, all the North and South bound vehicles leave intersection as soon as the light turns green. You can follow the logs to verify that our traffic light model is indeed working correctly.
 
 Statistics
@@ -301,11 +301,11 @@ To output these two statistics, add the following lines after the :func:`sim.sim
 
 .. code-block:: js
 
-    document.write("Number of vehicles at intersection (average) = " 
-            + stats.sizeSeries.average().toFixed(3) 
+    document.write("Number of vehicles at intersection (average) = "
+            + stats.sizeSeries.average().toFixed(3)
             + " (+/- " + stats.sizeSeries.deviation().toFixed(3)
             + ")\n");
-    document.write("Time spent at the intersection (average) = " 
+    document.write("Time spent at the intersection (average) = "
             + stats.durationSeries.average().toFixed(3)
             + " (+/- " + stats.durationSeries.deviation().toFixed(3)
             + ")\n");

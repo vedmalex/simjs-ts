@@ -40,7 +40,7 @@ The following code lists all the global variables we will need in our simulation
 
 .. code-block:: js
 
-    var sim = new Sim(); 
+    var sim = new Sim.Sim();
     var stats = new Sim.Population();
     var cashier = new Sim.Facility('Cashier');
     var buffet = new Sim.Buffer('Buffet', BuffetCapacity);
@@ -50,24 +50,24 @@ Lets start with the Entity Prototype for Chef first. The chef replenishes the sa
 
 .. code-block:: js
 
-    var Chef = {
-        start: function () {
+    class Chef extends Sim.Entity {
+        start() {
             this.putBuffer(buffet, BuffetCapacity - buffet.current());
             this.setTimer(PreparationTime).done(this.start);
         }
     };
-   
+
 Note here that the chef fills only the empty portion in the buffet.
 
-Next, let us look at the Customer entity. This entity prototype will generate request for all customers, where the time interval between customer arrivals is exponentially distributed. We will first look at the start function, which is somewhat similar to the start function of Chef. The customer will order (this.order(), which we will see next), and the function is called again after an exponentially distributed random delay: 
+Next, let us look at the Customer entity. This entity prototype will generate request for all customers, where the time interval between customer arrivals is exponentially distributed. We will first look at the start function, which is somewhat similar to the start function of Chef. The customer will order (this.order(), which we will see next), and the function is called again after an exponentially distributed random delay:
 
 .. code-block:: js
 
-    var Customer = {
-        start: function () {
+    class Customer extends Sim.Entity {
+        start() {
             this.order();
 
-            var nextCustomerAt = random.exponential (1.0 / MeanArrival); 
+            var nextCustomerAt = random.exponential (1.0 / MeanArrival);
             this.setTimer(nextCustomerAt).done(this.start);
         },
         ...
@@ -77,24 +77,24 @@ The :func:`Customer.order` function models the actions of customers inside the r
 .. code-block:: js
    :linenos:
 
-    order: function () {
+    order() {
         // Logging
         sim.log("Customer ENTER at " + this.time());
 
         // statistics
         stats.enter(this.time());
 
-        this.getBuffer(buffet, 1).done(function () {
+        this.getBuffer(buffet, 1).done(() => {
             // Logging
-            sim.log("Customer at CASHIER " + this.time() 
+            sim.log("Customer at CASHIER " + this.time()
                 + " (entered at " + this.callbackData + ")");
-            
+
             var serviceTime = random.exponential(1.0 / CashierTime);
-            this.useFacility(cashier, serviceTime).done(function () {
+            this.useFacility(cashier, serviceTime).done(() => {
                 // Logging
-                sim.log("Customer LEAVE at " + this.time() 
+                sim.log("Customer LEAVE at " + this.time()
                     + " (entered at " + this.callbackData + ")");
-                
+
                 // Statistics
                 stats.leave(this.callbackData, this.time());
             }).setData(this.callbackData);
@@ -110,7 +110,7 @@ Finally, we create entities (lines 1 and 2), optionally set a logger function (l
     sim.addEntity(Chef);
 
 
-    sim.setLogger(function (msg) {
+    sim.setLogger((msg) => {
         document.write(msg);
     });
 
@@ -140,7 +140,7 @@ We will run our model as a web page on a web browser. For this we have created t
     <html>
     <head>
         <title>Tutorial: Customers at a Buffet Restaurant</title>
-  
+
         <script type="text/javascript" src="sim-0.1.js"></script>
         <script type="text/javascript" src="buffet_restaurant.js"></script>
     </head>
