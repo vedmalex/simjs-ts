@@ -42,6 +42,10 @@ SimJS updated with ES2015 and updated toolchain
 
 The original implementation was written in 2011, and can be found at http://www.simjs.com
 
+Note, the documentation on that site is slightly out of date. We're using standard ES2015
+classes and idioms now, which should improve code readability. The documentation in the git
+repository has been updated though, and you should use that as your reference.
+
 SIM.JS is a library for modeling discrete time event systems:
 
   * The library provides constructs to create Entities which are the active
