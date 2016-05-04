@@ -21,7 +21,7 @@
 
 
   <a href="https://coveralls.io/github/btelles/simjs-updated">
-    <img src="https://coveralls.io/repos/github/btelles/simjs-updated/badge.svg?branch=2.0.1" alt="Coveralls">
+    <img src="https://coveralls.io/repos/github/btelles/simjs-updated/badge.svg?branch=2.0.2" alt="Coveralls">
   </a>
 
 
