@@ -1,9 +1,6 @@
 
 if (this.load) {
-	load('../../sim.js');
-	load('../../rand.js');
-	load('../../stats.js');
-	load('../../queues.js');
+	load('../sim.js');
 	document = {
 			write: function (str) {
 				print(str);
@@ -15,11 +12,11 @@ if (this.load) {
 
 
 function RunMMc(lambda, mu, nservers, simtime, seed) {
-	var sim = new Sim();
+	var sim = new Sim.Sim();
 	var server = new Sim.Facility('server', Sim.Facility.FCFS, nservers);
-	var rand = new Random((seed !== undefined) ? seed : 12345);
-	var Generator = {
-		start: function () {
+	var rand = new Sim.Random((typeof seed !== 'undefined') ? seed : 12345);
+	class Generator extends Sim.Entity {
+		start() {
 			this.useFacility(server, rand.exponential(mu));
 			this.setTimer(rand.exponential(lambda)).done(this.start);
 		}
