@@ -1,7 +1,7 @@
 <big><h1 align="center">simjs-updated</h1></big>
 
 <p align="center">
-  <a href="https://npmjs.org/package/simjs-updated">
+  <a href="https://www.npmjs.com/package/simjs">
     <img src="https://img.shields.io/npm/v/simjs.svg" alt="NPM Version">
   </a>
 
