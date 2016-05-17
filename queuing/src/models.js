@@ -1,4 +1,4 @@
-var MODELS = {
+const MODELS = {
   'model_mm1': {
     model: '{"until":14400,"seed":1234,"version":"1.0","objects":[{"x":102,"y":136,"type":"source","name":"source_1","out":"queue_1","model":{"lambda":0.25}},{"x":252,"y":93,"type":"queue","name":"queue_1","model":{"nservers":1,"mu":"1","maxqlen":"-1"}}]}'
   },
