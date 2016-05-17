@@ -20,13 +20,10 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "test",
     "examples",
-    "hadoop",
-    "network",
     "queuing",
-    "sequence",
     "ui",
-    "package.json"
+    "package.json",
+    "src"
   ]
 }
