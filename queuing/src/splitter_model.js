@@ -12,7 +12,7 @@ class SplitterModel {
   }
 
   start() {
-    this.entity = QueueApp.sim.addEntity(SplitterEntity, this.prob);
+    this.entity = QueueApp.sim.addEntity(SplitterEntity, null, this.prob);
   }
 
   connect() {

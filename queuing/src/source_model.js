@@ -13,7 +13,7 @@ class SourceModel {
   }
 
   start() {
-    this.entity = QueueApp.sim.addEntity(SourceEntity, this.lambda);
+    this.entity = QueueApp.sim.addEntity(SourceEntity, null, this.lambda);
   }
 
   connect() {

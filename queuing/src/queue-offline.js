@@ -9,7 +9,7 @@ class ServerModel {
   }
 
   start() {
-    this.entity = this.sim.addEntity(ServerEntity, this.random, this.nservers, this.mu);
+    this.entity = this.sim.addEntity(ServerEntity, null, this.random, this.nservers, this.mu);
   }
 
   connect(dest) {
@@ -41,7 +41,7 @@ class SourceModel {
   }
 
   start() {
-    this.entity = this.sim.addEntity(SourceEntity, this.random, this.lambda);
+    this.entity = this.sim.addEntity(SourceEntity, null, this.random, this.lambda);
   }
 
   connect(dest) {
@@ -57,7 +57,7 @@ class SplitterModel {
   }
 
   start() {
-    this.entity = this.sim.addEntity(SplitterEntity, this.random, this.prob);
+    this.entity = this.sim.addEntity(SplitterEntity, null, this.random, this.prob);
   }
 
   connect(dest, channel) {

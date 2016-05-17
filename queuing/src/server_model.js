@@ -37,7 +37,7 @@ class ServerModel {
   }
 
   start() {
-    this.entity = QueueApp.sim.addEntity(ServerEntity, this.nservers, this.mu, this.maxqlen);
+    this.entity = QueueApp.sim.addEntity(ServerEntity, null, this.nservers, this.mu, this.maxqlen);
 
   }
 
