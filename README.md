@@ -5,7 +5,7 @@
     <img src="https://img.shields.io/npm/v/simjs.svg" alt="NPM Version">
   </a>
 
-  <a href="https://opensource.org/licenses/LGPL-3.0">
+  <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/npm/l/simjs.svg" alt="License">
   </a>
 
