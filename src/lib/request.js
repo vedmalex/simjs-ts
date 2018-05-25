@@ -23,11 +23,11 @@ class Request {
         // if already cancelled, do nothing
     if (this.cancelled) return;
 
-        // prevent cancellation if request is about to be delivered at this
-        // instant covers case where in a buffer or store, object has already
+        // Prevent cancellation if request is about to be delivered at this
+        // instant. Covers case where in a buffer or store, object has already
         // been dequeued and delivery was scheduled for now, but waitUntil
         // times out at the same time, making the request get cancelled after
-        // the object is dequeued but before it is delivered
+        // the object is dequeued but before it is delivered.
     if (this.deliveryPending) return;
 
         // set flag
