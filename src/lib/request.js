@@ -5,6 +5,7 @@ class Request {
     this.entity = entity;
     this.scheduledAt = currentTime;
     this.deliverAt = deliverAt;
+    this.deliveryPending = false;
     this.callbacks = [];
     this.cancelled = false;
     this.group = null;
@@ -21,6 +22,13 @@ class Request {
 
         // if already cancelled, do nothing
     if (this.cancelled) return;
+
+        // prevent cancellation if request is about to be delivered at this
+        // instant covers case where in a buffer or store, object has already
+        // been dequeued and delivery was scheduled for now, but waitUntil
+        // times out at the same time, making the request get cancelled after
+        // the object is dequeued but before it is delivered
+    if (this.deliveryPending) return;
 
         // set flag
     this.cancelled = true;
@@ -96,6 +104,7 @@ class Request {
   }
 
   deliver() {
+    this.deliveryPending = false;
     if (this.cancelled) return;
     this.cancel();
     if (!this.callbacks) return;

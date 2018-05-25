@@ -488,6 +488,7 @@ class Buffer extends Model {
         this.getQueue.shift(obj.entity.time());
         this.available -= obj.amount;
         obj.deliverAt = obj.entity.time();
+        obj.deliveryPending = true;
         obj.entity.sim.queue.insert(obj);
       } else {
                 // this request cannot be satisfied
@@ -512,6 +513,7 @@ class Buffer extends Model {
         this.putQueue.shift(obj.entity.time());
         this.available += obj.amount;
         obj.deliverAt = obj.entity.time();
+        obj.deliveryPending = true;
         obj.entity.sim.queue.insert(obj);
       } else {
                 // this request cannot be satisfied
@@ -653,6 +655,7 @@ class Store extends Model {
 
           ro.msg = obj;
           ro.deliverAt = ro.entity.time();
+          ro.deliveryPending = true;
           ro.entity.sim.queue.insert(ro);
         } else {
           break;
@@ -682,6 +685,7 @@ class Store extends Model {
         this.available ++;
         this.objects.push(ro.obj);
         ro.deliverAt = ro.entity.time();
+        ro.deliveryPending = true;
         ro.entity.sim.queue.insert(ro);
       } else {
         // this request cannot be satisfied
