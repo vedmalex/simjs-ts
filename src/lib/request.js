@@ -104,6 +104,10 @@ class Request {
   }
 
   deliver() {
+        // Prevent delivery of child requests if main request is about to be
+        // delivered at this instant. See comment in cancel above
+    if (this.group && this.group[0].deliveryPending && this.group[0] !== this) return;
+
     this.deliveryPending = false;
     if (this.cancelled) return;
     this.cancel();

@@ -439,6 +439,7 @@ class Buffer extends Model {
       this.available -= amount;
 
       ro.deliverAt = ro.entity.time();
+      ro.deliveryPending = true;
       ro.entity.sim.queue.insert(ro);
 
       this.getQueue.passby(ro.deliverAt);
@@ -459,6 +460,7 @@ class Buffer extends Model {
       this.available += amount;
 
       ro.deliverAt = ro.entity.time();
+      ro.deliveryPending = true;
       ro.entity.sim.queue.insert(ro);
 
       this.putQueue.passby(ro.deliverAt);
@@ -580,6 +582,7 @@ class Store extends Model {
 
         ro.msg = obj;
         ro.deliverAt = ro.entity.time();
+        ro.deliveryPending = true;
         ro.entity.sim.queue.insert(ro);
 
         this.getQueue.passby(ro.deliverAt);
@@ -601,6 +604,7 @@ class Store extends Model {
       this.available ++;
 
       ro.deliverAt = ro.entity.time();
+      ro.deliveryPending = true;
       ro.entity.sim.queue.insert(ro);
 
       this.putQueue.passby(ro.deliverAt);
