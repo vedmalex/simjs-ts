@@ -28,10 +28,15 @@ function argCheck(found, expMin, expMax) {
 class Sim {
   constructor() {
     this.simTime = 0;
+    this.events = 0;
+    this.endTime = 0;
+    this.maxEvents = 0;
     this.entities = [];
     this.queue = new PQueue();
     this.endTime = 0;
     this.entityId = 1;
+    this.paused = 0;
+    this.running = false;
   }
 
   time() {
@@ -85,31 +90,50 @@ class Sim {
   simulate(endTime, maxEvents) {
         // argCheck(arguments, 1, 2);
     if (!maxEvents) { maxEvents = Math.Infinity; }
-    let events = 0;
+    this.events = 0;
+    this.maxEvents = maxEvents;
+    this.endTime = endTime;
+    this.running = true;
+    this.pause();
+    return this.resume();
+  }
 
-    while (true) {  // eslint-disable-line no-constant-condition
-      events++;
-      if (events > maxEvents) return false;
+  pause() {
+    ++this.paused;
+  }
 
-            // Get the earliest event
-      const ro = this.queue.remove();
-
-            // If there are no more events, we are done with simulation here.
-      if (ro === null) break;
-
-            // Uh oh.. we are out of time now
-      if (ro.deliverAt > endTime) break;
-
-            // Advance simulation time
-      this.simTime = ro.deliverAt;
-
-            // If this event is already cancelled, ignore
-      if (ro.cancelled) continue;
-
-      ro.deliver();
+  resume() {
+    if (this.paused > 0) {
+      --this.paused;
     }
+    if (this.paused <= 0 && this.running) {
+      while (true) {  // eslint-disable-line no-constant-condition
+        this.events++;
+        if (this.events > this.maxEvents) return false;
 
-    this.finalize();
+              // Get the earliest event
+        const ro = this.queue.remove();
+
+              // If there are no more events, we are done with simulation here.
+        if (ro === null) break;
+
+              // Uh oh.. we are out of time now
+        if (ro.deliverAt > this.endTime) break;
+
+              // Advance simulation time
+        this.simTime = ro.deliverAt;
+
+              // If this event is already cancelled, ignore
+        if (ro.cancelled) continue;
+
+        ro.deliver();
+        if (this.paused) {
+          return true;
+        }
+      }
+      this.running = false;
+      this.finalize();
+    }
     return true;
   }
 
