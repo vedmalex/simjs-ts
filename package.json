@@ -1,6 +1,6 @@
 {
   "name": "simjs",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "SIM.JS Updated is a general-purpose Discrete Event Simulation library",
   "main": "sim.js",
   "files": [

@@ -32,6 +32,7 @@ class Sim {
     this.endTime = 0;
     this.maxEvents = 0;
     this.entities = [];
+    this.entitiesByName = {};
     this.queue = new PQueue();
     this.endTime = 0;
     this.entityId = 1;
@@ -77,10 +78,16 @@ class Sim {
     if (!Klass.prototype.start) {  // ARG CHECK
       throw new Error(`Entity class ${Klass.name} must have start() function defined`);
     }
+    if (typeof name === 'string' && typeof this.entitiesByName[name] !== 'undefined') {
+      throw new Error(`Entity name ${name} already exists`);
+    }
 
     const entity = new Klass(this, name);
 
     this.entities.push(entity);
+    if (typeof name === 'string') {
+      this.entitiesByName[name] = entity;
+    }
 
     entity.start(...args);
 
