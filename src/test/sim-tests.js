@@ -16,3 +16,15 @@ test('testStartArguments', (t) => {
   sim.simulate(100);
 });
 
+test('testFinalize', () => {
+  const sim = new Sim.Sim();
+
+  class MyQueue extends Sim.Queue {
+    start() {
+      this.quantity = 0;
+    }
+  }
+  sim.addEntity(MyQueue);
+  sim.simulate(100);
+});
+

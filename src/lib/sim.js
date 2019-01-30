@@ -161,7 +161,7 @@ class Sim {
     for (let i = 0; i < this.entities.length; i++) {
 
       if (this.entities[i].finalize) {
-        this.entities[i].finalize();
+        this.entities[i].finalize(this.simTime);
       }
     }
   }
