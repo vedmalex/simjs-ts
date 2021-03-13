@@ -1,0 +1,348 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Request Objects" href="request.html" />
+    <link rel="prev" title="SIM.JS Reference Guide" href="simulator.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="simulator-and-entity">
+<h1>Simulator and Entity<a class="headerlink" href="#simulator-and-entity" title="Permalink to this headline">¶</a></h1>
+<p>Simulator and Entities are the core of Discrete Event Simulation. Entities are the <em>actors</em> in the system – they request resources, communicate with other entities and so on. Simulator is the backbone that provides the necessary framework, including the notion of <em>simulated clock</em>. The basics of discrete event simulation are discussed in <a class="reference internal" href="basics.html#introduction-simjs"><span class="std std-ref">Introduction to SIM.JS</span></a>.</p>
+<div class="section" id="simulator">
+<span id="entity-simulator"></span><h2>Simulator<a class="headerlink" href="#simulator" title="Permalink to this headline">¶</a></h2>
+<p>The SIM.JS library provides a global class variable <code class="xref py py-class docutils literal notranslate"><span class="pre">Sim</span></code>, an instance of which defines one simulation process.</p>
+<p>The steps in creating a simulation run are quite simple:</p>
+<ol class="arabic simple">
+<li>Create an object of <code class="xref py py-class docutils literal notranslate"><span class="pre">Sim</span></code> class.</li>
+<li>Create entity objects via <code class="xref py py-func docutils literal notranslate"><span class="pre">addEntity()</span></code> function call. This function takes a <code class="docutils literal notranslate"><span class="pre">Sim.Entity</span> <span class="pre">class/prototype</span></code> (see <a class="reference internal" href="#entity-entity"><span class="std std-ref">Sim.Entity</span></a> below), uses it to create a Sim.Entity, and attaches it to the simulation.</li>
+<li>Start the simulation by calling <code class="xref py py-func docutils literal notranslate"><span class="pre">simulate()</span></code>.</li>
+</ol>
+<div class="section" id="api-reference">
+<h3>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.Sim">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Sim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an instance of discrete event simulator.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Sim.addEntity">
+<code class="descclassname">Sim.Sim.</code><code class="descname">addEntity</code><span class="sig-paren">(</span><em>entityPrototype</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Sim.addEntity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an entity in the simulation environment. The entity object inherits from the <code class="docutils literal notranslate"><span class="pre">entityPrototype</span></code> object. The simulator also adds several other API function in the prototype. See <a class="reference internal" href="#entity-entity"><span class="std std-ref">Sim.Entity</span></a> for further details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Sim.simulate">
+<code class="descclassname">Sim.Sim.</code><code class="descname">simulate</code><span class="sig-paren">(</span><em>duration</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Sim.simulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the simulation. <code class="docutils literal notranslate"><span class="pre">duration</span></code> is the time until which the simulation runs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Sim.setLogger">
+<code class="descclassname">Sim.Sim.</code><code class="descname">setLogger</code><span class="sig-paren">(</span><em>loggerFn</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Sim.setLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns a function that will be called by the simulator when logging messages.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Sim.log">
+<code class="descclassname">Sim.Sim.</code><code class="descname">log</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Sim.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a message using a logger function defined in <code class="xref py py-func docutils literal notranslate"><span class="pre">setLogger()</span></code>.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="sim-entity">
+<span id="entity-entity"></span><h2>Sim.Entity<a class="headerlink" href="#sim-entity" title="Permalink to this headline">¶</a></h2>
+<p>Entities are the actors in the simulation. SIM.JS uses the JavaScript’s <em>prototype inheritance</em> concept to differentiate between the behavior representation (similar to <em>class</em> in C++ or Java) and the runtime representation (similar to <em>objects</em> in C++ or Java).</p>
+<p>As programmers, we create a <code class="docutils literal notranslate"><span class="pre">Sim.Entity</span> <span class="pre">Prototype</span></code> JavaScript object. This is like any other JavaScript object, except for the following constraints:</p>
+<ul class="simple">
+<li>The object must have a <code class="docutils literal notranslate"><span class="pre">start()</span></code> function. This function is called by the simulator when the simulation starts.</li>
+<li>There are reserved function and attribute names (see <a class="reference internal" href="#id1"><span class="std std-ref">Extended Entity Prototype API</span></a> for a complete list) that must not be used in the object.</li>
+</ul>
+<p>An example of a very simple <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> object could be:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">EntityPrototype</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// This function is necessary!</span>
+        <span class="c1">// This function is called by simulator when simulation starts.</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;the simulation has started!&quot;</span><span class="p">).</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Think of <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> objects as <em>classes</em> in languages like C++ or Java. This class will be used to create <em>objects</em>, which are the runtime representation of entities. We call these runtime objects as <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Objects</span></code>, which are <em>instances</em> of <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototypes</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Objects</span></code> are created by the <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Sim.addEntity()</span></code> function:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create entity object from the entity prototype object</span>
+<span class="kd">var</span> <span class="nx">entityObject</span> <span class="o">=</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">EntityPrototype</span><span class="p">);</span>
+
+<span class="c1">// More than one entity objects can be created by same entity prototype object</span>
+<span class="kd">var</span> <span class="nx">anotherEntityObject</span> <span class="o">=</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">EntityPrototype</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Sim.addEntity()</span></code> function performs three actions:</p>
+<ol class="arabic simple">
+<li><em>Extends</em> the <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> object by adding new functions and attributes to the original prototype object. <a class="reference internal" href="#id1"><span class="std std-ref">Extended Entity Prototype API</span></a> lists these functions and attributes.</li>
+<li><em>Creates</em> a new object which inherits the <code class="docutils literal notranslate"><span class="pre">Extended</span> <span class="pre">Entity</span> <span class="pre">Prototype</span></code>.</li>
+<li>Assigns a unique integer value to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code> attribute of the object.</li>
+</ol>
+<p>The entire process is illustrated in the diagram below:</p>
+<img alt="_images/entity-prototype.png" src="_images/entity-prototype.png" />
+<p>The input to the <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Sim.addEntity()</span></code> function is <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> object. This is an object that we have written to model the components of system for our discrete simulation problem.</p>
+<p>The simulator adds other useful functions and attributes (see below for complete list) to the <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> object. We call this object as <code class="docutils literal notranslate"><span class="pre">Extended</span> <span class="pre">Entity</span> <span class="pre">Prototype</span></code>.</p>
+<p>The simulator then creates an object (the <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Object</span></code>) which inherits from the <code class="docutils literal notranslate"><span class="pre">Extended</span> <span class="pre">Entity</span> <span class="pre">Prototype</span></code> object (for example, via the <em>Object.create</em> function on platforms where it is supported).</p>
+<p>This new <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Object</span></code> is returned to the user program.</p>
+<div class="section" id="entity-prototype">
+<h3>Entity Prototype<a class="headerlink" href="#entity-prototype" title="Permalink to this headline">¶</a></h3>
+<p>As noted earlier, the <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> object must define <code class="xref py py-func docutils literal notranslate"><span class="pre">start()</span></code> function. This function is called by the simulator when the simulation starts. It is this function where the entities initialize their state and schedule future events in the simulator.</p>
+<p>The prototype object may optionally have a <code class="xref py py-func docutils literal notranslate"><span class="pre">finalize()</span></code> function. This function is called when the simulation terminates.</p>
+<p>The prototype object may optionally have a <code class="xref py py-func docutils literal notranslate"><span class="pre">onMessage()</span></code> function. This function is called when some other entity has sent a <a class="reference internal" href="events.html#events-messages"><span class="std std-ref">Message</span></a>.</p>
+</div>
+<div class="section" id="extended-entity-prototype-api">
+<span id="id1"></span><h3>Extended Entity Prototype API<a class="headerlink" href="#extended-entity-prototype-api" title="Permalink to this headline">¶</a></h3>
+<p>The SIM.JS library adds following functions and attributes to the <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> object.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The function and attribute names listed below should be treated as “reserved keywords” when writing the <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> code.</p>
+</div>
+<p>These functions and attributes are added when <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Sim.addEntity()</span></code> function is called. For example,</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">EntityPrototype</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">();</span> <span class="c1">// Where did we get this time() function from? See below..</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;The time now is &quot;</span> <span class="o">+</span> <span class="nx">now</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">assert</span><span class="p">(</span><span class="nx">EntityPrototype</span><span class="p">.</span><span class="nx">time</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">);</span> <span class="c1">// the object does not have a time method (yet)!</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">EntityPrototype</span><span class="p">);</span>   <span class="c1">// create an object from prototype</span>
+
+
+<span class="c1">// Since obj inherits from the extended Sim.Entity prototype, it will have methods</span>
+<span class="c1">//  defined in EntityPrototype as well as those Sim.Entity defines.</span>
+<span class="nx">assert</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">start</span> <span class="k">instanceof</span> <span class="nb">Function</span><span class="p">);</span>
+<span class="nx">assert</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">time</span> <span class="k">instanceof</span> <span class="nb">Function</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="id">
+<code class="descname">id</code><a class="headerlink" href="#id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The unique id of the entity. The <code class="docutils literal notranslate"><span class="pre">id</span></code> will be unique for entity objects even if they are derived from the same prototype.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="time">
+<code class="descname">time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current simulation time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="setTimer">
+<code class="descname">setTimer</code><span class="sig-paren">(</span><em>delay</em><span class="sig-paren">)</span><a class="headerlink" href="#setTimer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets an internal timer that expires after <code class="docutils literal notranslate"><span class="pre">delay</span></code> duration. This function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="events.html#events-timers"><span class="std std-ref">Timers</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="waitEvent">
+<code class="descname">waitEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#waitEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits on the <code class="docutils literal notranslate"><span class="pre">event</span></code> <a class="reference internal" href="events.html#events-events"><span class="std std-ref">Event</span></a>. This function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<p>The difference between <code class="xref py py-func docutils literal notranslate"><span class="pre">waitEvent()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">queueEvent()</span></code> is that when the event triggers (or fires), <em>all</em> waiting entities are notified, and only one queued entity (the one at the head of the queue) is notified.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="events.html#events-events"><span class="std std-ref">Events</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="queueEvent">
+<code class="descname">queueEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#queueEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queue for the <code class="docutils literal notranslate"><span class="pre">event</span></code> <a class="reference internal" href="events.html#events-events"><span class="std std-ref">Event</span></a>. The function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<p>The difference between <code class="xref py py-func docutils literal notranslate"><span class="pre">waitEvent()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">queueEvent()</span></code> is that when the event triggers (or fires), <em>all</em> waiting entities are notified, and only one (the one at the head of the queue) is notified.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="events.html#events-events"><span class="std std-ref">Events</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>message</em>, <em>delay</em><span class="optional">[</span>, <em>entities</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the <code class="docutils literal notranslate"><span class="pre">message</span></code> to other entities after a <code class="docutils literal notranslate"><span class="pre">delay</span></code>. <code class="docutils literal notranslate"><span class="pre">entities</span></code> can be:</p>
+<ul class="simple">
+<li>omitted or null. The message is sent to <em>all</em> entities (excluding self).</li>
+<li>Entity object: The message is send to the entity object.</li>
+<li>Array of entity objects: The message is sent to all entities in array.</li>
+</ul>
+<p>This function does not return any value.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="events.html#events-messages"><span class="std std-ref">Messages</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="useFacility">
+<code class="descname">useFacility</code><span class="sig-paren">(</span><em>facility</em>, <em>duration</em><span class="sig-paren">)</span><a class="headerlink" href="#useFacility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to use the <code class="docutils literal notranslate"><span class="pre">facility</span></code> for <code class="docutils literal notranslate"><span class="pre">duration</span></code> duration. This function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="resources.html#resources-facility"><span class="std std-ref">Facility</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="putBuffer">
+<code class="descname">putBuffer</code><span class="sig-paren">(</span><em>buffer</em>, <em>amount</em><span class="sig-paren">)</span><a class="headerlink" href="#putBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to put <code class="docutils literal notranslate"><span class="pre">amount</span></code> quantity of tokens in the <code class="docutils literal notranslate"><span class="pre">buffer</span></code>. This function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="resources.html#resources-buffer"><span class="std std-ref">Buffer</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="getBuffer">
+<code class="descname">getBuffer</code><span class="sig-paren">(</span><em>buffer</em>, <em>amount</em><span class="sig-paren">)</span><a class="headerlink" href="#getBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to retrieve <code class="docutils literal notranslate"><span class="pre">amount</span></code> quantity of tokens from the <code class="docutils literal notranslate"><span class="pre">buffer</span></code>. This function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="resources.html#resources-buffer"><span class="std std-ref">Buffer</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="putStore">
+<code class="descname">putStore</code><span class="sig-paren">(</span><em>store</em>, <em>object</em><span class="sig-paren">)</span><a class="headerlink" href="#putStore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to store <code class="docutils literal notranslate"><span class="pre">object</span></code> in the <code class="docutils literal notranslate"><span class="pre">store</span></code>. <code class="docutils literal notranslate"><span class="pre">object</span></code> can be any JavaScript value (numbers, strings, functions, objects, arrays etc). This function returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="resources.html#resources-store"><span class="std std-ref">Store</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="getStore">
+<code class="descname">getStore</code><span class="sig-paren">(</span><em>store</em><span class="optional">[</span>, <em>filter</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#getStore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to retrieve object from the <code class="docutils literal notranslate"><span class="pre">store</span></code>. If the filter function is supplied then the first object (in FIFO order) that matches the filter is retrieved; otherwise the first object in FIFO order is retrieved. The retrieved object can be accessed via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">this.callbackMessage</span></code> attribute in the callback function. This returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="resources.html#resources-store"><span class="std std-ref">Store</span></a>.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Simulator and Entity</a><ul>
+<li><a class="reference internal" href="#simulator">Simulator</a><ul>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sim-entity">Sim.Entity</a><ul>
+<li><a class="reference internal" href="#entity-prototype">Entity Prototype</a></li>
+<li><a class="reference internal" href="#extended-entity-prototype-api">Extended Entity Prototype API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="simulator.html">SIM.JS Reference Guide</a><ul>
+      <li>Previous: <a href="simulator.html" title="previous chapter">SIM.JS Reference Guide</a></li>
+      <li>Next: <a href="request.html" title="next chapter">Request Objects</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

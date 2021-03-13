@@ -1,0 +1,477 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Timers, Events and Messages" href="events.html" />
+    <link rel="prev" title="Request Objects" href="request.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="resources-facilities-buffers-and-stores">
+<h1>Resources: Facilities, Buffers and Stores<a class="headerlink" href="#resources-facilities-buffers-and-stores" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="facility">
+<span id="resources-facility"></span><h2>Facility<a class="headerlink" href="#facility" title="Permalink to this headline">¶</a></h2>
+<p><em>Facility</em> is a resource that is used by entities for a finite duration. There is a limit on the number of entities that can use the facility at a given time. As an example, consider a barbershop (the facility) with <em>m</em> barbers (capacity of facility). The customers arrive at shop and wish to ‘use’ the resource (barber); if all barbers are busy, the customers wait until one barber is available.</p>
+<p>The timeline of interactions between entities and facility is as follows:</p>
+<ol class="arabic simple">
+<li>An entity requests the simulator to use a facility for <em>duration</em> time (with <code class="xref py py-func docutils literal notranslate"><span class="pre">useFacility()</span></code> <code class="docutils literal notranslate"><span class="pre">Extended</span> <span class="pre">Entity</span> <span class="pre">Prototype</span></code> API).</li>
+<li>If the facility is busy, the entity is placed in facility’s queue. It waits there until other entities in front of it are done using the facility (also see the <em>Scheduling Disciplines</em> below).</li>
+<li><dl class="first docutils">
+<dt>If the facility is free or when the entity is done waiting in the queue, the entity is given access to the facility. This is modeled as:</dt>
+<dd><ul class="first last">
+<li>The facility is marked as busy.</li>
+<li>The simulator starts a timer for <em>duration</em> interval.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>At the expiration of the timer, the entity is notified that it has just finished using the facility.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The entity is notified only at the completion of the request (step 4 above).</p>
+<p class="last">It is not notified, for example, when it done waiting in the queue or when it is preempted (if supported by queuing discipline).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">useFacility()</span></code> request can only be cancelled or reneged while the entity is waiting in queue.</p>
+<p class="last">If the entity has started using the facility (step 3 above), the entity cannot be removed from the queue. That is, <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Request.cancel()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Request.waitUntil()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">Sim.Request.unlessEvent()</span></code> will have no effect after the entity has started using facility.</p>
+</div>
+<p><strong>Scheduling Disciplines</strong></p>
+<p>Scheduling Discipline is the policy on how the entities wait in the queue and use the facility. Some disciplines are:</p>
+<dl class="docutils">
+<dt><em>First Come First Server (FCFS)</em></dt>
+<dd>This is the most common scheduling discipline. Entities queue up in priority of their arrival times. Only when an entity is done using the facility, the next earliest entity is scheduled.</dd>
+<dt><em>Last Come First Served (LCFS)</em></dt>
+<dd>The last entity arriving at facility will preempt any current entity. When this entity is finished, the earlier entities will resume.</dd>
+<dt><em>Processor Sharing (PS)</em></dt>
+<dd>There is no queue in the system. All entities simultaneously use the facility, however their usage duration increases proportionally to the number of active entities.</dd>
+<dt><em>Round Robin (RR)</em> (not supported)</dt>
+<dd>All entities take turn to use the facility for some time quanta duration each.</dd>
+</dl>
+<p>In the version 0.25 only FCFS, LCFS and Processor Sharing scheduling disciplines are supported. The other disciplines are planned for future releases.</p>
+<p>Entities access the buffers through their <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> API:</p>
+<ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">useFacility(facility,</span> <span class="pre">duration)</span></code>. Request to use the <em>facility</em> for <em>duration</em> time. This returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</li>
+</ul>
+<div class="section" id="api-reference">
+<h3>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.Facility">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Facility</code><span class="sig-paren">(</span><em>name</em><span class="optional">[</span>, <em>discipline</em><span class="optional">[</span>, <em>numServers</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Facility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new facility. <code class="docutils literal notranslate"><span class="pre">name</span></code> (string) is used for identifying the statistics in a report. <code class="docutils literal notranslate"><span class="pre">discipline</span></code> is the scheduling discipline; currently it can take one of these values:</p>
+<ul class="simple">
+<li>Sim.Facility.FCFS (first come first served) [Default value]</li>
+<li>Sim.Facility.LCFS (last come first served)</li>
+<li>Sim.Facility.PS (processor sharing; resources are “shared”, see <a class="reference internal" href="#resource-processor-sharing"><span class="std std-ref">Example: Processor Sharing</span></a>)</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">numServers</span></code> is the number of servers available in the facility. By default, only one server is available per facility. Currently, only Sim.Facility.FCFS uses this parameter.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Facility.usage">
+<code class="descclassname">Sim.Facility.</code><code class="descname">usage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Facility.usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the duration for which this facility has been in use.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Facility.systemStats">
+<code class="descclassname">Sim.Facility.</code><code class="descname">systemStats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Facility.systemStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population</span></a> statistics for the request in the system (queue + service time).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Facility.queueStats">
+<code class="descclassname">Sim.Facility.</code><code class="descname">queueStats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Facility.queueStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population</span></a> statistics for the request in the queue.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="example-m-m-c-queue">
+<h3>Example: M/M/c Queue<a class="headerlink" href="#example-m-m-c-queue" title="Permalink to this headline">¶</a></h3>
+<p><strong>The M/M/c problem</strong>: There are <em>c</em> servers (e.g. bank tellers) whose services are requested by customers. There is only one queue in front of all servers, so a customer at the head of the queue will move if any one of the <em>c</em> servers is free. The customers arrival is Poisson process, and service time is exponentially distributed. Such kind of queuing systems and servers can be easily modeled with FCFS facilities.</p>
+<p>We create a facility as:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Facility</span><span class="p">(</span><span class="s1">&#39;Server&#39;</span><span class="p">,</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Facility</span><span class="p">.</span><span class="nx">FCFS</span><span class="p">,</span> <span class="nx">nServers</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The customers arrive at intervals that is exponentially distributed with mean <em>lambda</em>, and they request service for exponentially distributed duration with mean <em>mu</em>. We model the customer as:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">rand</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Random</span><span class="p">(</span><span class="nx">SEED</span><span class="p">);</span>
+
+<span class="kr">class</span> <span class="nx">Customer</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// the next customer will arrive at:</span>
+        <span class="kd">var</span> <span class="nx">nextCustomerInterval</span> <span class="o">=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">exponential</span><span class="p">(</span><span class="nx">lamda</span><span class="p">);</span>
+
+        <span class="c1">// wait for nextCustomerInterval</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="nx">nextCustomerInterval</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="c1">// customer has arrived.</span>
+            <span class="kd">var</span> <span class="nx">useDuration</span> <span class="o">=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">exponential</span><span class="p">(</span><span class="nx">mu</span><span class="p">);</span> <span class="c1">// time to use the server</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">useFacility</span><span class="p">(</span><span class="nx">server</span><span class="p">,</span> <span class="nx">useDuration</span><span class="p">);</span>
+
+            <span class="c1">// repeat for the next customer</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally we create the simulation and entity objects, and start the simulation.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">sim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Sim</span><span class="p">(</span><span class="s2">&quot;M/M/c&quot;</span><span class="p">);</span>  <span class="c1">// create simulator</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Customer</span><span class="p">);</span>         <span class="c1">// add entity</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">simulate</span><span class="p">(</span><span class="nx">SIMTIME</span><span class="p">);</span>           <span class="c1">// start simulation</span>
+<span class="nx">server</span><span class="p">.</span><span class="nx">report</span><span class="p">();</span>                 <span class="c1">// statistics</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-processor-sharing">
+<span id="resource-processor-sharing"></span><h3>Example: Processor Sharing<a class="headerlink" href="#example-processor-sharing" title="Permalink to this headline">¶</a></h3>
+<p>In the processor sharing service disciplines, all requesting entities get immediate access to the resource, however, their service time increases proportionally to the number of other entities already in the system.</p>
+<p>As an example, consider CPU modeled as facility with Processor Sharing discipline. A single request to use CPU for 1 second will complete in 1 second. Two simultaneous requests to use CPU for 1 second each will finish in 2 seconds each (since the CPU is “shared” between the two requests).</p>
+<p>Another example would be network connection link (e.g. Ethernet) with a given data rate. Entities request to use the resource, which in this case means sending data. If multiple overlapping requests are made then the network link is “shared” between all requests. Say, request one is initiated at time 0 to send data for 10 seconds. A second request is also made at time 5 seconds to send data for 1 second. In this case, the first request will finish at 11 seconds (0 - 5 sec at full capacity, 5 - 7 seconds at half capacity, and 7 - 11 sec at full capacity again), while the second request will finish at 7 seconds . We validate this as follows:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// create the facility</span>
+<span class="kd">var</span> <span class="nx">network</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Facility</span><span class="p">(</span><span class="s2">&quot;Network Cable&quot;</span><span class="p">,</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Facility</span><span class="p">.</span><span class="nx">PS</span><span class="p">);</span>
+
+<span class="kr">class</span> <span class="nx">Entity</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// make request at time 0, to use network for 10 sec</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">useFacility</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">(),</span> <span class="mi">11</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="c1">// make request at time 5, to use the network for 1 sec</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">useFacility</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+                <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">(),</span> <span class="mi">7</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">sim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Sim</span><span class="p">();</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Entity</span><span class="p">);</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">simulate</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="buffer">
+<span id="resources-buffer"></span><h2>Buffer<a class="headerlink" href="#buffer" title="Permalink to this headline">¶</a></h2>
+<p><em>Buffer</em> is a resource that can store a finite number of tokens. Any entity can store tokens in the buffer if there is free space, or retrieve existing tokens from the buffer if some are available. Queueing happens when:</p>
+<ul class="simple">
+<li>an entity wishes to store tokens, but the buffer does not have sufficient free space to store them. The entity will be queued until some other entity (or entities) remove tokens from the buffer to create enough free space.</li>
+<li>an entity wishes to retrieve tokens, but the buffer does not have sufficient number of available tokens. The entity will be queued until some other entity (or entities) put enough number of tokens into the buffer.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Buffer vs. Store</p>
+<p class="last">Buffers are resources that store “homogeneous” quantities. The buffers do not actually store any object, rather they keep a counter for the current usage, which is increment by <em>putBuffer</em> operation and decremented after <em>getBuffer</em> operation. If you wish to store real objects, consider using <a class="reference internal" href="#resources-store"><span class="std std-ref">Store</span></a>.</p>
+</div>
+<p><em>Buffers</em> support two basic operations: <code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code> to store tokens in the buffer, and <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> to retrieve tokens from the buffers. The <em>Buffer</em> object has two queues: <em>putQueue</em> where the entities wait if their <code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code> request cannot be immediately satisfied, and <em>getQueue</em> where the entities wait if their <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> request cannot be immediately satisfied.</p>
+<p>Entities access the buffers through their <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> API:</p>
+<ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">putBuffer(buffer,</span> <span class="pre">amount)</span></code>. Attempt to store <em>amount</em> number of the tokens in <em>buffer</em>. This returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">getBuffer(buffer,</span> <span class="pre">amount)</span></code>. Attempt to retrieve <em>amount</em> number of the tokens from <em>buffer</em>. This returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</li>
+</ul>
+<div class="section" id="id1">
+<h3>API Reference<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.Buffer">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Buffer</code><span class="sig-paren">(</span><em>name</em>, <em>maxCapacity</em><span class="optional">[</span>, <em>initialAmount</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new buffer. <code class="docutils literal notranslate"><span class="pre">name</span></code> (string) is used for identifying the statistics in a report. The buffer has <code class="docutils literal notranslate"><span class="pre">maxCapacity</span></code> capacity and has initially <code class="docutils literal notranslate"><span class="pre">initialAmount</span></code> number of tokens. If <code class="docutils literal notranslate"><span class="pre">initialAmount</span></code> is omitted, then the buffer will be created empty.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Buffer.size">
+<code class="descclassname">Sim.Buffer.</code><code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Buffer.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum capacity of the buffer.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Buffer.current">
+<code class="descclassname">Sim.Buffer.</code><code class="descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Buffer.current" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of available tokens in the buffer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Sim.Buffer.putQueue.stats">
+<code class="descclassname">Sim.Buffer.putQueue.</code><code class="descname">stats</code><a class="headerlink" href="#Sim.Buffer.putQueue.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population Statistics</span></a> for the put queue.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Sim.Buffer.getQueue.stats">
+<code class="descclassname">Sim.Buffer.getQueue.</code><code class="descname">stats</code><a class="headerlink" href="#Sim.Buffer.getQueue.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population Statistics</span></a> for the get queue.</p>
+</dd></dl>
+
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Buffer</span></code> class does not directly provide any <em>put()</em> or <em>get()</em> API. Instead, entities must use their <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> functions (<code class="xref py py-func docutils literal notranslate"><span class="pre">putBuffer()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">getBuffer()</span></code>) to access buffers.</p>
+</div>
+<div class="section" id="example-producers-consumers">
+<h3>Example: Producers-Consumers<a class="headerlink" href="#example-producers-consumers" title="Permalink to this headline">¶</a></h3>
+<p><strong>The Producer-Consumer Problem</strong>: There are <em>nProducers</em> number of producer entities that produce tokens at rate of <em>productionRate</em> and stores them in a common buffer of <em>bufferSize</em> capacity. The producers must successfully store their produced items in buffer before they can begin on production of the next item. There are also <em>nConsumers</em> number of consumer entities that retrieve tokens from the same buffer and process them at rate of <em>consumerRate</em>.</p>
+<p>We would like to study what is the average wait times for the producers and the consumers, given different values of the various parameters (such as <em>bufferSize</em>, <em>productionRate</em> etc).</p>
+<p>We create the common buffer as:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">(</span><span class="s2">&quot;buffer&quot;</span><span class="p">,</span> <span class="nx">bufferSize</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>We model the producers as entities that generate one token every <em>t</em> seconds, where <em>t</em> is exponential random number will mean <em>productionRate</em>.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">Random</span> <span class="nx">rand</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Random</span><span class="p">(</span><span class="nx">SEED</span><span class="p">);</span>
+
+<span class="kr">class</span> <span class="nx">Producer</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">timeToProduce</span> <span class="o">=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">exponential</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nx">productionRate</span><span class="p">);</span>
+
+        <span class="c1">// Set timer to self (models the time spend in production)</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="nx">timeToProduce</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="c1">// Timer expires =&gt; item is ready to be stored in buffer.</span>
+            <span class="c1">// When the item is successfully stored in buffer, we repeat</span>
+            <span class="c1">//     the process by recursively calling the same function.</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">putBuffer</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">start</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We model the consumers as entities that retrieve tokens from the buffers, and process them for <em>t</em> seconds, where <em>t</em> is exponential random number will mean <em>consumptionRate</em>.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Consumer</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Retrieve one token from buffer</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">getBuffer</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="c1">// After an item has been retrieved, wait for some time</span>
+            <span class="c1">//   to model the consumption time.</span>
+            <span class="c1">// After the waiting period is over, we repeat by</span>
+            <span class="c1">//   recursively calling this same function.</span>
+            <span class="kd">var</span> <span class="nx">timeToConsume</span> <span class="o">=</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">exponential</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nx">consumptionRate</span><span class="p">);</span>
+
+            <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="nx">timeToConsume</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">start</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally we create the simulation and entity objects, and start the simulation.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create simulator</span>
+<span class="kd">var</span> <span class="nx">sim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Sim</span><span class="p">();</span>
+
+<span class="c1">// Create producer entities</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nProducers</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Producer</span><span class="p">);</span>
+
+<span class="c1">// Create consumer entities</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nConsumers</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Consumer</span><span class="p">);</span>
+
+<span class="c1">// Start simulation</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">simulate</span><span class="p">(</span><span class="nx">SIMTIME</span><span class="p">);</span>
+
+<span class="c1">// statistics</span>
+<span class="nx">buffer</span><span class="p">.</span><span class="nx">report</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="store">
+<span id="resources-store"></span><h2>Store<a class="headerlink" href="#store" title="Permalink to this headline">¶</a></h2>
+<p><em>Store</em> is a resource that can store a finite number of JavaScript objects (actually any datatype: number, string, function, array, object etc). Any entity can store objects in the store if there is free space, or retrieve existing objects from the store if some are available. Queueing happens when:</p>
+<ul class="simple">
+<li>an entity wishes to store objects, but the store does not have sufficient free space to store them. The entity will be queued until some other entity (or entities) remove objects from the store to create enough free space.</li>
+<li>an entity wishes to retrieve objects, but the store does not have sufficient number of available object. The entity will be queued until some other entity (or entities) put enough number of objects into the buffer.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Store vs. Buffer</p>
+<p class="last">Stores are resources that store distinct JavaScript objects. If you do not wish to store actual objects, consider using <a class="reference internal" href="#resources-buffer"><span class="std std-ref">Buffer</span></a>.</p>
+</div>
+<p><em>Stores</em> support two basic operations: <code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code> to store objects in the store, and <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> to retrieve objects from the stores. The <em>Store</em> object has two queues: <em>putQueue</em> where the entities wait if their <code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code> request cannot be immediately satisfied, and <em>getQueue</em> where the entities wait if their <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> request cannot be immediately satisfied.</p>
+<p>Entities can retrieve objects from stores in two ways:</p>
+<ul class="simple">
+<li>Retrieve objects from store in FIFO order.</li>
+<li>Supply a “filter” function and retrieve object that matches the filter.</li>
+</ul>
+<p>Entities access the stores through their <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> API:</p>
+<ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">putStore(store,</span> <span class="pre">object)</span></code>. Attempt to store <em>object</em> in <em>store</em>. This returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">getStore(store[,</span> <span class="pre">filter])</span></code>. Attempt to retrieve object from <em>buffer</em>. If the filter function is supplied then the first object (in FIFO order) that matches the filter is retrieved; otherwise the first object in FIFO order is retrieved. This returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request</span></a> object.</li>
+</ul>
+<p>The retrieved object can be accessed via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">this.callbackMessage</span></code> attribute in the callback function (see example below).</p>
+<div class="section" id="id2">
+<h3>API Reference<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.Store">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Store</code><span class="sig-paren">(</span><em>name</em>, <em>maxCapacity</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Store" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new store. <code class="docutils literal notranslate"><span class="pre">name</span></code> (string) is used for identifying the statistics in a report. The store has <code class="docutils literal notranslate"><span class="pre">maxCapacity</span></code> capacity. The store will be created empty.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Store.size">
+<code class="descclassname">Sim.Store.</code><code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Store.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum capacity of the store.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Store.current">
+<code class="descclassname">Sim.Store.</code><code class="descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Store.current" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of available objects in the store.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Sim.Store.putQueue.stats">
+<code class="descclassname">Sim.Store.putQueue.</code><code class="descname">stats</code><a class="headerlink" href="#Sim.Store.putQueue.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population Statistics</span></a> for the put queue.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Sim.Store.getQueue.stats">
+<code class="descclassname">Sim.Store.getQueue.</code><code class="descname">stats</code><a class="headerlink" href="#Sim.Store.getQueue.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population Statistics</span></a> for the get queue.</p>
+</dd></dl>
+
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code> class does not directly provide any <em>put()</em> or <em>get()</em> API. Instead, entities must use their <code class="docutils literal notranslate"><span class="pre">Entity</span> <span class="pre">Prototype</span></code> functions (<code class="xref py py-func docutils literal notranslate"><span class="pre">putStore()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">getStore()</span></code>) to access stores.</p>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a store</span>
+<span class="kd">var</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="s2">&quot;Example Store&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+
+<span class="kr">class</span> <span class="nx">Entity</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Put an object</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">putStore</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="p">{</span><span class="nx">myfield</span><span class="o">:</span> <span class="s2">&quot;myvalue&quot;</span><span class="p">});</span>
+
+        <span class="c1">// Put another object</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">putStore</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="p">{</span><span class="nx">myfield</span><span class="o">:</span> <span class="s2">&quot;othervalue&quot;</span><span class="p">});</span>
+
+        <span class="c1">// arrays, numbers, strings etc can also be stored</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">putStore</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="s2">&quot;stored string&quot;</span><span class="p">);</span>
+
+        <span class="c1">// Retrieve object from store.</span>
+        <span class="c1">// Note 1: If filter function is not supplied, objects are returned in FIFO order</span>
+        <span class="c1">// Note 2: The object can be accessed via this.callbackMessage</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">getStore</span><span class="p">(</span><span class="nx">store</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackMessage</span><span class="p">.</span><span class="nx">myfield</span> <span class="o">===</span> <span class="s2">&quot;myvalue&quot;</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="c1">// Retrieve object from store using filter function</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">getStore</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">obj</span> <span class="o">===</span> <span class="s1">&#39;stored string&#39;</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackMessage</span> <span class="o">===</span> <span class="s2">&quot;stored string&quot;</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Resources: Facilities, Buffers and Stores</a><ul>
+<li><a class="reference internal" href="#facility">Facility</a><ul>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+<li><a class="reference internal" href="#example-m-m-c-queue">Example: M/M/c Queue</a></li>
+<li><a class="reference internal" href="#example-processor-sharing">Example: Processor Sharing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buffer">Buffer</a><ul>
+<li><a class="reference internal" href="#id1">API Reference</a></li>
+<li><a class="reference internal" href="#example-producers-consumers">Example: Producers-Consumers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#store">Store</a><ul>
+<li><a class="reference internal" href="#id2">API Reference</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="simulator.html">SIM.JS Reference Guide</a><ul>
+      <li>Previous: <a href="request.html" title="previous chapter">Request Objects</a></li>
+      <li>Next: <a href="events.html" title="next chapter">Timers, Events and Messages</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

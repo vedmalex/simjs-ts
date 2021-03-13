@@ -1,0 +1,325 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Statistics" href="statistics.html" />
+    <link rel="prev" title="Resources: Facilities, Buffers and Stores" href="resources.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="timers-events-and-messages">
+<h1>Timers, Events and Messages<a class="headerlink" href="#timers-events-and-messages" title="Permalink to this headline">¶</a></h1>
+<p>This section covers the various mechanisms by which entities can plan actions for themselves at different time instances, as well as coordinate with other entities.</p>
+<p><a class="reference internal" href="#events-timers"><span class="std std-ref">Timers</span></a> allow entities to execute functions after a delay.</p>
+<p><a class="reference internal" href="#events-events"><span class="std std-ref">Events</span></a> are objects that can help synchronize actions among multiple entities.</p>
+<p><a class="reference internal" href="#events-messages"><span class="std std-ref">Messages</span></a> are objects that entities can send to each other.</p>
+<div class="section" id="timers">
+<span id="events-timers"></span><h2>Timers<a class="headerlink" href="#timers" title="Permalink to this headline">¶</a></h2>
+<p>Timers are mechanisms for <em>delayed executions</em> of functions. An entity can specify a JavaScript function and a duration (in simulated time) after which this function must be executed.</p>
+<p>The <a class="reference internal" href="entities.html#setTimer" title="setTimer"><code class="xref js js-func docutils literal notranslate"><span class="pre">setTimer()</span></code></a> function in the Entity Prototype provides an API to execute function after a timeout.</p>
+<p>Some examples:</p>
+<div class="highlight-js notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">Entity</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Execute an anonymous function after 10 seconds</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;The simulation time must be 10 now.&quot;</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="c1">// Execute a local function after 20 seconds</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">specialHandler</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="nx">specialHandler</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Special Handler: executed every 20 seconds&quot;</span><span class="p">);</span>
+
+        <span class="c1">// Recursively calling a function (will not overflow on stack)</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">specialHandler</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="nx">onTimeout</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Default handler: time now must be 30&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>The <a class="reference internal" href="entities.html#setTimer" title="setTimer"><code class="xref js js-func docutils literal notranslate"><span class="pre">setTimer()</span></code></a> function takes one argument – the duration after which the timer must expire and some action must be taken.</p>
+<p>The setTimer function returns a <code class="docutils literal notranslate"><span class="pre">Request</span></code> object. Refer to <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request Objects</span></a> documentation on how to further modify the setTimer request.</p>
+<p>If the timeout value is 0, the action function will be called <em>after</em> the current function has finished executing. This way, there will be recursive function calls and no chance of stack overflow in case of recursive delayed functions.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">start</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Action functions are called *after* the current function has returned</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;I will print as second line.&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;I will print as first line.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The action function is executed in context of the entity. That is, it will be equivalent to <em>actionFunction</em>.<code class="docutils literal notranslate"><span class="pre">call</span></code>(<em>entity</em>).</p>
+</div>
+</div>
+<div class="section" id="events">
+<span id="events-events"></span><h2>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h2>
+<p>Events are external objects that start out in <em>passive</em> state, and at some point in time will be <em>activated</em> or <em>fired</em>. Entities ‘attach’ themselves to events and wait until the event is fired. There are two ways in which entities can attach with events:</p>
+<ol class="arabic simple">
+<li><em>Wait for Event</em>. All entities that wait for events will be notified when the event fires.</li>
+<li><em>Queue for Event</em>. Entities join a queue, and only the front entity will be notified when the event fires. Once notified, the entity is removed from the queue, and the next in queue entity will be notified when the event fires the second time.</li>
+</ol>
+<p>The events can fire in two ways:</p>
+<ol class="arabic simple">
+<li><em>Flash fire</em>. The event fires <cite>for an instant</cite> (more technically: for zero simulated time duration). When the event fires, it notifies all entities that were waiting and one entity in the queue, and then reverts back to passive state. Any request (wait or queue) after this will have to wait until the next time the event is fired.</li>
+<li><em>Sustained fire</em>. The event fires and remains in activated state for an indefinite period until explicitly reset to passive state. When the event fires, it notifies all entities that were waiting and <em>all</em> entities in the queue. Any request (wait or queue) coming after the event is fired, and before the event is reset, will be serviced immediately.</li>
+</ol>
+<p>An example of flash fire would be clock changing the date ‘at the stroke of midnight’. Only the entities that were already waiting before the midnight will be notified. Any entity that requested the event after midnight will have to wait until the next fire event (midnight next night). The event itself can be considered to have happened in zero time.</p>
+<p>An example of sustained fire would be traffic lights. When the traffic light is red (passive state), the entities (cars) will wait. Once the lights are green (fired) they remain in fired state until explicitly reset to passive state. Any request arriving during the period when the event is activated will be services immediately.</p>
+<p>An event object is created as:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">event</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Event</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="Sim.Event">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Event</code><span class="sig-paren">(</span><span class="optional">[</span><em>name</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is an optional parameter used for identifying the event in statistics reporting and tracing.</p>
+<p>The event will start out in passive state.</p>
+</dd></dl>
+
+<p>The events are fired by <a class="reference internal" href="#Sim.Event.fire" title="Sim.Event.fire"><code class="xref js js-func docutils literal notranslate"><span class="pre">fire()</span></code></a> function and reset to passive state by <a class="reference internal" href="#Sim.Event.clear" title="Sim.Event.clear"><code class="xref js js-func docutils literal notranslate"><span class="pre">clear()</span></code></a> function.</p>
+<dl class="function">
+<dt id="Sim.Event.fire">
+<code class="descclassname">Sim.Event.</code><code class="descname">fire</code><span class="sig-paren">(</span><span class="optional">[</span><em>keepFired</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Event.fire" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">keepFired</span></code> (boolean) is an optional argument to indicate that the event must remain in fired state (the sustained fire mode). The default value is false.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Event.clear">
+<code class="descclassname">Sim.Event.</code><code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Event.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the event to passive state. This function has no effect if the event is already in passive state.</p>
+</dd></dl>
+
+<p>The entities can wait or queue on events by <a class="reference internal" href="entities.html#waitEvent" title="waitEvent"><code class="xref js js-func docutils literal notranslate"><span class="pre">waitEvent()</span></code></a> and <a class="reference internal" href="entities.html#queueEvent" title="queueEvent"><code class="xref js js-func docutils literal notranslate"><span class="pre">queueEvent()</span></code></a>, respectively, as defined in the <a class="reference internal" href="entities.html#id1"><span class="std std-ref">Extended Entity Prototype API</span></a> section.</p>
+<p>An example demonstrating the behavior of waitEvent and queueEvent:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">barrier</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Event</span><span class="p">(</span><span class="s1">&#39;Barrier&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">funnel</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Event</span><span class="p">(</span><span class="s1">&#39;Funnel&#39;</span><span class="p">);</span>
+<span class="kr">class</span> <span class="nx">Entity</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">waitEvent</span><span class="p">(</span><span class="nx">barrier</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;This line is printed by all entities.&quot;</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">queueEvent</span><span class="p">(</span><span class="nx">funnel</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;This line is printed by one entity only&quot;</span><span class="p">);</span>
+        <span class="p">});</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">master</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">barrier</span><span class="p">.</span><span class="nx">fire</span><span class="p">,</span> <span class="nx">barrier</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">funnel</span><span class="p">.</span><span class="nx">fire</span><span class="p">,</span> <span class="nx">funnel</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">sim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Sim</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">entities</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">NUM_ENTITIES</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">entities</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Entity</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="nx">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">master</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">simulate</span><span class="p">(</span><span class="nx">SIMTIME</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>An example demonstrating the behavior of flash and sustained event fire:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">sustained</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Event</span><span class="p">(</span><span class="s1">&#39;Sustained Event&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">flash</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Event</span><span class="p">(</span><span class="s1">&#39;Flash Event&#39;</span><span class="p">);</span>
+<span class="kr">class</span> <span class="nx">Entity</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// one second before fire</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">9</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">waitEvent</span><span class="p">(</span><span class="nx">sustained</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Notified at time 10.&quot;</span><span class="p">));</span>
+
+            <span class="k">this</span><span class="p">.</span><span class="nx">waitEvent</span><span class="p">(</span><span class="nx">flash</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Notified at time 10.&quot;</span><span class="p">));</span>
+        <span class="p">});</span>
+
+        <span class="c1">// one second after fire</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">11</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">waitEvent</span><span class="p">(</span><span class="nx">sustained</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Notified at time 11.&quot;</span><span class="p">));</span>
+
+            <span class="k">this</span><span class="p">.</span><span class="nx">waitEvent</span><span class="p">(</span><span class="nx">flash</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Will not be notified :(&quot;</span><span class="p">));</span>
+        <span class="p">});</span>
+
+        <span class="c1">// Trigger both events at time = 10</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">sustained</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+        <span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">flash</span><span class="p">.</span><span class="nx">fire</span><span class="p">,</span> <span class="nx">flash</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="messages">
+<span id="events-messages"></span><h2>Messages<a class="headerlink" href="#messages" title="Permalink to this headline">¶</a></h2>
+<p>Messages are objects that entities can send to each other. The messages can be any JavaScript type – numbers, string, functions, arrays, objects etc.</p>
+<p>Entities send messages using the <a class="reference internal" href="#send" title="send"><code class="xref js js-func docutils literal notranslate"><span class="pre">send()</span></code></a> <code class="docutils literal notranslate"><span class="pre">Extended</span> <span class="pre">Entity</span> <span class="pre">Prototype</span></code> function (see also <a class="reference internal" href="entities.html#id1"><span class="std std-ref">Extended Entity Prototype API</span></a>). The signature of this function is:</p>
+<dl class="function">
+<dt id="send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>message</em>, <em>delay</em><span class="optional">[</span>, <em>entities</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the <code class="docutils literal notranslate"><span class="pre">message</span></code> to other entities after a <code class="docutils literal notranslate"><span class="pre">delay</span></code>. <code class="docutils literal notranslate"><span class="pre">entities</span></code> can be:</p>
+<ul class="simple">
+<li>omitted or null. The message is sent to <em>all</em> entities (excluding self).</li>
+<li>Entity object: The message is sent to the entity object.</li>
+<li>Array of entity objects: The message is sent to all entities in the array.</li>
+</ul>
+<p>This function does not return anything.</p>
+</dd></dl>
+
+<p>As an example, consider a ping-pong game played by two players where they send a string back and forth to each other. Before resending the string, each player appends his/her name to the string. We will model the two players as entities and the string as a message.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Player</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span><span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">firstServer</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// Send the string to other player with delay = 0.</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;INITIAL&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">opponent</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nx">onMessage</span><span class="p">(</span><span class="nx">sender</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Receive message, add own name and send back</span>
+        <span class="kd">var</span> <span class="nx">newMessage</span> <span class="o">=</span> <span class="nx">message</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">newMessage</span><span class="p">,</span> <span class="nx">HOLDTIME</span><span class="p">,</span> <span class="nx">sender</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">sim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Sim</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">jack</span> <span class="o">=</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Player</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">jill</span> <span class="o">=</span> <span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Player</span><span class="p">);</span>
+
+<span class="nx">jack</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">&quot;Jack&quot;</span><span class="p">;</span>
+<span class="nx">jill</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">&quot;Jill&quot;</span><span class="p">;</span>
+
+<span class="nx">jack</span><span class="p">.</span><span class="nx">firstServer</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">jack</span><span class="p">.</span><span class="nx">opponent</span> <span class="o">=</span> <span class="nx">jill</span><span class="p">;</span>
+
+<span class="nx">sim</span><span class="p">.</span><span class="nx">simulate</span><span class="p">(</span><span class="nx">SIMTIME</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Timers, Events and Messages</a><ul>
+<li><a class="reference internal" href="#timers">Timers</a></li>
+<li><a class="reference internal" href="#events">Events</a></li>
+<li><a class="reference internal" href="#messages">Messages</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="simulator.html">SIM.JS Reference Guide</a><ul>
+      <li>Previous: <a href="resources.html" title="previous chapter">Resources: Facilities, Buffers and Stores</a></li>
+      <li>Next: <a href="statistics.html" title="next chapter">Statistics</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

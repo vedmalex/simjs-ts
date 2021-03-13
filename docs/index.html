@@ -1,0 +1,107 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction to SIM.JS" href="basics.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sim-js-discrete-event-simulation-in-javascript">
+<h1>SIM.JS – Discrete Event Simulation in JavaScript<a class="headerlink" href="#sim-js-discrete-event-simulation-in-javascript" title="Permalink to this headline">¶</a></h1>
+<p><strong>SIM.JS is a general-purpose Discrete Event Simulation library written entirely in JavaScript.</strong></p>
+<div class="sidebar">
+<p class="first sidebar-title">Table of Contents</p>
+<div class="toctree-wrapper last compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Introduction to SIM.JS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">SIM.JS Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">SIM.JS Reference Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random.html">Random Number Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Download SIM.JS, random.js</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<p>SIM.JS is a library for modeling discrete time event systems:</p>
+<ul class="simple">
+<li>The library provides constructs to create <a class="reference internal" href="entities.html#entity-entity"><span class="std std-ref">Entities</span></a> which are the active actors in the system and encapsulate the state and logic of components in a system.</li>
+<li>The entities contend for <em>resources</em>, which can be <a class="reference internal" href="resources.html#resources-facility"><span class="std std-ref">Facilities</span></a> (services that are requested by entities; supports FIFO, LIFO with preemption and Processor Sharing service disciplines), <a class="reference internal" href="resources.html#resources-buffer"><span class="std std-ref">Buffers</span></a> (resources that store finite amount of tokens) and <a class="reference internal" href="resources.html#resources-store"><span class="std std-ref">Stores</span></a> (resources that store JavaScript objects).</li>
+<li>The entities communicate by waiting on <a class="reference internal" href="events.html#events-events"><span class="std std-ref">Events</span></a> or by sending <a class="reference internal" href="events.html#events-messages"><span class="std std-ref">Messages</span></a>.</li>
+<li>Statistics recording and analysis is provided by <a class="reference internal" href="statistics.html#statistics-data-series"><span class="std std-ref">Data Series Statistics</span></a> (collection of discrete, time-independent observations), <a class="reference internal" href="statistics.html#statistics-time-series"><span class="std std-ref">Time Series Statistics</span></a> (collection of discrete, time-dependent observations) and <a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population Statistics</span></a> (the behavior of population growth and decline).</li>
+<li>SIM.JS also provides a random number generation library to generate seeded random variates from various distributions, including uniform, exponential, normal, gamma, pareto and others.</li>
+</ul>
+<p><strong>SIM.JS is written in *idiomatic* ES2015 JavaScript</strong>. The library is written in event-based design paradigm: the changes in system states are notified via callback functions (<a class="reference internal" href="basics.html#basic-design"><span class="std std-ref">why not process-based?</span></a>). The design takes advantage of the powerful feature sets of JavaScript: prototype based inheritance, first-class functions, closures, anonymous functions, runtime object modifications and so on. Of course, a knowledge of these principles is not required (a lot of this behind the scenes), but we do certainly hope that using SIM.JS will be pleasurable experience for the amateur as well as the experienced practitioners of JavaScript.</p>
+<p>SIM.JS is free, open source and licensed under LGPL.</p>
+<div class="topic">
+<p class="topic-title">Why Javascript?</p>
+<ul class="simple">
+<li>The authors of this library are passionate about Discrete Event Simulations, and hope to see its widespread use in education as well as everyday applications. The authors also believe that in this era of Web 2.0, web-based applications are the best way to reach people. Which is why they concluded that there is a need for a Web enabled simulation engine.</li>
+<li>These days when one can <a class="reference external" href="http://bellard.org/jslinux">boot linux</a> with JavaScript, play <a class="reference external" href="http://developer.mozilla.org/en-US/demos/detail/doom-on-the-web">Doom</a>, run a myriad of productivity applications on the Web, we ask – why not simulations? (And we say its about time!)</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

@@ -1,0 +1,450 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Random Number Generation" href="random.html" />
+    <link rel="prev" title="Timers, Events and Messages" href="events.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="statistics">
+<h1>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h1>
+<p>The SIM.JS library provides three utility classes for recording and analyzing statistics: <code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">Series</span></code>, <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> and <code class="docutils literal notranslate"><span class="pre">Population</span></code>.</p>
+<p><a class="reference internal" href="#statistics-data-series"><span class="std std-ref">Data Series</span></a> is a collection of discrete, time-independent observations, for example, grades of each student in a class, length of rivers in United States. The <a class="reference internal" href="#Sim.DataSeries" title="Sim.DataSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">DataSeries()</span></code></a> class provides a
+convenient API for recording and analyzing such observations, such as finding
+maximum and minimum values, statistical properties like average and standard deviation and so on.</p>
+<p><a class="reference internal" href="#statistics-time-series"><span class="std std-ref">Time Series</span></a> is a collection of discrete time-dependent observations. That is, each observation value is associated with a discrete time instance (the time at which the observation was made). For example, the size of queue at time <em>t</em> during the simulation run, number of customers in a restaurant at time <em>t</em> during evening hours. Note that the time instances when the observations are made are discrete. Also note the difference between <code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">Series</span></code> statistics which records time independent statistics. The <a class="reference internal" href="#Sim.TimeSeries" title="Sim.TimeSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a> class provides a convenient API for recording and analyzing such observations, such as finding
+maximum and minimum values, statistical properties like time-averaged mean and standard deviation and so on.</p>
+<p><a class="reference internal" href="#statistics-population"><span class="std std-ref">Population</span></a> is actually a composite of the above two statistics, which models the behavior of population growth and decline. Consider a room where people may enter, stay for a while and then leave. The <em>enter</em> event will increase the population count, while the <em>leave</em> will decrease the population count of the room. For this room, we are interested in two statistics:</p>
+<ol class="arabic simple">
+<li>The average population of the room. Note that this is a <em>Time Series</em> statistics (observation is number of people in room at some discrete time instance). The statistical information for the size of the population is contained in the <a class="reference internal" href="#Sim.Population.sizeSeries" title="Sim.Population.sizeSeries"><code class="xref js js-attr docutils literal notranslate"><span class="pre">sizeSeries</span></code></a> attribute, which is an object of the <a class="reference internal" href="#Sim.TimeSeries" title="Sim.TimeSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a> class.</li>
+<li>The average duration that people stayed in the room. Note that is a <em>Data Series</em> statistics (observations are stay duration for each person, and are independent of time). The statistical information for the stay duration is contained in the <a class="reference internal" href="#Sim.Population.durationSeries" title="Sim.Population.durationSeries"><code class="xref js js-attr docutils literal notranslate"><span class="pre">durationSeries</span></code></a> attribute, which is an object of the <a class="reference internal" href="#Sim.DataSeries" title="Sim.DataSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">DataSeries()</span></code></a> class.</li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">Population</span></code> statistics is used very often to study the behaviors of <em>queues</em>.</p>
+<div class="section" id="data-series-statistics">
+<span id="statistics-data-series"></span><h2>Data Series Statistics<a class="headerlink" href="#data-series-statistics" title="Permalink to this headline">¶</a></h2>
+<p>Data Series is a collection of discrete, time-independent observations, and the <a class="reference internal" href="#Sim.DataSeries" title="Sim.DataSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">DataSeries()</span></code></a> class provides an API for recording and analyzing statistics.</p>
+<p>An object of the <a class="reference internal" href="#Sim.DataSeries" title="Sim.DataSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">DataSeries()</span></code></a> is created for each observation set:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">studentGrades</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">DataSeries</span><span class="p">(</span><span class="s2">&quot;Student Grades&quot;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">riverLengths</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">DataSeries</span><span class="p">(</span><span class="s2">&quot;Length of Rivers in US&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The observation values are recorded through the <a class="reference internal" href="#Sim.DataSeries.record" title="Sim.DataSeries.record"><code class="xref js js-func docutils literal notranslate"><span class="pre">record()</span></code></a> function. This function optionally takes a <em>weight</em> parameter to adjust the weight of the given observation:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">studentGrades</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mf">3.0</span><span class="p">);</span>       <span class="c1">// Alice</span>
+<span class="nx">riverLengths</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mf">2320.0</span><span class="p">);</span>  <span class="c1">// Mississippi (miles)</span>
+<span class="nx">experimentData</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">);</span> <span class="c1">// Value = 1.5, Weight = 0.8</span>
+</pre></div>
+</div>
+<p>The DataSeries class computes statistical properties of the observation values, including <a class="reference internal" href="#Sim.DataSeries.count" title="Sim.DataSeries.count"><code class="xref js js-func docutils literal notranslate"><span class="pre">count()</span></code></a>, <a class="reference internal" href="#Sim.DataSeries.min" title="Sim.DataSeries.min"><code class="xref js js-func docutils literal notranslate"><span class="pre">min()</span></code></a>, <a class="reference internal" href="#Sim.DataSeries.max" title="Sim.DataSeries.max"><code class="xref js js-func docutils literal notranslate"><span class="pre">max()</span></code></a>, <a class="reference internal" href="#Sim.DataSeries.sum" title="Sim.DataSeries.sum"><code class="xref js js-func docutils literal notranslate"><span class="pre">sum()</span></code></a>, <a class="reference internal" href="#Sim.DataSeries.sumWeighted" title="Sim.DataSeries.sumWeighted"><code class="xref js js-func docutils literal notranslate"><span class="pre">sumWeighted()</span></code></a>, <a class="reference internal" href="#Sim.DataSeries.average" title="Sim.DataSeries.average"><code class="xref js js-func docutils literal notranslate"><span class="pre">average()</span></code></a> (mean), <a class="reference internal" href="#Sim.DataSeries.deviation" title="Sim.DataSeries.deviation"><code class="xref js js-func docutils literal notranslate"><span class="pre">deviation()</span></code></a> (standard deviation) and <a class="reference internal" href="#Sim.DataSeries.variance" title="Sim.DataSeries.variance"><code class="xref js js-func docutils literal notranslate"><span class="pre">variance()</span></code></a>. Data can be recorded as histograms via the <a class="reference internal" href="#Sim.DataSeries.setHistogram" title="Sim.DataSeries.setHistogram"><code class="xref js js-func docutils literal notranslate"><span class="pre">setHistogram()</span></code></a> function.</p>
+<p>An example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">DataSeries</span><span class="p">(</span><span class="s1">&#39;Simple Data&#39;</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">data</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">count</span><span class="p">();</span> <span class="c1">// = 100</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">min</span><span class="p">();</span>   <span class="c1">// = 1.0</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">max</span><span class="p">();</span>   <span class="c1">// = 100.0</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">range</span><span class="p">();</span> <span class="c1">// = 99.0</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">sum</span><span class="p">();</span>   <span class="c1">// = 5050.0</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">average</span><span class="p">();</span> <span class="c1">// 50.5</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">deviation</span><span class="p">();</span> <span class="c1">// = 28.86607004772212</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">variance</span><span class="p">();</span> <span class="c1">// = 833.25</span>
+</pre></div>
+</div>
+<div class="section" id="api-reference">
+<h3>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.DataSeries">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">DataSeries</code><span class="sig-paren">(</span><span class="optional">[</span><em>name</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is an optional parameter used for identifying the statistics in a report.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.record">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">record</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>weight</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records an observation <code class="docutils literal notranslate"><span class="pre">value</span></code> and an optional <code class="docutils literal notranslate"><span class="pre">weight</span></code>. If the weight argument is omitted, it is assigned the default value of 1.0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.reset">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the statistics. If a histogram was set earlier with <a class="reference internal" href="#Sim.DataSeries.setHistogram" title="Sim.DataSeries.setHistogram"><code class="xref js js-func docutils literal notranslate"><span class="pre">setHistogram()</span></code></a>, then the histogram settings (lower bound, upper bound and number of buckets) are retained, but the count for each bucket is reset to 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.count">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of observations recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.min">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum value from all observations recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.max">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum value from all the observations recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.sum">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of all observation values recorded so far. Note that this does not consider the
+<code class="docutils literal notranslate"><span class="pre">weight</span></code> for the values. See <a class="reference internal" href="#Sim.DataSeries.sumWeighted" title="Sim.DataSeries.sumWeighted"><code class="xref js js-func docutils literal notranslate"><span class="pre">sumWeighted()</span></code></a> for
+weighted sum.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.sumWeighted">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">sumWeighted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.sumWeighted" title="Permalink to this definition">¶</a></dt>
+<dd><p>The weighted sum of all observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.average">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">average</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.average" title="Permalink to this definition">¶</a></dt>
+<dd><p>The weighted average of all observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.deviation">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">deviation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The standard deviation of observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.variance">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">variance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The variance of the observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.setHistogram">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">setHistogram</code><span class="sig-paren">(</span><em>lower</em>, <em>upper</em>, <em>nbuckets</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.setHistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares a histogram for recording frequency of occurrence of values. The histogram has <code class="docutils literal notranslate"><span class="pre">nbucket</span></code> number of buckets, spanning the range of [<code class="docutils literal notranslate"><span class="pre">lower</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span></code>].</p>
+<p>Only the values that are recorded (via the <a class="reference internal" href="#Sim.DataSeries.record" title="Sim.DataSeries.record"><code class="xref js js-func docutils literal notranslate"><span class="pre">record()</span></code></a> function) <em>after</em> the histogram was created will be taken into account. It is therefore recommended that <code class="docutils literal notranslate"><span class="pre">setHistogram</span></code> is called before recording values.</p>
+<p>If a histogram already existed by an earlier call to <code class="docutils literal notranslate"><span class="pre">setHistogram</span></code>, that previous histogram will be deleted. Also, as noted above, only the recorded values from this point on will be entered in the new histogram.</p>
+<p>When the statistic is reset (via the <a class="reference internal" href="#Sim.DataSeries.reset" title="Sim.DataSeries.reset"><code class="xref js js-func docutils literal notranslate"><span class="pre">reset()</span></code></a> function), the DataSeries object will remember the histogram structure (the lower, upper and nbuckets values) but the values themselves will be reset to 0. That is, there is no need to call setHistogram after the <code class="docutils literal notranslate"><span class="pre">reset</span></code> function is called.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.DataSeries.getHistogram">
+<code class="descclassname">Sim.DataSeries.</code><code class="descname">getHistogram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.DataSeries.getHistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the histogram as an array. The size of the array will be (<code class="docutils literal notranslate"><span class="pre">nbuckets</span></code> + 2). The index 0 of the array counts the number of observations that were below the <code class="docutils literal notranslate"><span class="pre">lower</span></code> value (as defined in <a class="reference internal" href="#Sim.DataSeries.setHistogram" title="Sim.DataSeries.setHistogram"><code class="xref js js-func docutils literal notranslate"><span class="pre">setHistogram()</span></code></a>), the last index of the array counts the number of observations that were greater than the <code class="docutils literal notranslate"><span class="pre">upper</span></code> value.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The returned array should be treated as <em>read-only</em>.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="time-series-statistics">
+<span id="statistics-time-series"></span><h2>Time Series Statistics<a class="headerlink" href="#time-series-statistics" title="Permalink to this headline">¶</a></h2>
+<p>Time Series is a collection of discrete, <strong>time-dependent</strong> observations, and the <a class="reference internal" href="#Sim.TimeSeries" title="Sim.TimeSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a> class provides an API for recording and analyzing statistics.</p>
+<p>An object of the <a class="reference internal" href="#Sim.TimeSeries" title="Sim.TimeSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a> class is created for each observation set:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">queueSize</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">TimeSeries</span><span class="p">(</span><span class="s2">&quot;Queue Size&quot;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">customers</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">TimeSeries</span><span class="p">(</span><span class="s2">&quot;Customers at Restaurant&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The observation values are recorded through the <a class="reference internal" href="#Sim.TimeSeries.record" title="Sim.TimeSeries.record"><code class="xref js js-func docutils literal notranslate"><span class="pre">record()</span></code></a> function. Each observation is a combination of (a) the value to record, and (b) the time when the observation was made. For example,</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">queueSize</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// size is 0 at 0 sec</span>
+<span class="nx">queueSize</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">);</span> <span class="c1">// size is 1 at 1.4 sec</span>
+<span class="nx">queueSize</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">);</span> <span class="c1">// size is 2 at 1.8 sec</span>
+
+<span class="nx">customer</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">1800</span><span class="p">);</span> <span class="c1">// 15 customers at 6 pm</span>
+<span class="nx">customer</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2100</span><span class="p">);</span> <span class="c1">// 50 customers at 9 pm</span>
+<span class="nx">customer</span><span class="p">.</span><span class="nx">record</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2315</span><span class="p">);</span> <span class="c1">// 5 customers at 11:15 pm</span>
+</pre></div>
+</div>
+<p>Few notes on the semantics of observations: when an observation (<em>v1</em>, <em>t1</em>) is recorded, it means that the value of the system is <em>v1</em>, starting at time <em>t1</em>, and will remain so until the next observation is recorded.</p>
+<p>For the <em>customer</em> example above, the observation will look like this:</p>
+<img alt="_images/statistics-time-series.png" src="_images/statistics-time-series.png" />
+<p>The three circles represent the three observations recorded. Note how the observations are <em>discrete</em> with respect to time.</p>
+<p>Also observe that (<em>v1</em>, <em>t1</em>) record will not be “<em>committed</em>” until a next observation (<em>v2</em>, <em>t2</em>) is made (since only then we will know that the value <em>v1</em> was applicable for the duration <em>t1</em> - <em>t2</em>). The <a class="reference internal" href="#Sim.TimeSeries.finalize" title="Sim.TimeSeries.finalize"><code class="xref js js-func docutils literal notranslate"><span class="pre">finalize()</span></code></a> function can be used to commit the last observation.</p>
+<p>The TimeSeries class computes statistical properties of the observation values, including <a class="reference internal" href="#Sim.TimeSeries.count" title="Sim.TimeSeries.count"><code class="xref js js-func docutils literal notranslate"><span class="pre">count()</span></code></a>, <a class="reference internal" href="#Sim.TimeSeries.min" title="Sim.TimeSeries.min"><code class="xref js js-func docutils literal notranslate"><span class="pre">min()</span></code></a>, <a class="reference internal" href="#Sim.TimeSeries.max" title="Sim.TimeSeries.max"><code class="xref js js-func docutils literal notranslate"><span class="pre">max()</span></code></a>, <a class="reference internal" href="#Sim.TimeSeries.sum" title="Sim.TimeSeries.sum"><code class="xref js js-func docutils literal notranslate"><span class="pre">sum()</span></code></a>, <a class="reference internal" href="#Sim.TimeSeries.average" title="Sim.TimeSeries.average"><code class="xref js js-func docutils literal notranslate"><span class="pre">average()</span></code></a> (mean), <a class="reference internal" href="#Sim.TimeSeries.deviation" title="Sim.TimeSeries.deviation"><code class="xref js js-func docutils literal notranslate"><span class="pre">deviation()</span></code></a> (standard deviation) and <a class="reference internal" href="#Sim.TimeSeries.variance" title="Sim.TimeSeries.variance"><code class="xref js js-func docutils literal notranslate"><span class="pre">variance()</span></code></a>. Data can be recorded as histograms via the <a class="reference internal" href="#Sim.TimeSeries.setHistogram" title="Sim.TimeSeries.setHistogram"><code class="xref js js-func docutils literal notranslate"><span class="pre">setHistogram()</span></code></a> function.</p>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">average</span></code>, <code class="docutils literal notranslate"><span class="pre">deviation</span></code> and <code class="docutils literal notranslate"><span class="pre">variance</span></code> statistics are <em>averaged over time</em>.</p>
+<div class="section" id="id1">
+<h3>API Reference<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.TimeSeries">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><span class="optional">[</span><em>name</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is an optional parameter used for identifying the statistics in a report.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.record">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">record</code><span class="sig-paren">(</span><em>value</em>, <em>timestamp</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Records an observation <code class="docutils literal notranslate"><span class="pre">value</span></code> made at time <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.finalize">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">finalize</code><span class="sig-paren">(</span><em>timestamp</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function after the last observation was recorded.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.reset">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the statistics. If a histogram was set earlier with <a class="reference internal" href="#Sim.TimeSeries.setHistogram" title="Sim.TimeSeries.setHistogram"><code class="xref js js-func docutils literal notranslate"><span class="pre">setHistogram()</span></code></a>, then the histogram settings (lower bound, upper bound and number of buckets) are retained, but the count for each bucket is reset to 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.count">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of observations recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.min">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum value from all observations recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.max">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum value from all the observations recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.sum">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of all observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.average">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">average</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.average" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time average of all observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.deviation">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">deviation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The standard deviation of observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.variance">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">variance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The variance of the observation values recorded so far.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.setHistogram">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">setHistogram</code><span class="sig-paren">(</span><em>lower</em>, <em>upper</em>, <em>nbuckets</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.setHistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares a histogram for recording frequency of occurrence of values. The histogram has <code class="docutils literal notranslate"><span class="pre">nbucket</span></code> number of buckets, spanning the range of [<code class="docutils literal notranslate"><span class="pre">lower</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span></code>].</p>
+<p>Only the values that are recorded (via the <a class="reference internal" href="#Sim.TimeSeries.record" title="Sim.TimeSeries.record"><code class="xref js js-func docutils literal notranslate"><span class="pre">record()</span></code></a> function) <em>after</em> the histogram was created will be taken into account. It is therefore recommended that <code class="docutils literal notranslate"><span class="pre">setHistogram</span></code> is called before recording values.</p>
+<p>If a histogram already existed by an earlier call to <code class="docutils literal notranslate"><span class="pre">setHistogram</span></code>, that previous histogram will be deleted. Also, as noted above, only the recorded values from this point on will be entered in the new histogram.</p>
+<p>When the statistic is reset (via the <a class="reference internal" href="#Sim.TimeSeries.reset" title="Sim.TimeSeries.reset"><code class="xref js js-func docutils literal notranslate"><span class="pre">reset()</span></code></a> function), the DataSeries object will remember the histogram structure (the lower, upper and nbuckets values) but the values themselves will be reset to 0. That is, there is no need to call setHistogram after the <code class="docutils literal notranslate"><span class="pre">reset</span></code> function is called.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.TimeSeries.getHistogram">
+<code class="descclassname">Sim.TimeSeries.</code><code class="descname">getHistogram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.TimeSeries.getHistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the histogram as an array. The size of the array will be (<code class="docutils literal notranslate"><span class="pre">nbuckets</span></code> + 2). The index 0 of the array counts the number of observations that were below the <code class="docutils literal notranslate"><span class="pre">lower</span></code> value (as defined in <a class="reference internal" href="#Sim.TimeSeries.setHistogram" title="Sim.TimeSeries.setHistogram"><code class="xref js js-func docutils literal notranslate"><span class="pre">setHistogram()</span></code></a>), the last index of the array counts the number of observations that were greater than the <code class="docutils literal notranslate"><span class="pre">upper</span></code> value.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The returned array should be treated as <em>read-only</em>.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="population-statistics">
+<span id="statistics-population"></span><h2>Population Statistics<a class="headerlink" href="#population-statistics" title="Permalink to this headline">¶</a></h2>
+<p><em>Population</em> models the behavior of population growth and decline. This class supports two basic operations:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#Sim.Population.enter" title="Sim.Population.enter"><code class="xref js js-func docutils literal notranslate"><span class="pre">enter()</span></code></a> to indicate that one entity has entered the system and the population has increased by one (<em>birth</em> event), and</li>
+<li><a class="reference internal" href="#Sim.Population.leave" title="Sim.Population.leave"><code class="xref js js-func docutils literal notranslate"><span class="pre">leave()</span></code></a> to indicate that one entity has left the system and the population has decreased by one (<em>death</em> event).</li>
+</ol>
+<p>Population itself is a composite of two statistics:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#Sim.Population.sizeSeries" title="Sim.Population.sizeSeries"><code class="xref js js-attr docutils literal notranslate"><span class="pre">Sim.Population.sizeSeries</span></code></a>: a statistic of <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> type which records the population of the system as a function of time.</li>
+<li><a class="reference internal" href="#Sim.Population.durationSeries" title="Sim.Population.durationSeries"><code class="xref js js-attr docutils literal notranslate"><span class="pre">Sim.Population.durationSeries</span></code></a>: a statistic of <code class="docutils literal notranslate"><span class="pre">DataSeries</span></code> type which records the stay duration of each entity.</li>
+</ol>
+<p>Consider the following example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">motel0</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Population</span><span class="p">(</span><span class="s2">&quot;Motel 0&quot;</span><span class="p">);</span>
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="mi">1600</span><span class="p">);</span> <span class="c1">// one person entered at 4:00 pm</span>
+<span class="nx">motel0</span><span class="o">:</span><span class="nx">enter</span><span class="p">(</span><span class="mi">1600</span><span class="p">);</span> <span class="c1">// second person entered at 4:00 pm</span>
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">leave</span><span class="p">(</span><span class="mi">1600</span><span class="p">,</span> <span class="mi">1601</span><span class="p">);</span> <span class="c1">// one person who entered at 4:00 pm, left at 4:01 pm</span>
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="mi">1630</span><span class="p">);</span> <span class="c1">// another person entered at 4:30 pm</span>
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">leave</span><span class="p">(</span><span class="mi">1630</span><span class="p">,</span> <span class="mi">1700</span><span class="p">);</span> <span class="c1">// person who entered at 4:30 pm left at 5:00 pm</span>
+
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">finalize</span><span class="p">(</span><span class="mi">1700</span><span class="p">);</span> <span class="c1">// No more observations after this</span>
+
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">current</span><span class="p">();</span> <span class="c1">// current population = 1</span>
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">sizeSeries</span><span class="p">.</span><span class="nx">average</span><span class="p">();</span> <span class="c1">// average population in motel</span>
+<span class="nx">motel0</span><span class="p">.</span><span class="nx">durationSeries</span><span class="p">.</span><span class="nx">average</span><span class="p">();</span> <span class="c1">// average stay duration in motel</span>
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h3>API Reference<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="Sim.Population">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Population</code><span class="sig-paren">(</span><span class="optional">[</span><em>name</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Population" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is an optional parameter used for identifying the statistics in a report.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Sim.Population.sizeSeries">
+<code class="descclassname">Sim.Population.</code><code class="descname">sizeSeries</code><a class="headerlink" href="#Sim.Population.sizeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>A statistic of <a class="reference internal" href="#Sim.TimeSeries" title="Sim.TimeSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">Sim.TimeSeries()</span></code></a> type that records the size of the population of the system. Refer to <a class="reference internal" href="#statistics-time-series"><span class="std std-ref">Time Series</span></a> for the APIs for this attribute.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Sim.Population.durationSeries">
+<code class="descclassname">Sim.Population.</code><code class="descname">durationSeries</code><a class="headerlink" href="#Sim.Population.durationSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>A statistic of <a class="reference internal" href="#Sim.DataSeries" title="Sim.DataSeries"><code class="xref js js-class docutils literal notranslate"><span class="pre">Sim.DataSeries()</span></code></a> type that records the stay duration of the entities. Refer to <a class="reference internal" href="#statistics-data-series"><span class="std std-ref">Data Series</span></a> for the APIs for this attribute.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Population.current">
+<code class="descclassname">Sim.Population.</code><code class="descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Population.current" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current population of the system.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Population.enter">
+<code class="descclassname">Sim.Population.</code><code class="descname">enter</code><span class="sig-paren">(</span><em>timestamp</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Population.enter" title="Permalink to this definition">¶</a></dt>
+<dd><p>An entity has entered the system at <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Population.leave">
+<code class="descclassname">Sim.Population.</code><code class="descname">leave</code><span class="sig-paren">(</span><em>enteredAt</em>, <em>leaveAt</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Population.leave" title="Permalink to this definition">¶</a></dt>
+<dd><p>An entity that entered the system at <code class="docutils literal notranslate"><span class="pre">enteredAt</span></code> will leave at <code class="docutils literal notranslate"><span class="pre">leaveAt</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Population.finalize">
+<code class="descclassname">Sim.Population.</code><code class="descname">finalize</code><span class="sig-paren">(</span><em>timestamp</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Population.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function after the last observation was recorded.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Population.reset">
+<code class="descclassname">Sim.Population.</code><code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Population.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the statistics.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Statistics</a><ul>
+<li><a class="reference internal" href="#data-series-statistics">Data Series Statistics</a><ul>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#time-series-statistics">Time Series Statistics</a><ul>
+<li><a class="reference internal" href="#id1">API Reference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#population-statistics">Population Statistics</a><ul>
+<li><a class="reference internal" href="#id2">API Reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="simulator.html">SIM.JS Reference Guide</a><ul>
+      <li>Previous: <a href="events.html" title="previous chapter">Timers, Events and Messages</a></li>
+      <li>Next: <a href="random.html" title="next chapter">Random Number Generation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

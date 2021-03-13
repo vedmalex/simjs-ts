@@ -1,0 +1,261 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SIM.JS Tutorial" href="tutorial.html" />
+    <link rel="prev" title="SIM.JS – Discrete Event Simulation in JavaScript" href="index.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction-to-sim-js">
+<span id="introduction-simjs"></span><h1>Introduction to SIM.JS<a class="headerlink" href="#introduction-to-sim-js" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="discrete-event-simulation">
+<h2>Discrete Event Simulation<a class="headerlink" href="#discrete-event-simulation" title="Permalink to this headline">¶</a></h2>
+<p>We could say a lot about Discrete Event Simulations in this document, but sadly we don’t have the resources. For a brief overview, we refer you to the excellent article at <a class="reference external" href="http://en.wikipedia.org/wiki/Discrete_event_simulation">Wikipedia</a> and the references therein as an entry point to this interesting field of Computer Science.</p>
+<p>Briefly speaking, Discrete Event Simulation (DES) is a technique to <em>model</em> a complex system in order to study its behavior. The system is modeled as a collection of <em>states</em> that change over time. Within DES, the time advances in discrete steps.</p>
+<p>A typical model of a system includes (a) <em>entities</em>, which are the active actors in the system and encapsulate the state and logic of the system components, (b) <em>resources</em>, which are entities consume, (c) <em>communication</em> primitives, to coordinate actions between entities across time, and of course, (d) <em>statistics</em>, which is the output of a simulation run.</p>
+<p>As we will see shortly, the SIM.JS library provides support for entities, resources (Facility, Buffers and Stores), communication (via Timers, Events and Messages) and statistics (with Data Series, Time Series and Population statistics).</p>
+</div>
+<div class="section" id="sim-js-design-principles">
+<span id="basic-design"></span><h2>SIM.JS Design Principles<a class="headerlink" href="#sim-js-design-principles" title="Permalink to this headline">¶</a></h2>
+<p>The most common design pattern that appears in DES models takes after the following <em>process</em> block:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">entity</span><span class="p">::</span>
+<span class="mf">2.</span>  <span class="n">do_some_local_computation</span>
+<span class="mf">3.</span>  <span class="n">resource</span> <span class="o">=</span> <span class="n">request_some_shared_resource</span>
+<span class="mf">4.</span>  <span class="n">do_more_local_computation</span>
+</pre></div>
+</div>
+<p>Pretend that the shared resource is not available at the time step 3 starts processing, which means the process can’t finish. In that case, the simulation has to “block” from further execution.</p>
+<p>Waiting for resources is only one of several reasons entities need to wait or block. Other reasons include waiting for a timer to expire, waiting to receive a message from other entities, waiting for a predicate condition to become true, and so on.</p>
+<p>There are two broad paradigns for implementing this “blocking” behavior:</p>
+<ol class="arabic simple">
+<li>Process-based simulation.</li>
+<li>Event-based simulation.</li>
+</ol>
+<p>In process-based simulation, entities behave very much like regular operating system processes. Each entity runs on a separate thread, and when an entity executes a command for which it must wait/block, the entire thread is suspended. When the waiting condition is satisfied, the thread resumes processing. In the example given above, the entity thread will block at line 3 until the resource is free, and then will resume to line 4.</p>
+<p>In event-based simulation, the entities all run in a single thread. When a request is made to simulate something, the entities don’t immediately process the similation. Instead they provide a callback function that must be invoked when the waiting condition is over. Graphical User Interface programming uses this event-based design quite often, where the system invokes callback functions when any interesting event occurs (e.g. mouse click). However, this style also means we have to restructure the code a little. For example, we’d have to rewrite the example above as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">entity</span><span class="p">::</span>
+    <span class="n">do_some_local_computation</span>
+    <span class="n">request_some_shared_resource_with_callback</span><span class="p">(</span><span class="n">entity_get_resource</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="n">entity_get_resource</span> <span class="p">(</span><span class="n">resource</span><span class="p">)::</span>
+    <span class="n">do_more_local_computation</span>
+</pre></div>
+</div>
+<p>The proponents of process-based programming claim that their design leads to a better code readability. Whereas the adherents of event-based programming argue their approach is more structured since the actions for each different kind of events are encapsulated as different functions.</p>
+<p>SIM.JS library provides the <em>event-based</em> design mainly because process-based programming is not <em>idiomatic</em> JavaScript. Practitioners of JavaScript largely follow the event-based programming, and specially so given the powerful features of JavaScript, such as first class functions, closures, anonymous functions, function call chains and so on.</p>
+</div>
+<div class="section" id="the-sim-js-library">
+<h2>The SIM.JS Library<a class="headerlink" href="#the-sim-js-library" title="Permalink to this headline">¶</a></h2>
+<p>The SIM.JS library introduces just one variables in the global namespace: <code class="docutils literal notranslate"><span class="pre">Sim</span></code>. The <code class="docutils literal notranslate"><span class="pre">Sim</span></code> class provides all functionality for Discrete Event Simulations, which include the following classes:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Class</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Sim</span></code></td>
+<td>The simulator kernel.</td>
+</tr>
+<tr class="row-odd"><td>:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>Sim.Entity</td>
+<td><a class="reference internal" href="entities.html#entity-simulator"><span class="std std-ref">Simulator</span></a> Is an actor in the simulation.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Facility</span></code></td>
+<td><a class="reference internal" href="resources.html#resources-facility"><span class="std std-ref">Facility</span></a> is a resource entities use for a
+finite duration. There is a limit on the
+number of entities that can use the facility at a given
+time. As an example, consider a barbershop (the facility)
+with <em>m</em> barbers (capacity of facility). The customers
+arrive at shop and wish to ‘use’ the resource (barber);
+if all barbers are busy, the customers wait until one
+barber is available.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Buffer</span></code></td>
+<td><a class="reference internal" href="resources.html#resources-buffer"><span class="std std-ref">Buffer</span></a> is a resource that stores a
+finite number of tokens. Any entity can put tokens in
+the buffer if there is free space, or get/retrieve
+tokens from the buffer if some are available.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Store</span></code></td>
+<td><a class="reference internal" href="resources.html#resources-store"><span class="std std-ref">Store</span></a> is a resource that stores a finite
+number of
+JavaScript objects (actually any datatype: number, string,
+function, array, object etc). Any entity can store objects
+in the store if there is free space, or retrieve existing
+objects from the store if some are available.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Event</span></code></td>
+<td><a class="reference internal" href="events.html#events-events"><span class="std std-ref">Events</span></a> are external objects that start out
+in <em>passive</em> state, and at some point in time will be
+<em>activated</em> or <em>fired</em>. Entities ‘attach’ themselves to
+events and wait until the event is fired.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Request</span></code></td>
+<td>When an entity makes a request to the simulation – such
+as set a timer, use a facility, etc – the simulator
+returns a <a class="reference internal" href="request.html#request-main"><span class="std std-ref">Request object</span></a>. The
+entity can use this Request object to further modify the
+original request.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.DataSeries</span></code></td>
+<td><a class="reference internal" href="statistics.html#statistics-data-series"><span class="std std-ref">Data Series</span></a> is a
+collection of discrete, time-independent observations, for
+example, grades of each student in a class, length of
+rivers in United States. The <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSeries</span></code>
+class provides a convenient API for recording and
+analyzing such observations, such as finding maximum and
+minimum values, statistical properties like average and
+standard deviation and so on.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.TimeSeries</span></code></td>
+<td><a class="reference internal" href="statistics.html#statistics-time-series"><span class="std std-ref">Time Series</span></a> is a
+collection of discrete time-dependent observations.
+That is, each observation value is associated with a
+discrete time instance (the time at which the observation
+was made). For example, the size of queue at time <em>t</em>
+during the simulation run, number of customers in a
+restaurant at time <em>t</em> during evening hours.The
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code> class provides a convenient API
+for recording and analyzing such observations, such as
+finding maximum and minimum values, statistical
+properties like time-averaged mean and standard deviation
+and so on.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-class docutils literal notranslate"><span class="pre">Sim.Population</span></code></td>
+<td><a class="reference internal" href="statistics.html#statistics-population"><span class="std std-ref">Population</span></a> is actually a
+composite of the above two statistics, which models the
+behavior of population growth and decline.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">Sim.Random</span></code> library uses the Mersenne Twister algorithm for generating random number stream, and is based on the JavaScript implementation by Makoto Matsumoto and Takuji Nishimura (<a class="reference external" href="www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/JAVASCRIPT/java-script.html">code</a>). The <code class="docutils literal notranslate"><span class="pre">Sim.Random</span></code> class supports following probability distribution functions:</p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">exponential()</span></code></li>
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">gamma()</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">normal()</span></code></li>
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">pareto()</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">triangular()</span></code></li>
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">uniform()</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-func docutils literal notranslate"><span class="pre">weibull()</span></code></li>
+</ul>
+</td></tr></table>
+</div>
+<div class="section" id="using-sim-js">
+<h2>Using SIM.JS<a class="headerlink" href="#using-sim-js" title="Permalink to this headline">¶</a></h2>
+<p>Take a look at <a class="reference internal" href="tutorial.html#tutorial-main"><span class="std std-ref">tutorials and examples</span></a> to get a feel for writing simulation models with SIM.JS.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction to SIM.JS</a><ul>
+<li><a class="reference internal" href="#discrete-event-simulation">Discrete Event Simulation</a></li>
+<li><a class="reference internal" href="#sim-js-design-principles">SIM.JS Design Principles</a></li>
+<li><a class="reference internal" href="#the-sim-js-library">The SIM.JS Library</a></li>
+<li><a class="reference internal" href="#using-sim-js">Using SIM.JS</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">SIM.JS – Discrete Event Simulation in JavaScript</a></li>
+      <li>Next: <a href="tutorial.html" title="next chapter">SIM.JS Tutorial</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

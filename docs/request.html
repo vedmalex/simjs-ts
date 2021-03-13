@@ -1,0 +1,359 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Resources: Facilities, Buffers and Stores" href="resources.html" />
+    <link rel="prev" title="Simulator and Entity" href="entities.html" />
+
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="request-objects">
+<span id="request-main"></span><h1>Request Objects<a class="headerlink" href="#request-objects" title="Permalink to this headline">¶</a></h1>
+<p>When an entity makes a request to the simulation – such as set a timer, use a facility, etc – the simulator returns backs a <code class="docutils literal notranslate"><span class="pre">Request</span></code> object. The entity can use this Request object to further modify the original request.</p>
+<p id="request-generation">The <code class="docutils literal notranslate"><span class="pre">Request</span></code> object is returned when an entity makes any of the following requests:</p>
+<ul class="simple">
+<li>To set a timer, via <a class="reference internal" href="entities.html#setTimer" title="setTimer"><code class="xref js js-func docutils literal notranslate"><span class="pre">setTimer()</span></code></a>.</li>
+<li>To use a facility, via <a class="reference internal" href="entities.html#useFacility" title="useFacility"><code class="xref js js-func docutils literal notranslate"><span class="pre">useFacility()</span></code></a>.</li>
+<li>To put tokens in a buffer, via <a class="reference internal" href="entities.html#putBuffer" title="putBuffer"><code class="xref js js-func docutils literal notranslate"><span class="pre">putBuffer()</span></code></a>.</li>
+<li>To get tokens from buffer, via <a class="reference internal" href="entities.html#getBuffer" title="getBuffer"><code class="xref js js-func docutils literal notranslate"><span class="pre">getBuffer()</span></code></a>.</li>
+<li>To store objects in a store, via <a class="reference internal" href="entities.html#putStore" title="putStore"><code class="xref js js-func docutils literal notranslate"><span class="pre">putStore()</span></code></a>.</li>
+<li>To retrieve object from a store, via <a class="reference internal" href="entities.html#getStore" title="getStore"><code class="xref js js-func docutils literal notranslate"><span class="pre">getStore()</span></code></a>.</li>
+<li>To wait on an event, via <a class="reference internal" href="entities.html#waitEvent" title="waitEvent"><code class="xref js js-func docutils literal notranslate"><span class="pre">waitEvent()</span></code></a>.</li>
+<li>To queue on an event, via <a class="reference internal" href="entities.html#queueEvent" title="queueEvent"><code class="xref js js-func docutils literal notranslate"><span class="pre">queueEvent()</span></code></a>.</li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">Request</span></code> object can then be used to modify the request in the following ways:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#Sim.Request.done" title="Sim.Request.done"><code class="xref js js-func docutils literal notranslate"><span class="pre">done()</span></code></a>: Assign functions that must be called when the request is satisfied.</li>
+<li><a class="reference internal" href="#Sim.Request.waitUntil" title="Sim.Request.waitUntil"><code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code></a>: Set a timeout value to the request. If the request is not satisfied within the timeout value, it will be terminated and the entity will be notified.</li>
+<li><a class="reference internal" href="#Sim.Request.unlessEvent" title="Sim.Request.unlessEvent"><code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code></a>: Put the request in the wait queue of one or more <a class="reference internal" href="events.html#events-events"><span class="std std-ref">Events</span></a>. If any one of those events is fired, the request will be terminated and the entity will be notified.</li>
+<li><a class="reference internal" href="#Sim.Request.setData" title="Sim.Request.setData"><code class="xref js js-func docutils literal notranslate"><span class="pre">setData()</span></code></a>: Assign some user data for this request, which will be returned back when the simulator notifies the entity about the request.</li>
+<li><a class="reference internal" href="#Sim.Request.cancel" title="Sim.Request.cancel"><code class="xref js js-func docutils literal notranslate"><span class="pre">cancel()</span></code></a>: Cancel the request.</li>
+</ul>
+<p>Except for <a class="reference internal" href="#Sim.Request.cancel" title="Sim.Request.cancel"><code class="xref js js-func docutils literal notranslate"><span class="pre">cancel()</span></code></a>, all other functions return the <code class="docutils literal notranslate"><span class="pre">Request</span></code> object back, therefore, these functions can be <em>chained</em> together. For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example of chained function calls</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">putBuffer</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">fnWhenSatisfied</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">fnAlsoWhenSatisfied</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">waitUntil</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">fnCouldNotAllocIn10Sec</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">unlessEvent</span><span class="p">(</span><span class="nx">event1</span><span class="p">,</span> <span class="nx">fnEvent1Happened</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">unlessEvent</span><span class="p">(</span><span class="nx">event2</span><span class="p">,</span> <span class="nx">fnEvent2Happened</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">setData</span><span class="p">(</span><span class="s1">&#39;give me this data when ANY callback function is called&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The following table summarizes the various outcomes of a request and which callback functions are called in each case:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="21%" />
+<col width="28%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Outcome of
+Request</th>
+<th class="head">callback
+in done()</th>
+<th class="head">callback
+in waitUntil()</th>
+<th class="head">callback
+in unlessEvent()</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Request is
+satisfied</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>Timeout
+occurs</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>Event is
+fired</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>cancel()
+called</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Sim.Request">
+<em class="property">class </em><code class="descclassname">Sim.</code><code class="descname">Request</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Request" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">Request</span></code> constructor should be considered as a private API. Application code should not explicitly create objects of this class.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Request.done">
+<code class="descclassname">Sim.Request.</code><code class="descname">done</code><span class="sig-paren">(</span><em>callback</em><span class="optional">[</span>, <em>context</em><span class="optional">[</span>, <em>argument</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Request.done" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">callback</span></code> is a function (named or anonymous) that must be called when the request is satisfied.</p>
+<p><code class="docutils literal notranslate"><span class="pre">context</span></code> is the object in whose context the function will be called. The behavior is therefore equivalent to: <code class="docutils literal notranslate"><span class="pre">callback.call(context)</span></code>. If <code class="docutils literal notranslate"><span class="pre">context</span></code> argument is not provided or is set to a value that evaluates to <em>false</em>, it is assumed to be the calling entity object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">argument</span></code> are the optional arguments that are passed to the callback function. If <code class="docutils literal notranslate"><span class="pre">argument</span></code> is an array then the simulator will execute <code class="docutils literal notranslate"><span class="pre">callback.apply(context,</span> <span class="pre">argument)</span></code>, otherwise the simulator will execute <code class="docutils literal notranslate"><span class="pre">callback.call(context,</span> <span class="pre">argument)</span></code>.</p>
+<p><strong>Note 1:</strong> This function can be called multiple times for the same request object, in which case all the callback functions will be called. The simulator guarantees that the the ordering of callback functions will be same as the order in which they were added.</p>
+<p><strong>Note 2:</strong> If this function is not applied for a request object, then the simulator will still schedule this request and handle it appropriately. Other callback functions defined in <code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code> or <code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code> may still be called. This is useful when the application is interested in error conditions only, for example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// done() function is not applied to the request object.</span>
+<span class="c1">// The simulator will schedule and process this request appropriately,</span>
+<span class="c1">// and may call the other callback functions.</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">putBuffer</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">unlessEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">handleEvent</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">waitUntil</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">handleTimeout</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Note 3:</strong> Even if the request is immediately satisfied (for example, buffer has enough free space for the <em>put</em> request), the callback function will still be called <em>after</em> the function scope that made this request has finished. That is:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">start</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Adding 0 units.. should always succeed immediately</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">putBuffer</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;I will be printed as second line.&quot;</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;I will be printed as first line.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Request.waitUntil">
+<code class="descclassname">Sim.Request.</code><code class="descname">waitUntil</code><span class="sig-paren">(</span><em>duration</em>, <em>callback</em><span class="optional">[</span>, <em>context</em><span class="optional">[</span>, <em>argument</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Request.waitUntil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a timeout value to the request. If the request is not satisfied within the       <code class="docutils literal notranslate"><span class="pre">duration</span></code> time interval, it will be terminated and the <code class="docutils literal notranslate"><span class="pre">callback</span></code> function will be called.</p>
+<p><code class="docutils literal notranslate"><span class="pre">context</span></code> is the object in whose context the function will be called. The behavior is therefore equivalent to: <code class="docutils literal notranslate"><span class="pre">callback.call(context)</span></code>. If <code class="docutils literal notranslate"><span class="pre">context</span></code> argument is not provided or is set to value that evaluates to <em>false</em>, it is assumed to be the calling entity object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">argument</span></code> are the optional arguments that are passed to the callback function. If <code class="docutils literal notranslate"><span class="pre">argument</span></code> is an array then the simulator will execute <code class="docutils literal notranslate"><span class="pre">callback.apply(context,</span> <span class="pre">argument)</span></code>, otherwise the simulator will execute <code class="docutils literal notranslate"><span class="pre">callback.call(context,</span> <span class="pre">argument)</span></code>.</p>
+<p>As noted in the table above, if the timeout occurs then no other callback function (for example, in <code class="xref js js-func docutils literal notranslate"><span class="pre">done()</span></code> or <code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code>) will be called.</p>
+<p><strong>Note:</strong> The API does not prevent calling this function multiple times, however, note that only one callback function (the one with smallest timeout value) is effectively useful.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Request.unlessEvent">
+<code class="descclassname">Sim.Request.</code><code class="descname">unlessEvent</code><span class="sig-paren">(</span><em>event</em>, <em>callback</em><span class="optional">[</span>, <em>context</em><span class="optional">[</span>, <em>argument</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Request.unlessEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">event</span></code> is either:</p>
+<ul class="simple">
+<li>an object of <code class="xref js js-class docutils literal notranslate"><span class="pre">Event()</span></code> instance type, or</li>
+<li>an array of objects, each an instance of <code class="xref js js-class docutils literal notranslate"><span class="pre">Event()</span></code>.</li>
+</ul>
+<p>Puts the request in the wait queue of one or more events. If any of those events are fired, the request will be terminated and the <code class="docutils literal notranslate"><span class="pre">callback</span></code> function will be called.</p>
+<p><code class="docutils literal notranslate"><span class="pre">context</span></code> is the object in whose context the function will be called. The behavior is therefore equivalent to: <code class="docutils literal notranslate"><span class="pre">callback.call(context)</span></code>. If <code class="docutils literal notranslate"><span class="pre">context</span></code> argument is not provided or is set to value that evaluates to <em>false</em>, it is assumed to be the calling entity object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">argument</span></code> are the optional arguments that are passed to the callback function. If <code class="docutils literal notranslate"><span class="pre">argument</span></code> is an array then the simulator will execute <code class="docutils literal notranslate"><span class="pre">callback.apply(context,</span> <span class="pre">argument)</span></code>, otherwise the simulator will execute <code class="docutils literal notranslate"><span class="pre">callback.call(context,</span> <span class="pre">argument)</span></code>.</p>
+<p>As noted in the table above, if the timeout occurs then no other callback function (for example, in <code class="xref js js-func docutils literal notranslate"><span class="pre">done()</span></code> or <code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code>) be called.</p>
+<p><strong>Note:</strong> This function can be called multiple times for the same request object. Note that if one event appears in more than one <code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code> function, even then only one callback functions will be called. The simulator will non-deterministically select which callback function to call. The following table summarizes the semantics of the callback behavior of this function. Assume <em>ev1</em> and <em>ev2</em> are two events, and <em>request</em> is the Request object.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="61%" />
+<col width="17%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">ev1 fired</th>
+<th class="head">ev2 fired</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>request.unlessEvent(ev1, fn1).unlessEvent(ev2, fn2)</td>
+<td>fn1 called</td>
+<td>fn2 called</td>
+</tr>
+<tr class="row-odd"><td>request.unlessEvent([ev1, ev2], fn1)</td>
+<td>fn1 called</td>
+<td>fn1 called</td>
+</tr>
+<tr class="row-even"><td>request.unlessEvent(ev1, fn1).unlessEvent(ev1, fn2)</td>
+<td>one of f1 or
+fn2 called</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Request.setData">
+<code class="descclassname">Sim.Request.</code><code class="descname">setData</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Request.setData" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">data</span></code> can be any data type (primitive type, arrays, objects etc) which will be returned back when the simulator notifies the entity about the request.</p>
+<p>From within the callback function, this data can be accessed through the <code class="docutils literal notranslate"><span class="pre">this.callbackData</span></code> attribute. This attribute is defined only during the scope of the callback function, and only during the time when the callback function is executing.</p>
+<p>This function can be called multiple times for the same request object, but each new invocation will <cite>overwrite</cite> the data from previous calls.</p>
+<p>The data, once set, will be returned to all callback function (if they are called).</p>
+<p>For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">Entity</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">putBuffer</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">fn1</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">unlessEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">fn2</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">setData</span><span class="p">(</span><span class="s1">&#39;my data&#39;</span><span class="p">);</span>
+
+        <span class="c1">// this.userData is undefined outside the callback functions</span>
+        <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="nx">fn1</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span> <span class="o">===</span> <span class="s1">&#39;my data&#39;</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="nx">fn2</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// this.userData is visible in all callback functions</span>
+        <span class="nx">assert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span> <span class="o">===</span> <span class="s1">&#39;my data&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sim.Request.cancel">
+<code class="descclassname">Sim.Request.</code><code class="descname">cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Sim.Request.cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel a request. After this call, no callback function will be called.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Special case with facilities.</p>
+<p>In case of facilities with FIFO queuing discipline, the requesting entities go through two stages: (1) wait for the facility to become free (this may be zero duration if the facility is already free), and (2) use the facility for specified duration. The <code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code>, <code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code> and <code class="xref js js-func docutils literal notranslate"><span class="pre">cancel()</span></code> functions are applicable in the first stage only. In order words, if an entity has started using the facility, then it cannot be dislodged and these function calls will have no effect.</p>
+<p class="last">In case of facilities with LIFO and Processor Sharing disciplines, the requesting entities obtain an immediate access to the facility resource. Therefore, <code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code>, <code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code> and <code class="xref js js-func docutils literal notranslate"><span class="pre">cancel()</span></code> functions will have no effect for these facilities.</p>
+</div>
+</div>
+<div class="section" id="callback-functions">
+<span id="request-callbacks"></span><h2>Callback Functions<a class="headerlink" href="#callback-functions" title="Permalink to this headline">¶</a></h2>
+<p>Request class has three functions that accept callback functions: <a class="reference internal" href="#Sim.Request.done" title="Sim.Request.done"><code class="xref js js-func docutils literal notranslate"><span class="pre">done()</span></code></a>, <a class="reference internal" href="#Sim.Request.waitUntil" title="Sim.Request.waitUntil"><code class="xref js js-func docutils literal notranslate"><span class="pre">waitUntil()</span></code></a> and <a class="reference internal" href="#Sim.Request.unlessEvent" title="Sim.Request.unlessEvent"><code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code></a>.  Before calling the callback functions, the simulator may assign one or more of these attributes in the <code class="docutils literal notranslate"><span class="pre">context</span></code> object:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt><code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code>. The object for which this request was made.</dt>
+<dd><ul class="first last">
+<li>for <a class="reference internal" href="entities.html#setTimer" title="setTimer"><code class="xref js js-attr docutils literal notranslate"><span class="pre">setTimer()</span></code></a>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>undefined</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">useFacility(fac)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>fac</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">putBuffer(buf)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>buf</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">getBuffer(buf)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>buf</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">putStore(store)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>store</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">getStore(store)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>store</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">waitEvent(event)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>event</em>.</li>
+<li>for <code class="xref js js-attr docutils literal notranslate"><span class="pre">queueEvent(event)</span></code>, <code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackSource</span></code> is equal to <em>event</em>.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackMessage</span></code>. Provides additional information. Currently, this attribute is set in following cases only:</dt>
+<dd><ul class="first last">
+<li>If the request had a <code class="xref js js-func docutils literal notranslate"><span class="pre">unlessEvent()</span></code> clause and the corresponding callback function is called. This attribute points to the event that led to this callback function.</li>
+<li>For <code class="xref js js-attr docutils literal notranslate"><span class="pre">useFacility(fac)</span></code>, the callback in <a class="reference internal" href="#Sim.Request.done" title="Sim.Request.done"><code class="xref js js-func docutils literal notranslate"><span class="pre">done()</span></code></a> reports the server id that was allocated to this request.</li>
+<li>For <code class="xref js js-attr docutils literal notranslate"><span class="pre">getStore(store)</span></code>, the callback in <a class="reference internal" href="#Sim.Request.done" title="Sim.Request.done"><code class="xref js js-func docutils literal notranslate"><span class="pre">done()</span></code></a> points to the object that is returned by the store.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><code class="xref js js-attr docutils literal notranslate"><span class="pre">this.callbackData</span></code>. User defined data through <a class="reference internal" href="#Sim.Request.setData" title="Sim.Request.setData"><code class="xref js js-func docutils literal notranslate"><span class="pre">setData()</span></code></a>.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Request Objects</a><ul>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+<li><a class="reference internal" href="#callback-functions">Callback Functions</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="simulator.html">SIM.JS Reference Guide</a><ul>
+      <li>Previous: <a href="entities.html" title="previous chapter">Simulator and Entity</a></li>
+      <li>Next: <a href="resources.html" title="next chapter">Resources: Facilities, Buffers and Stores</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>

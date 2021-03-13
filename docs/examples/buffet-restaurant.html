@@ -1,0 +1,281 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta content="General Purpose Discrete Event Simulation Library in JavaScript" name="description" />
+<meta content="discrete event simulation, simulation, javascript, web simulation, javascript simulator" name="keywords" />
+
+    <title>SIM.JS | Discrete Event Simulation in JavaScript</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SIM.JS Reference Guide" href="../simulator.html" />
+    <link rel="prev" title="Traffic Lights at Intersection" href="traffic-lights.html" />
+
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24240723-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="buffet-restaurant">
+<span id="example-buffet-restaurant"></span><h1>Buffet Restaurant<a class="headerlink" href="#buffet-restaurant" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-system">
+<h2>The System<a class="headerlink" href="#the-system" title="Permalink to this headline">¶</a></h2>
+<p>In this example, we will model as buffet-style restaurant. Customer arrive at restaurant, pick up food from buffet area (we will will assume only one food item: salad), reach cashier for payment and leave the restaurant. The salad buffet is a finite resource, and is replenished every few minutes by the chef. In this restaurant the customers may have to wait at two places:</p>
+<ul class="simple">
+<li>At the buffet. If the salad is all gone, customers have to wait until the chef brings in more.</li>
+<li>At the cashier. If there are other customers ahead in line.</li>
+</ul>
+<p>The customizable parameters for this restaurant model are:</p>
+<ol class="arabic simple">
+<li>Salad preparation time. Time taken by chef to prepare the next round of fresh salad. We will assume this is a constant time interval.</li>
+<li>Customer arrival rate. We will assume that the arrivals is a Poisson process.</li>
+<li>Time taken by cashier per customer. We will assume this to be exponentially distributed.</li>
+<li>The capacity of salad buffet. This is a constant and will not change over the course of simulation.</li>
+</ol>
+<p><strong>Simulation Objectives</strong>. We would like to find out:</p>
+<ul class="simple">
+<li>The average time spent by customers at the restaurant?</li>
+<li>The average number of customers inside the restaurant?</li>
+</ul>
+</div>
+<div class="section" id="modeling-with-sim-js">
+<h2>Modeling with SIM.JS<a class="headerlink" href="#modeling-with-sim-js" title="Permalink to this headline">¶</a></h2>
+<p>We observe first that the system has two resources:</p>
+<ol class="arabic simple">
+<li>The salad buffet. We will model this as <a class="reference internal" href="../resources.html#resources-buffer"><span class="std std-ref">Buffer</span></a>.</li>
+<li>The cashier. We will model her as <a class="reference internal" href="../resources.html#resources-facility"><span class="std std-ref">Facility</span></a>.</li>
+</ol>
+<p>There will be two entities in the system: the chef and the customers. As in the earlier example, we will model customers as one entity object.</p>
+<p>We will use <a class="reference internal" href="../statistics.html#statistics-population"><span class="std std-ref">Population Statistics</span></a> to record the arrival and departure of customers.</p>
+<p>The following code lists all the global variables we will need in our simulation:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">sim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Sim</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">stats</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Population</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">cashier</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Facility</span><span class="p">(</span><span class="s1">&#39;Cashier&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">buffet</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">(</span><span class="s1">&#39;Buffet&#39;</span><span class="p">,</span> <span class="nx">BuffetCapacity</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">random</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Random</span><span class="p">(</span><span class="nx">Seed</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Lets start with the Entity Prototype for Chef first. The chef replenishes the salad buffer every <em>PreparationTime</em> interval. The code is very simple:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Chef</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">putBuffer</span><span class="p">(</span><span class="nx">buffet</span><span class="p">,</span> <span class="nx">BuffetCapacity</span> <span class="o">-</span> <span class="nx">buffet</span><span class="p">.</span><span class="nx">current</span><span class="p">());</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="nx">PreparationTime</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">start</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Note here that the chef fills only the empty portion in the buffet.</p>
+<p>Next, let us look at the Customer entity. This entity prototype will generate request for all customers, where the time interval between customer arrivals is exponentially distributed. We will first look at the start function, which is somewhat similar to the start function of Chef. The customer will order (this.order(), which we will see next), and the function is called again after an exponentially distributed random delay:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Customer</span> <span class="kr">extends</span> <span class="nx">Sim</span><span class="p">.</span><span class="nx">Entity</span> <span class="p">{</span>
+    <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">order</span><span class="p">();</span>
+
+        <span class="kd">var</span> <span class="nx">nextCustomerAt</span> <span class="o">=</span> <span class="nx">random</span><span class="p">.</span><span class="nx">exponential</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nx">MeanArrival</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setTimer</span><span class="p">(</span><span class="nx">nextCustomerAt</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">start</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="p">...</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">Customer.order()</span></code> function models the actions of customers inside the restaurant. First we will log the arrival of customer (line 3) and record in the statistics object (line 6). The customer then request to <em>get</em> one unit from the buffer (line 8) and will execute the anonymous function (argument to <code class="xref py py-func docutils literal notranslate"><span class="pre">done()</span></code> function) when the request is satisfied. The request may be satisfied immediately, if the buffer not empty, or wait otherwise. In the callback function, we log again that the customer has cleared the buffer stage and will now proceed to the cashier (line 10). The service time at cashier is also exponential distributed (line 13), and we use the <code class="xref py py-func docutils literal notranslate"><span class="pre">this.useFacility()</span></code> function to request service from the cashier (line 14). The callback function here will log that the customer will not leave the restaurant (line 16) and we also record this time in the statistics (line 20). Note also that we are using the <code class="xref py py-func docutils literal notranslate"><span class="pre">Request.setData()</span></code> function to remember the arrival time (which is read later on from <code class="xref py py-attr docutils literal notranslate"><span class="pre">this.callbackData</span></code> attribute).</p>
+<div class="highlight-js notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="nx">order</span><span class="p">()</span> <span class="p">{</span>
+     <span class="c1">// Logging</span>
+     <span class="nx">sim</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Customer ENTER at &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">());</span>
+
+     <span class="c1">// statistics</span>
+     <span class="nx">stats</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">());</span>
+
+     <span class="k">this</span><span class="p">.</span><span class="nx">getBuffer</span><span class="p">(</span><span class="nx">buffet</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+         <span class="c1">// Logging</span>
+         <span class="nx">sim</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Customer at CASHIER &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">()</span>
+             <span class="o">+</span> <span class="s2">&quot; (entered at &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">);</span>
+
+         <span class="kd">var</span> <span class="nx">serviceTime</span> <span class="o">=</span> <span class="nx">random</span><span class="p">.</span><span class="nx">exponential</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nx">CashierTime</span><span class="p">);</span>
+         <span class="k">this</span><span class="p">.</span><span class="nx">useFacility</span><span class="p">(</span><span class="nx">cashier</span><span class="p">,</span> <span class="nx">serviceTime</span><span class="p">).</span><span class="nx">done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+             <span class="c1">// Logging</span>
+             <span class="nx">sim</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Customer LEAVE at &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">()</span>
+                 <span class="o">+</span> <span class="s2">&quot; (entered at &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">);</span>
+
+             <span class="c1">// Statistics</span>
+             <span class="nx">stats</span><span class="p">.</span><span class="nx">leave</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">());</span>
+         <span class="p">}).</span><span class="nx">setData</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callbackData</span><span class="p">);</span>
+     <span class="p">}).</span><span class="nx">setData</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">());</span>
+ <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>Finally, we create entities (lines 1 and 2), optionally set a logger function (lines 5-7), start the simulation (line 9) and report back the statistics (line 11).</p>
+<div class="highlight-js notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Customer</span><span class="p">);</span>
+<span class="nx">sim</span><span class="p">.</span><span class="nx">addEntity</span><span class="p">(</span><span class="nx">Chef</span><span class="p">);</span>
+
+
+<span class="nx">sim</span><span class="p">.</span><span class="nx">setLogger</span><span class="p">((</span><span class="nx">msg</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">sim</span><span class="p">.</span><span class="nx">simulate</span><span class="p">(</span><span class="nx">Simtime</span><span class="p">);</span>
+
+<span class="k">return</span> <span class="p">[</span><span class="nx">stats</span><span class="p">.</span><span class="nx">durationSeries</span><span class="p">.</span><span class="nx">average</span><span class="p">(),</span>
+        <span class="nx">stats</span><span class="p">.</span><span class="nx">durationSeries</span><span class="p">.</span><span class="nx">deviation</span><span class="p">(),</span>
+        <span class="nx">stats</span><span class="p">.</span><span class="nx">sizeSeries</span><span class="p">.</span><span class="nx">average</span><span class="p">(),</span>
+        <span class="nx">stats</span><span class="p">.</span><span class="nx">sizeSeries</span><span class="p">.</span><span class="nx">deviation</span><span class="p">()];</span>
+</pre></div>
+</td></tr></table></div>
+<p><a class="reference external" href="buffet_restaurant.js">View the complete source code</a>.</p>
+</div>
+<div class="section" id="running-simulation">
+<h2>Running Simulation<a class="headerlink" href="#running-simulation" title="Permalink to this headline">¶</a></h2>
+<p>This javascript code can be executed where ever javascript can run. This includes:</p>
+<ul class="simple">
+<li>As a script in HTML page on a web browser.</li>
+<li>Via Web browser JavaScript debuggers such as Mozilla Firebug, Safari’s Developer tools etc.</li>
+<li>With <a class="reference external" href="www.mozilla.org/rhino">Rhino</a>.</li>
+<li>With <code class="docutils literal notranslate"><span class="pre">jrunscript</span></code>.</li>
+<li>and so on…</li>
+</ul>
+<p>We will run our model as a web page on a web browser. For this we have created the following web page:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span>&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Tutorial: Customers at a Buffet Restaurant&lt;/title&gt;
+
+    &lt;script type=&quot;text/javascript&quot; src=&quot;sim-0.1.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;buffet_restaurant.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="buffer-restaurant-in-action">
+<h2>Buffer Restaurant in Action<a class="headerlink" href="#buffer-restaurant-in-action" title="Permalink to this headline">¶</a></h2>
+<p>You can <a class="reference external" href="buffet_restaurant.html">play with this simulation model</a>. Try out different values of input parameters and compare the output statistics of model.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Buffet Restaurant</a><ul>
+<li><a class="reference internal" href="#the-system">The System</a></li>
+<li><a class="reference internal" href="#modeling-with-sim-js">Modeling with SIM.JS</a></li>
+<li><a class="reference internal" href="#running-simulation">Running Simulation</a></li>
+<li><a class="reference internal" href="#buffer-restaurant-in-action">Buffer Restaurant in Action</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../tutorial.html">SIM.JS Tutorial</a><ul>
+      <li>Previous: <a href="traffic-lights.html" title="previous chapter">Traffic Lights at Intersection</a></li>
+      <li>Next: <a href="../simulator.html" title="next chapter">SIM.JS Reference Guide</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy;2011, Maneesh Varshney.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+
+
+  </body>
+</html>
