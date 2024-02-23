@@ -1,5 +1,4 @@
 import { Model } from "./model.js";
-import { argCheck } from "./sim.js";
 import { Population } from "./stats.js";
 
 class Queue extends Model {
@@ -19,7 +18,6 @@ class Queue extends Model {
 	}
 
 	push(value, timestamp) {
-		argCheck(arguments, 2, 2);
 		this.data.push(value);
 		this.timestamp.push(timestamp);
 
@@ -27,7 +25,6 @@ class Queue extends Model {
 	}
 
 	unshift(value, timestamp) {
-		argCheck(arguments, 2, 2);
 		this.data.unshift(value);
 		this.timestamp.unshift(timestamp);
 
@@ -35,8 +32,6 @@ class Queue extends Model {
 	}
 
 	shift(timestamp) {
-		argCheck(arguments, 1, 1);
-
 		const value = this.data.shift();
 
 		const enqueuedAt = this.timestamp.shift();
@@ -46,8 +41,6 @@ class Queue extends Model {
 	}
 
 	pop(timestamp) {
-		argCheck(arguments, 1, 1);
-
 		const value = this.data.pop();
 
 		const enqueuedAt = this.timestamp.pop();
@@ -57,15 +50,11 @@ class Queue extends Model {
 	}
 
 	passby(timestamp) {
-		argCheck(arguments, 1, 1);
-
 		this.stats.enter(timestamp);
 		this.stats.leave(timestamp, timestamp);
 	}
 
 	finalize(timestamp) {
-		argCheck(arguments, 1, 1);
-
 		this.stats.finalize(timestamp);
 	}
 
@@ -109,7 +98,6 @@ class PQueue extends Model {
 	}
 
 	insert(ro) {
-		argCheck(arguments, 1, 1);
 		ro.order = this.order++;
 
 		let index = this.data.length;

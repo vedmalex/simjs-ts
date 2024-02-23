@@ -1,4 +1,4 @@
-import { Buffer, Event, Store, argCheck } from "./sim.js";
+import { Buffer, Event, Store } from "./sim.js";
 
 class Request {
 	constructor(entity, currentTime, deliverAt) {
@@ -56,14 +56,11 @@ class Request {
 	}
 
 	done(callback, context, argument) {
-		argCheck(arguments, 0, 3, Function, Object);
-
 		this.callbacks.push([callback, context, argument]);
 		return this;
 	}
 
 	waitUntil(delay, callback, context, argument) {
-		argCheck(arguments, 1, 4, null, Function, Object);
 		if (this.noRenege) return this;
 
 		const ro = this._addRequest(
@@ -78,7 +75,6 @@ class Request {
 	}
 
 	unlessEvent(event, callback, context, argument) {
-		argCheck(arguments, 1, 4, null, Function, Object);
 		if (this.noRenege) return this;
 
 		if (event instanceof Event) {

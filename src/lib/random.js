@@ -1,13 +1,5 @@
 class Random {
 	constructor(seed = new Date().getTime()) {
-		if (
-			typeof seed !== "number" || // argCheck
-			Math.ceil(seed) !== Math.floor(seed)
-		) {
-			// argCheck
-			throw new TypeError("seed value must be an integer"); // argCheck
-		} // argCheck
-
 		/* Period parameters */
 		this.N = 624;
 		this.M = 397;
@@ -163,29 +155,14 @@ class Random {
 	}
 
 	exponential(lambda) {
-		if (arguments.length !== 1) {
-			// argCheck
-			throw new SyntaxError(
-				"exponential() must  be called with 'lambda' parameter",
-			); // argCheck
-		} // argCheck
-
 		const r = this.random();
 
 		return -Math.log(r) / lambda;
 	}
 
 	gamma(alpha, beta) {
-		if (arguments.length !== 2) {
-			// argCheck
-			throw new SyntaxError(
-				"gamma() must be called with alpha and beta parameters",
-			); // argCheck
-		} // argCheck
-
 		/* Based on Python 2.6 source code of random.py.
 		 */
-
 		let u;
 
 		if (alpha > 1.0) {
@@ -254,13 +231,6 @@ class Random {
 	}
 
 	normal(mu, sigma) {
-		if (arguments.length !== 2) {
-			// argCheck
-			throw new SyntaxError(
-				"normal() must be called with mu and sigma parameters",
-			); // argCheck
-		} // argCheck
-
 		let z = this.lastNormal;
 
 		this.lastNormal = NaN;
@@ -276,11 +246,6 @@ class Random {
 	}
 
 	pareto(alpha) {
-		if (arguments.length !== 1) {
-			// argCheck
-			throw new SyntaxError("pareto() must be called with alpha parameter"); // argCheck
-		} // argCheck
-
 		const u = this.random();
 
 		return 1.0 / Math.pow(1 - u, 1.0 / alpha);
@@ -288,13 +253,6 @@ class Random {
 
 	triangular(lower, upper, mode) {
 		// http://en.wikipedia.org/wiki/Triangular_distribution
-		if (arguments.length !== 3) {
-			// argCheck
-			throw new SyntaxError(
-				"triangular() must be called with lower, upper and mode parameters",
-			); // argCheck
-		} // argCheck
-
 		const c = (mode - lower) / (upper - lower);
 
 		const u = this.random();
@@ -315,22 +273,10 @@ class Random {
 	 * @returns {Number}
 	 */
 	uniform(lower, upper) {
-		if (arguments.length !== 2) {
-			// argCheck
-			throw new SyntaxError(
-				"uniform() must be called with lower and upper parameters",
-			); // argCheck
-		} // argCheck
 		return lower + this.random() * (upper - lower);
 	}
 
 	weibull(alpha, beta) {
-		if (arguments.length !== 2) {
-			// argCheck
-			throw new SyntaxError(
-				"weibull() must be called with alpha and beta parameters",
-			); // argCheck
-		} // argCheck
 		const u = 1.0 - this.random();
 
 		return alpha * Math.pow(-Math.log(u), 1.0 / beta);

@@ -1,5 +1,3 @@
-import { argCheck } from "./sim.js";
-
 class DataSeries {
 	constructor(name) {
 		this.name = name;
@@ -23,8 +21,6 @@ class DataSeries {
 	}
 
 	setHistogram(lower, upper, nbuckets) {
-		argCheck(arguments, 3, 3);
-
 		this.hLower = lower;
 		this.hUpper = upper;
 		this.hBucketSize = (upper - lower) / nbuckets;
@@ -39,8 +35,6 @@ class DataSeries {
 	}
 
 	record(value, weight) {
-		argCheck(arguments, 1, 2);
-
 		const w = typeof weight === "undefined" ? 1 : weight;
 
 		// document.write("Data series recording " + value + " (weight = " + w + ")\n");
@@ -127,7 +121,6 @@ class TimeSeries {
 	}
 
 	setHistogram(lower, upper, nbuckets) {
-		argCheck(arguments, 3, 3);
 		this.dataSeries.setHistogram(lower, upper, nbuckets);
 	}
 
@@ -136,8 +129,6 @@ class TimeSeries {
 	}
 
 	record(value, timestamp) {
-		argCheck(arguments, 2, 2);
-
 		if (!isNaN(this.lastTimestamp)) {
 			this.dataSeries.record(this.lastValue, timestamp - this.lastTimestamp);
 		}
@@ -147,8 +138,6 @@ class TimeSeries {
 	}
 
 	finalize(timestamp) {
-		argCheck(arguments, 1, 1);
-
 		this.record(NaN, timestamp);
 	}
 
@@ -200,15 +189,11 @@ class Population {
 	}
 
 	enter(timestamp) {
-		argCheck(arguments, 1, 1);
-
 		this.population++;
 		this.sizeSeries.record(this.population, timestamp);
 	}
 
 	leave(arrivalAt, leftAt) {
-		argCheck(arguments, 2, 2);
-
 		this.population--;
 		this.sizeSeries.record(this.population, leftAt);
 		this.durationSeries.record(leftAt - arrivalAt);
