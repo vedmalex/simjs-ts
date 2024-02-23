@@ -1,441 +1,456 @@
-import { PQueue, Queue } from './queues.js';
-import { Population } from './stats.js';
-import { Request } from './request.js';
-import { Model } from './model.js';
+import { Model } from "./model.js";
+import { PQueue, Queue } from "./queues.js";
+import { Request } from "./request.js";
+import { Population } from "./stats.js";
 
 function argCheck(found, expMin, expMax) {
-  if (found.length < expMin || found.length > expMax) {   // argCheck
-    throw new Error('Incorrect number of arguments');   // argCheck
-  }   // argCheck
+	if (found.length < expMin || found.length > expMax) {
+		// argCheck
+		throw new Error("Incorrect number of arguments"); // argCheck
+	} // argCheck
 
+	for (let i = 0; i < found.length; i++) {
+		// argCheck
 
-  for (let i = 0; i < found.length; i++) {   // argCheck
+		if (!arguments[i + 3] || !found[i]) continue; // argCheck
 
-    if (!arguments[i + 3] || !found[i]) continue;   // argCheck
+		//    print("TEST " + found[i] + " " + arguments[i + 3]   // argCheck
+		//    + " " + (found[i] instanceof Event)   // argCheck
+		//    + " " + (found[i] instanceof arguments[i + 3])   // argCheck
+		//    + "\n");   // ARG CHECK
 
-//    print("TEST " + found[i] + " " + arguments[i + 3]   // argCheck
-//    + " " + (found[i] instanceof Event)   // argCheck
-//    + " " + (found[i] instanceof arguments[i + 3])   // argCheck
-//    + "\n");   // ARG CHECK
-
-
-    if (!(found[i] instanceof arguments[i + 3])) {   // argCheck
-      throw new Error(`parameter ${i + 1} is of incorrect type.`);   // argCheck
-    }   // argCheck
-  }   // argCheck
-}   // argCheck
+		if (!(found[i] instanceof arguments[i + 3])) {
+			// argCheck
+			throw new Error(`parameter ${i + 1} is of incorrect type.`); // argCheck
+		} // argCheck
+	} // argCheck
+} // argCheck
 
 class Sim {
-  constructor() {
-    this.simTime = 0;
-    this.events = 0;
-    this.endTime = 0;
-    this.maxEvents = 0;
-    this.entities = [];
-    this.entitiesByName = {};
-    this.queue = new PQueue();
-    this.endTime = 0;
-    this.entityId = 1;
-    this.paused = 0;
-    this.running = false;
-  }
+	constructor(name) {
+		this.name = name;
+		this.simTime = 0;
+		this.events = 0;
+		this.endTime = 0;
+		this.maxEvents = 0;
+		this.entities = [];
+		this.entitiesByName = {};
+		this.queue = new PQueue();
+		this.endTime = 0;
+		this.entityId = 1;
+		this.paused = 0;
+		this.running = false;
+	}
 
-  time() {
-    return this.simTime;
-  }
+	time() {
+		return this.simTime;
+	}
 
-  sendMessage() {
-    const sender = this.source;
+	sendMessage() {
+		const sender = this.source;
 
-    const message = this.msg;
+		const message = this.msg;
 
-    const entities = this.data;
+		const entities = this.data;
 
-    const sim = sender.sim;
+		const sim = sender.sim;
 
-    if (!entities) {
-            // send to all entities
-      for (let i = sim.entities.length - 1; i >= 0; i--) {
-        const entity = sim.entities[i];
+		if (!entities) {
+			// send to all entities
+			for (let i = sim.entities.length - 1; i >= 0; i--) {
+				const entity = sim.entities[i];
 
-        if (entity === sender) continue;
-        if (entity.onMessage) entity.onMessage(sender, message);
-      }
-    } else if (entities instanceof Array) {
-      for (let i = entities.length - 1; i >= 0; i--) {
-        const entity = entities[i];
+				if (entity === sender) continue;
+				if (entity.onMessage) entity.onMessage(sender, message);
+			}
+		} else if (entities instanceof Array) {
+			for (let i = entities.length - 1; i >= 0; i--) {
+				const entity = entities[i];
 
-        if (entity === sender) continue;
-        if (entity.onMessage) entity.onMessage(sender, message);
-      }
-    } else if (entities.onMessage) {
-      entities.onMessage(sender, message);
-    }
-  }
+				if (entity === sender) continue;
+				if (entity.onMessage) entity.onMessage(sender, message);
+			}
+		} else if (entities.onMessage) {
+			entities.onMessage(sender, message);
+		}
+	}
 
-  addEntity(Klass, name, ...args) {
-        // Verify that prototype has start function
-    if (!Klass.prototype.start) {  // ARG CHECK
-      throw new Error(`Entity class ${Klass.name} must have start() function defined`);
-    }
-    if (typeof name === 'string' && typeof this.entitiesByName[name] !== 'undefined') {
-      throw new Error(`Entity name ${name} already exists`);
-    }
+	addEntity(Klass, name, ...args) {
+		// Verify that prototype has start function
+		if (!Klass.prototype.start) {
+			// ARG CHECK
+			throw new Error(
+				`Entity class ${Klass.name} must have start() function defined`,
+			);
+		}
+		if (
+			typeof name === "string" &&
+			typeof this.entitiesByName[name] !== "undefined"
+		) {
+			throw new Error(`Entity name ${name} already exists`);
+		}
 
-    const entity = new Klass(this, name);
+		const entity = new Klass(this, name);
 
-    this.entities.push(entity);
-    if (typeof name === 'string') {
-      this.entitiesByName[name] = entity;
-    }
+		this.entities.push(entity);
+		if (typeof name === "string") {
+			this.entitiesByName[name] = entity;
+		}
 
-    entity.start(...args);
+		entity.start(...args);
 
-    return entity;
-  }
+		return entity;
+	}
 
-  simulate(endTime, maxEvents) {
-        // argCheck(arguments, 1, 2);
-    if (!maxEvents) { maxEvents = Math.Infinity; }
-    this.events = 0;
-    this.maxEvents = maxEvents;
-    this.endTime = endTime;
-    this.running = true;
-    this.pause();
-    return this.resume();
-  }
+	simulate(endTime, maxEvents) {
+		// argCheck(arguments, 1, 2);
+		if (!maxEvents) {
+			maxEvents = Math.Infinity;
+		}
+		this.events = 0;
+		this.maxEvents = maxEvents;
+		this.endTime = endTime;
+		this.running = true;
+		this.pause();
+		return this.resume();
+	}
 
-  pause() {
-    ++this.paused;
-  }
+	pause() {
+		++this.paused;
+	}
 
-  resume() {
-    if (this.paused > 0) {
-      --this.paused;
-    }
-    if (this.paused <= 0 && this.running) {
-      while (true) {  // eslint-disable-line no-constant-condition
-        this.events++;
-        if (this.events > this.maxEvents) return false;
+	resume() {
+		if (this.paused > 0) {
+			--this.paused;
+		}
+		if (this.paused <= 0 && this.running) {
+			while (true) {
+				// eslint-disable-line no-constant-condition
+				this.events++;
+				if (this.events > this.maxEvents) return false;
 
-              // Get the earliest event
-        const ro = this.queue.remove();
+				// Get the earliest event
+				const ro = this.queue.remove();
 
-              // If there are no more events, we are done with simulation here.
-        if (ro === null) break;
+				// If there are no more events, we are done with simulation here.
+				if (ro === null) break;
 
-              // Uh oh.. we are out of time now
-        if (ro.deliverAt > this.endTime) break;
+				// Uh oh.. we are out of time now
+				if (ro.deliverAt > this.endTime) break;
 
-              // Advance simulation time
-        this.simTime = ro.deliverAt;
+				// Advance simulation time
+				this.simTime = ro.deliverAt;
 
-              // If this event is already cancelled, ignore
-        if (ro.cancelled) continue;
+				// If this event is already cancelled, ignore
+				if (ro.cancelled) continue;
 
-        ro.deliver();
-        if (this.paused) {
-          return true;
-        }
-      }
-      this.running = false;
-      this.finalize();
-    }
-    return true;
-  }
+				ro.deliver();
+				if (this.paused) {
+					return true;
+				}
+			}
+			this.running = false;
+			this.finalize();
+		}
+		return true;
+	}
 
-  step() {
-    while (true) {  // eslint-disable-line no-constant-condition
-      const ro = this.queue.remove();
+	step() {
+		while (true) {
+			// eslint-disable-line no-constant-condition
+			const ro = this.queue.remove();
 
-      if (ro === null) return false;
-      this.simTime = ro.deliverAt;
-      if (ro.cancelled) continue;
-      ro.deliver();
-      break;
-    }
-    return true;
-  }
+			if (ro === null) return false;
+			this.simTime = ro.deliverAt;
+			if (ro.cancelled) continue;
+			ro.deliver();
+			break;
+		}
+		return true;
+	}
 
-  finalize() {
-    for (let i = 0; i < this.entities.length; i++) {
+	finalize() {
+		for (let i = 0; i < this.entities.length; i++) {
+			if (this.entities[i].finalize) {
+				this.entities[i].finalize(this.simTime);
+			}
+		}
+	}
 
-      if (this.entities[i].finalize) {
-        this.entities[i].finalize(this.simTime);
-      }
-    }
-  }
+	setLogger(logger) {
+		argCheck(arguments, 1, 1, Function);
+		this.logger = logger;
+	}
 
-  setLogger(logger) {
-    argCheck(arguments, 1, 1, Function);
-    this.logger = logger;
-  }
+	log(message, entity) {
+		argCheck(arguments, 1, 2);
 
-  log(message, entity) {
-    argCheck(arguments, 1, 2);
+		if (!this.logger) return;
+		let entityMsg = "";
 
-    if (!this.logger) return;
-    let entityMsg = '';
-
-    if (typeof entity !== 'undefined') {
-      if (entity.name) {
-        entityMsg = ` [${entity.name}]`;
-      } else {
-        entityMsg = ` [${entity.id}] `;
-      }
-    }
-    this.logger(`${this.simTime.toFixed(6)}${entityMsg}   ${message}`);
-  }
+		if (typeof entity !== "undefined") {
+			if (entity.name) {
+				entityMsg = ` [${entity.name}]`;
+			} else {
+				entityMsg = ` [${entity.id}] `;
+			}
+		}
+		this.logger(`${this.simTime.toFixed(6)}${entityMsg}   ${message}`);
+	}
 }
 
 class Facility extends Model {
-  constructor(name, discipline, servers, maxqlen) {
-    super(name);
-    argCheck(arguments, 1, 4);
+	constructor(name, discipline, servers, maxqlen) {
+		super(name);
+		argCheck(arguments, 1, 4);
 
-    this.free = servers ? servers : 1;
-    this.servers = servers ? servers : 1;
-    this.maxqlen = (typeof maxqlen === 'undefined') ? -1 : 1 * maxqlen;
+		this.free = servers ? servers : 1;
+		this.servers = servers ? servers : 1;
+		this.maxqlen = typeof maxqlen === "undefined" ? -1 : 1 * maxqlen;
 
-    switch (discipline) {
+		switch (discipline) {
+			case Facility.LCFS:
+				this.use = this.useLCFS;
+				this.queue = new Queue();
+				break;
+			case Facility.PS:
+				this.use = this.useProcessorSharing;
+				this.queue = [];
+				break;
+			case Facility.FCFS:
+			default:
+				this.use = this.useFCFS;
+				this.freeServers = new Array(this.servers);
+				this.queue = new Queue();
+				for (let i = 0; i < this.freeServers.length; i++) {
+					this.freeServers[i] = true;
+				}
+		}
 
-    case Facility.LCFS:
-      this.use = this.useLCFS;
-      this.queue = new Queue();
-      break;
-    case Facility.PS:
-      this.use = this.useProcessorSharing;
-      this.queue = [];
-      break;
-    case Facility.FCFS:
-    default:
-      this.use = this.useFCFS;
-      this.freeServers = new Array(this.servers);
-      this.queue = new Queue();
-      for (let i = 0; i < this.freeServers.length; i++) {
+		this.stats = new Population();
+		this.busyDuration = 0;
+	}
 
-        this.freeServers[i] = true;
-      }
-    }
+	reset() {
+		this.queue.reset();
+		this.stats.reset();
+		this.busyDuration = 0;
+	}
 
-    this.stats = new Population();
-    this.busyDuration = 0;
-  }
+	systemStats() {
+		return this.stats;
+	}
 
-  reset() {
-    this.queue.reset();
-    this.stats.reset();
-    this.busyDuration = 0;
-  }
+	queueStats() {
+		return this.queue.stats;
+	}
 
-  systemStats() {
-    return this.stats;
-  }
+	usage() {
+		return this.busyDuration;
+	}
 
-  queueStats() {
-    return this.queue.stats;
-  }
+	finalize(timestamp) {
+		argCheck(arguments, 1, 1);
 
-  usage() {
-    return this.busyDuration;
-  }
+		this.stats.finalize(timestamp);
+		this.queue.stats.finalize(timestamp);
+	}
 
-  finalize(timestamp) {
-    argCheck(arguments, 1, 1);
+	useFCFS(duration, ro) {
+		argCheck(arguments, 2, 2);
+		if (
+			(this.maxqlen === 0 && !this.free) ||
+			(this.maxqlen > 0 && this.queue.size() >= this.maxqlen)
+		) {
+			ro.msg = -1;
+			ro.deliverAt = ro.entity.time();
+			ro.entity.sim.queue.insert(ro);
+			return;
+		}
 
-    this.stats.finalize(timestamp);
-    this.queue.stats.finalize(timestamp);
-  }
+		ro.duration = duration;
+		const now = ro.entity.time();
 
-  useFCFS(duration, ro) {
-    argCheck(arguments, 2, 2);
-    if ((this.maxqlen === 0 && !this.free)
-                || (this.maxqlen > 0 && this.queue.size() >= this.maxqlen)) {
-      ro.msg = -1;
-      ro.deliverAt = ro.entity.time();
-      ro.entity.sim.queue.insert(ro);
-      return;
-    }
+		this.stats.enter(now);
+		this.queue.push(ro, now);
+		this.useFCFSSchedule(now);
+	}
 
-    ro.duration = duration;
-    const now = ro.entity.time();
+	useFCFSSchedule(timestamp) {
+		argCheck(arguments, 1, 1);
 
-    this.stats.enter(now);
-    this.queue.push(ro, now);
-    this.useFCFSSchedule(now);
-  }
+		while (this.free > 0 && !this.queue.empty()) {
+			const ro = this.queue.shift(timestamp);
 
-  useFCFSSchedule(timestamp) {
-    argCheck(arguments, 1, 1);
+			if (ro.cancelled) {
+				continue;
+			}
+			for (let i = 0; i < this.freeServers.length; i++) {
+				if (this.freeServers[i]) {
+					this.freeServers[i] = false;
+					ro.msg = i;
+					break;
+				}
+			}
 
-    while (this.free > 0 && !this.queue.empty()) {
-      const ro = this.queue.shift(timestamp);
+			this.free--;
+			this.busyDuration += ro.duration;
 
-      if (ro.cancelled) {
-        continue;
-      }
-      for (let i = 0; i < this.freeServers.length; i++) {
+			// cancel all other reneging requests
+			ro.cancelRenegeClauses();
 
-        if (this.freeServers[i]) {
-          this.freeServers[i] = false;
-          ro.msg = i;
-          break;
-        }
-      }
+			const newro = new Request(this, timestamp, timestamp + ro.duration);
 
-      this.free --;
-      this.busyDuration += ro.duration;
+			newro.done(this.useFCFSCallback, this, ro);
 
-            // cancel all other reneging requests
-      ro.cancelRenegeClauses();
+			ro.entity.sim.queue.insert(newro);
+		}
+	}
 
-      const newro = new Request(this, timestamp, timestamp + ro.duration);
+	useFCFSCallback(ro) {
+		// We have one more free server
+		this.free++;
+		this.freeServers[ro.msg] = true;
 
-      newro.done(this.useFCFSCallback, this, ro);
+		this.stats.leave(ro.scheduledAt, ro.entity.time());
 
-      ro.entity.sim.queue.insert(newro);
-    }
-  }
+		// if there is someone waiting, schedule it now
+		this.useFCFSSchedule(ro.entity.time());
 
-  useFCFSCallback(ro) {
-        // We have one more free server
-    this.free ++;
-    this.freeServers[ro.msg] = true;
+		// restore the deliver function, and deliver
+		ro.deliver();
+	}
 
-    this.stats.leave(ro.scheduledAt, ro.entity.time());
+	useLCFS(duration, ro) {
+		argCheck(arguments, 2, 2);
 
-        // if there is someone waiting, schedule it now
-    this.useFCFSSchedule(ro.entity.time());
+		// if there was a running request..
+		if (this.currentRO) {
+			this.busyDuration +=
+				this.currentRO.entity.time() - this.currentRO.lastIssued;
+			// calcuate the remaining time
+			this.currentRO.remaining =
+				this.currentRO.deliverAt - this.currentRO.entity.time();
+			// preempt it..
+			this.queue.push(this.currentRO, ro.entity.time());
+		}
 
-        // restore the deliver function, and deliver
-    ro.deliver();
+		this.currentRO = ro;
+		// If this is the first time..
+		if (!ro.saved_deliver) {
+			ro.cancelRenegeClauses();
+			ro.remaining = duration;
+			ro.saved_deliver = ro.deliver;
+			ro.deliver = this.useLCFSCallback;
 
-  }
+			this.stats.enter(ro.entity.time());
+		}
 
-  useLCFS(duration, ro) {
-    argCheck(arguments, 2, 2);
+		ro.lastIssued = ro.entity.time();
 
-        // if there was a running request..
-    if (this.currentRO) {
-      this.busyDuration += (this.currentRO.entity.time() - this.currentRO.lastIssued);
-            // calcuate the remaining time
-      this.currentRO.remaining = (
-          this.currentRO.deliverAt - this.currentRO.entity.time());
-            // preempt it..
-      this.queue.push(this.currentRO, ro.entity.time());
-    }
+		// schedule this new event
+		ro.deliverAt = ro.entity.time() + duration;
+		ro.entity.sim.queue.insert(ro);
+	}
 
-    this.currentRO = ro;
-        // If this is the first time..
-    if (!ro.saved_deliver) {
-      ro.cancelRenegeClauses();
-      ro.remaining = duration;
-      ro.saved_deliver = ro.deliver;
-      ro.deliver = this.useLCFSCallback;
+	useLCFSCallback() {
+		const facility = this.source;
 
-      this.stats.enter(ro.entity.time());
-    }
+		if (this !== facility.currentRO) return;
+		facility.currentRO = null;
 
-    ro.lastIssued = ro.entity.time();
+		// stats
+		facility.busyDuration += this.entity.time() - this.lastIssued;
+		facility.stats.leave(this.scheduledAt, this.entity.time());
 
-        // schedule this new event
-    ro.deliverAt = ro.entity.time() + duration;
-    ro.entity.sim.queue.insert(ro);
-  }
+		// deliver this request
+		this.deliver = this.saved_deliver;
+		delete this.saved_deliver;
+		this.deliver();
 
-  useLCFSCallback() {
-    const facility = this.source;
+		// see if there are pending requests
+		if (!facility.queue.empty()) {
+			const obj = facility.queue.pop(this.entity.time());
 
-    if (this !== facility.currentRO) return;
-    facility.currentRO = null;
+			facility.useLCFS(obj.remaining, obj);
+		}
+	}
 
-        // stats
-    facility.busyDuration += (this.entity.time() - this.lastIssued);
-    facility.stats.leave(this.scheduledAt, this.entity.time());
+	useProcessorSharing(duration, ro) {
+		argCheck(arguments, 2, 2, null, Request);
+		ro.duration = duration;
+		ro.cancelRenegeClauses();
+		this.stats.enter(ro.entity.time());
+		this.useProcessorSharingSchedule(ro, true);
+	}
 
-        // deliver this request
-    this.deliver = this.saved_deliver;
-    delete this.saved_deliver;
-    this.deliver();
+	useProcessorSharingSchedule(ro, isAdded) {
+		const current = ro.entity.time();
 
-        // see if there are pending requests
-    if (!facility.queue.empty()) {
-      const obj = facility.queue.pop(this.entity.time());
+		const size = this.queue.length;
 
-      facility.useLCFS(obj.remaining, obj);
-    }
-  }
+		const multiplier = isAdded ? (size + 1.0) / size : (size - 1.0) / size;
 
-  useProcessorSharing(duration, ro) {
-    argCheck(arguments, 2, 2, null, Request);
-    ro.duration = duration;
-    ro.cancelRenegeClauses();
-    this.stats.enter(ro.entity.time());
-    this.useProcessorSharingSchedule(ro, true);
-  }
+		const newQueue = [];
 
-  useProcessorSharingSchedule(ro, isAdded) {
-    const current = ro.entity.time();
+		if (this.queue.length === 0) {
+			this.lastIssued = current;
+		}
 
-    const size = this.queue.length;
+		for (let i = 0; i < size; i++) {
+			const ev = this.queue[i];
 
-    const multiplier = isAdded ? ((size + 1.0) / size) : ((size - 1.0) / size);
+			if (ev.ro === ro) {
+				continue;
+			}
+			const newev = new Request(
+				this,
+				current,
+				current + (ev.deliverAt - current) * multiplier,
+			);
 
-    const newQueue = [];
+			newev.ro = ev.ro;
+			newev.source = this;
+			newev.deliver = this.useProcessorSharingCallback;
+			newQueue.push(newev);
 
-    if (this.queue.length === 0) {
-      this.lastIssued = current;
-    }
+			ev.cancel();
+			ro.entity.sim.queue.insert(newev);
+		}
 
-    for (let i = 0; i < size; i++) {
+		// add this new request
+		if (isAdded) {
+			const newev = new Request(
+				this,
+				current,
+				current + ro.duration * (size + 1),
+			);
 
-      const ev = this.queue[i];
+			newev.ro = ro;
+			newev.source = this;
+			newev.deliver = this.useProcessorSharingCallback;
+			newQueue.push(newev);
 
-      if (ev.ro === ro) {
-        continue;
-      }
-      const newev = new Request(
-          this, current, current + (ev.deliverAt - current) * multiplier);
+			ro.entity.sim.queue.insert(newev);
+		}
 
-      newev.ro = ev.ro;
-      newev.source = this;
-      newev.deliver = this.useProcessorSharingCallback;
-      newQueue.push(newev);
+		this.queue = newQueue;
 
-      ev.cancel();
-      ro.entity.sim.queue.insert(newev);
-    }
+		// usage statistics
+		if (this.queue.length === 0) {
+			this.busyDuration += current - this.lastIssued;
+		}
+	}
 
-        // add this new request
-    if (isAdded) {
-      const newev = new Request(
-          this, current, current + ro.duration * (size + 1));
+	useProcessorSharingCallback() {
+		const fac = this.source;
 
-      newev.ro = ro;
-      newev.source = this;
-      newev.deliver = this.useProcessorSharingCallback;
-      newQueue.push(newev);
+		if (this.cancelled) return;
+		fac.stats.leave(this.ro.scheduledAt, this.ro.entity.time());
 
-      ro.entity.sim.queue.insert(newev);
-    }
-
-    this.queue = newQueue;
-
-        // usage statistics
-    if (this.queue.length === 0) {
-      this.busyDuration += (current - this.lastIssued);
-    }
-  }
-
-  useProcessorSharingCallback() {
-    const fac = this.source;
-
-    if (this.cancelled) return;
-    fac.stats.leave(this.ro.scheduledAt, this.ro.entity.time());
-
-    fac.useProcessorSharingSchedule(this.ro, false);
-    this.ro.deliver();
-  }
+		fac.useProcessorSharingSchedule(this.ro, false);
+		this.ro.deliver();
+	}
 }
 
 Facility.FCFS = 1;
@@ -444,471 +459,467 @@ Facility.PS = 3;
 Facility.NumDisciplines = 4;
 
 class Buffer extends Model {
-  constructor(name, capacity, initial) {
-    super(name);
-    argCheck(arguments, 2, 3);
+	constructor(name, capacity, initial) {
+		super(name);
+		argCheck(arguments, 2, 3);
 
-    this.capacity = capacity;
-    this.available = (typeof initial === 'undefined') ? 0 : initial;
-    this.putQueue = new Queue();
-    this.getQueue = new Queue();
-  }
+		this.capacity = capacity;
+		this.available = typeof initial === "undefined" ? 0 : initial;
+		this.putQueue = new Queue();
+		this.getQueue = new Queue();
+	}
 
-  current() {
-    return this.available;
-  }
+	current() {
+		return this.available;
+	}
 
-  size() {
-    return this.capacity;
-  }
+	size() {
+		return this.capacity;
+	}
 
-  get(amount, ro) {
-    argCheck(arguments, 2, 2);
+	get(amount, ro) {
+		argCheck(arguments, 2, 2);
 
-    if (this.getQueue.empty()
-                && amount <= this.available) {
-      this.available -= amount;
+		if (this.getQueue.empty() && amount <= this.available) {
+			this.available -= amount;
 
-      ro.deliverAt = ro.entity.time();
-      ro.deliveryPending = true;
-      ro.entity.sim.queue.insert(ro);
+			ro.deliverAt = ro.entity.time();
+			ro.deliveryPending = true;
+			ro.entity.sim.queue.insert(ro);
 
-      this.getQueue.passby(ro.deliverAt);
+			this.getQueue.passby(ro.deliverAt);
 
-      this.progressPutQueue();
+			this.progressPutQueue();
 
-      return;
-    }
-    ro.amount = amount;
-    this.getQueue.push(ro, ro.entity.time());
-  }
+			return;
+		}
+		ro.amount = amount;
+		this.getQueue.push(ro, ro.entity.time());
+	}
 
-  put(amount, ro) {
-    argCheck(arguments, 2, 2);
+	put(amount, ro) {
+		argCheck(arguments, 2, 2);
 
-    if (this.putQueue.empty()
-                && (amount + this.available) <= this.capacity) {
-      this.available += amount;
+		if (this.putQueue.empty() && amount + this.available <= this.capacity) {
+			this.available += amount;
 
-      ro.deliverAt = ro.entity.time();
-      ro.deliveryPending = true;
-      ro.entity.sim.queue.insert(ro);
+			ro.deliverAt = ro.entity.time();
+			ro.deliveryPending = true;
+			ro.entity.sim.queue.insert(ro);
 
-      this.putQueue.passby(ro.deliverAt);
+			this.putQueue.passby(ro.deliverAt);
 
-      this.progressGetQueue();
+			this.progressGetQueue();
 
-      return;
-    }
+			return;
+		}
 
-    ro.amount = amount;
-    this.putQueue.push(ro, ro.entity.time());
-  }
+		ro.amount = amount;
+		this.putQueue.push(ro, ro.entity.time());
+	}
 
-  progressGetQueue() {
-    let obj;
+	progressGetQueue() {
+		let obj;
 
-    while (obj = this.getQueue.top()) {  // eslint-disable-line no-cond-assign
-            // if obj is cancelled.. remove it.
-      if (obj.cancelled) {
-        this.getQueue.shift(obj.entity.time());
-        continue;
-      }
+		while ((obj = this.getQueue.top())) {
+			// eslint-disable-line no-cond-assign
+			// if obj is cancelled.. remove it.
+			if (obj.cancelled) {
+				this.getQueue.shift(obj.entity.time());
+				continue;
+			}
 
-            // see if this request can be satisfied
-      if (obj.amount <= this.available) {
-                // remove it..
-        this.getQueue.shift(obj.entity.time());
-        this.available -= obj.amount;
-        obj.deliverAt = obj.entity.time();
-        obj.deliveryPending = true;
-        obj.entity.sim.queue.insert(obj);
-      } else {
-                // this request cannot be satisfied
-        break;
-      }
-    }
-  }
+			// see if this request can be satisfied
+			if (obj.amount <= this.available) {
+				// remove it..
+				this.getQueue.shift(obj.entity.time());
+				this.available -= obj.amount;
+				obj.deliverAt = obj.entity.time();
+				obj.deliveryPending = true;
+				obj.entity.sim.queue.insert(obj);
+			} else {
+				// this request cannot be satisfied
+				break;
+			}
+		}
+	}
 
-  progressPutQueue() {
-    let obj;
+	progressPutQueue() {
+		let obj;
 
-    while (obj = this.putQueue.top()) {  // eslint-disable-line no-cond-assign
-            // if obj is cancelled.. remove it.
-      if (obj.cancelled) {
-        this.putQueue.shift(obj.entity.time());
-        continue;
-      }
+		while ((obj = this.putQueue.top())) {
+			// eslint-disable-line no-cond-assign
+			// if obj is cancelled.. remove it.
+			if (obj.cancelled) {
+				this.putQueue.shift(obj.entity.time());
+				continue;
+			}
 
-            // see if this request can be satisfied
-      if (obj.amount + this.available <= this.capacity) {
-                // remove it..
-        this.putQueue.shift(obj.entity.time());
-        this.available += obj.amount;
-        obj.deliverAt = obj.entity.time();
-        obj.deliveryPending = true;
-        obj.entity.sim.queue.insert(obj);
-      } else {
-                // this request cannot be satisfied
-        break;
-      }
-    }
-  }
+			// see if this request can be satisfied
+			if (obj.amount + this.available <= this.capacity) {
+				// remove it..
+				this.putQueue.shift(obj.entity.time());
+				this.available += obj.amount;
+				obj.deliverAt = obj.entity.time();
+				obj.deliveryPending = true;
+				obj.entity.sim.queue.insert(obj);
+			} else {
+				// this request cannot be satisfied
+				break;
+			}
+		}
+	}
 
-  putStats() {
-    return this.putQueue.stats;
-  }
+	putStats() {
+		return this.putQueue.stats;
+	}
 
-  getStats() {
-    return this.getQueue.stats;
-  }
+	getStats() {
+		return this.getQueue.stats;
+	}
 }
 
 class Store extends Model {
-  constructor(capacity, name = null) {
-    argCheck(arguments, 1, 2);
-    super(name);
+	constructor(capacity, name) {
+		argCheck(arguments, 1, 2);
+		super(name);
 
-    this.capacity = capacity;
-    this.objects = [];
-    this.putQueue = new Queue();
-    this.getQueue = new Queue();
-  }
+		this.capacity = capacity;
+		this.objects = [];
+		this.putQueue = new Queue();
+		this.getQueue = new Queue();
+	}
 
-  current() {
-    return this.objects.length;
-  }
+	current() {
+		return this.objects.length;
+	}
 
-  size() {
-    return this.capacity;
-  }
+	size() {
+		return this.capacity;
+	}
 
-  get(filter, ro) {
-    argCheck(arguments, 2, 2);
+	get(filter, ro) {
+		argCheck(arguments, 2, 2);
 
-    if (this.getQueue.empty() && this.current() > 0) {
-      let found = false;
+		if (this.getQueue.empty() && this.current() > 0) {
+			let found = false;
 
-      let obj;
+			let obj;
 
-            // TODO: refactor this code out
-            // it is repeated in progressGetQueue
-      if (filter) {
-        for (let i = 0; i < this.objects.length; i++) {
+			// TODO: refactor this code out
+			// it is repeated in progressGetQueue
+			if (filter) {
+				for (let i = 0; i < this.objects.length; i++) {
+					obj = this.objects[i];
+					if (filter(obj)) {
+						found = true;
+						this.objects.splice(i, 1);
+						break;
+					}
+				}
+			} else {
+				obj = this.objects.shift();
+				found = true;
+			}
 
-          obj = this.objects[i];
-          if (filter(obj)) {
-            found = true;
-            this.objects.splice(i, 1);
-            break;
-          }
-        }
-      } else {
-        obj = this.objects.shift();
-        found = true;
-      }
+			if (found) {
+				this.available--;
 
-      if (found) {
-        this.available --;
+				ro.msg = obj;
+				ro.deliverAt = ro.entity.time();
+				ro.deliveryPending = true;
+				ro.entity.sim.queue.insert(ro);
 
-        ro.msg = obj;
-        ro.deliverAt = ro.entity.time();
-        ro.deliveryPending = true;
-        ro.entity.sim.queue.insert(ro);
+				this.getQueue.passby(ro.deliverAt);
 
-        this.getQueue.passby(ro.deliverAt);
+				this.progressPutQueue();
 
-        this.progressPutQueue();
+				return;
+			}
+		}
 
-        return;
-      }
-    }
+		ro.filter = filter;
+		this.getQueue.push(ro, ro.entity.time());
+	}
 
-    ro.filter = filter;
-    this.getQueue.push(ro, ro.entity.time());
-  }
+	put(obj, ro) {
+		argCheck(arguments, 2, 2);
 
-  put(obj, ro) {
-    argCheck(arguments, 2, 2);
+		if (this.putQueue.empty() && this.current() < this.capacity) {
+			this.available++;
 
-    if (this.putQueue.empty() && this.current() < this.capacity) {
-      this.available ++;
+			ro.deliverAt = ro.entity.time();
+			ro.deliveryPending = true;
+			ro.entity.sim.queue.insert(ro);
 
-      ro.deliverAt = ro.entity.time();
-      ro.deliveryPending = true;
-      ro.entity.sim.queue.insert(ro);
+			this.putQueue.passby(ro.deliverAt);
+			this.objects.push(obj);
 
-      this.putQueue.passby(ro.deliverAt);
-      this.objects.push(obj);
+			this.progressGetQueue();
 
-      this.progressGetQueue();
+			return;
+		}
 
-      return;
-    }
+		ro.obj = obj;
+		this.putQueue.push(ro, ro.entity.time());
+	}
 
-    ro.obj = obj;
-    this.putQueue.push(ro, ro.entity.time());
-  }
+	progressGetQueue() {
+		let ro;
 
-  progressGetQueue() {
-    let ro;
+		while ((ro = this.getQueue.top())) {
+			// eslint-disable-line no-cond-assign
+			// if obj is cancelled.. remove it.
+			if (ro.cancelled) {
+				this.getQueue.shift(ro.entity.time());
+				continue;
+			}
 
-    while (ro = this.getQueue.top()) {  // eslint-disable-line no-cond-assign
-      // if obj is cancelled.. remove it.
-      if (ro.cancelled) {
-        this.getQueue.shift(ro.entity.time());
-        continue;
-      }
+			// see if this request can be satisfied
+			if (this.current() > 0) {
+				const filter = ro.filter;
 
-      // see if this request can be satisfied
-      if (this.current() > 0) {
-        const filter = ro.filter;
+				let found = false;
 
-        let found = false;
+				let obj;
 
-        let obj;
+				if (filter) {
+					for (let i = 0; i < this.objects.length; i++) {
+						obj = this.objects[i];
+						if (filter(obj)) {
+							// eslint-disable-line max-depth
+							found = true;
+							this.objects.splice(i, 1);
+							break;
+						}
+					}
+				} else {
+					obj = this.objects.shift();
+					found = true;
+				}
 
-        if (filter) {
-          for (let i = 0; i < this.objects.length; i++) {
+				if (found) {
+					// remove it..
+					this.getQueue.shift(ro.entity.time());
+					this.available--;
 
-            obj = this.objects[i];
-            if (filter(obj)) {  // eslint-disable-line max-depth
-              found = true;
-              this.objects.splice(i, 1);
-              break;
-            }
-          }
-        } else {
-          obj = this.objects.shift();
-          found = true;
-        }
+					ro.msg = obj;
+					ro.deliverAt = ro.entity.time();
+					ro.deliveryPending = true;
+					ro.entity.sim.queue.insert(ro);
+				} else {
+					break;
+				}
+			} else {
+				// this request cannot be satisfied
+				break;
+			}
+		}
+	}
 
-        if (found) {
-                    // remove it..
-          this.getQueue.shift(ro.entity.time());
-          this.available --;
+	progressPutQueue() {
+		let ro;
 
-          ro.msg = obj;
-          ro.deliverAt = ro.entity.time();
-          ro.deliveryPending = true;
-          ro.entity.sim.queue.insert(ro);
-        } else {
-          break;
-        }
+		while ((ro = this.putQueue.top())) {
+			// eslint-disable-line no-cond-assign
+			// if obj is cancelled.. remove it.
+			if (ro.cancelled) {
+				this.putQueue.shift(ro.entity.time());
+				continue;
+			}
 
-      } else {
-                // this request cannot be satisfied
-        break;
-      }
-    }
-  }
+			// see if this request can be satisfied
+			if (this.current() < this.capacity) {
+				// remove it..
+				this.putQueue.shift(ro.entity.time());
+				this.available++;
+				this.objects.push(ro.obj);
+				ro.deliverAt = ro.entity.time();
+				ro.deliveryPending = true;
+				ro.entity.sim.queue.insert(ro);
+			} else {
+				// this request cannot be satisfied
+				break;
+			}
+		}
+	}
 
-  progressPutQueue() {
-    let ro;
+	putStats() {
+		return this.putQueue.stats;
+	}
 
-    while (ro = this.putQueue.top()) {  // eslint-disable-line no-cond-assign
-            // if obj is cancelled.. remove it.
-      if (ro.cancelled) {
-        this.putQueue.shift(ro.entity.time());
-        continue;
-      }
-
-            // see if this request can be satisfied
-      if (this.current() < this.capacity) {
-                // remove it..
-        this.putQueue.shift(ro.entity.time());
-        this.available ++;
-        this.objects.push(ro.obj);
-        ro.deliverAt = ro.entity.time();
-        ro.deliveryPending = true;
-        ro.entity.sim.queue.insert(ro);
-      } else {
-        // this request cannot be satisfied
-        break;
-      }
-    }
-  }
-
-  putStats() {
-    return this.putQueue.stats;
-  }
-
-  getStats() {
-    return this.getQueue.stats;
-  }
+	getStats() {
+		return this.getQueue.stats;
+	}
 }
 
 class Event extends Model {
-  constructor(name) {
-    super(name);
-    argCheck(arguments, 0, 1);
+	constructor(name) {
+		super(name);
+		argCheck(arguments, 0, 1);
 
-    this.waitList = [];
-    this.queue = [];
-    this.isFired = false;
-  }
+		this.waitList = [];
+		this.queue = [];
+		this.isFired = false;
+	}
 
-  addWaitList(ro) {
-    argCheck(arguments, 1, 1);
+	addWaitList(ro) {
+		argCheck(arguments, 1, 1);
 
-    if (this.isFired) {
-      ro.deliverAt = ro.entity.time();
-      ro.entity.sim.queue.insert(ro);
-      return;
-    }
-    this.waitList.push(ro);
-  }
+		if (this.isFired) {
+			ro.deliverAt = ro.entity.time();
+			ro.entity.sim.queue.insert(ro);
+			return;
+		}
+		this.waitList.push(ro);
+	}
 
-  addQueue(ro) {
-    argCheck(arguments, 1, 1);
+	addQueue(ro) {
+		argCheck(arguments, 1, 1);
 
-    if (this.isFired) {
-      ro.deliverAt = ro.entity.time();
-      ro.entity.sim.queue.insert(ro);
-      return;
-    }
-    this.queue.push(ro);
-  }
+		if (this.isFired) {
+			ro.deliverAt = ro.entity.time();
+			ro.entity.sim.queue.insert(ro);
+			return;
+		}
+		this.queue.push(ro);
+	}
 
-  fire(keepFired) {
-    argCheck(arguments, 0, 1);
+	fire(keepFired) {
+		argCheck(arguments, 0, 1);
 
-    if (keepFired) {
-      this.isFired = true;
-    }
+		if (keepFired) {
+			this.isFired = true;
+		}
 
-        // Dispatch all waiting entities
-    const tmpList = this.waitList;
+		// Dispatch all waiting entities
+		const tmpList = this.waitList;
 
-    this.waitList = [];
-    for (let i = 0; i < tmpList.length; i++) {
+		this.waitList = [];
+		for (let i = 0; i < tmpList.length; i++) {
+			tmpList[i].deliver();
+		}
 
-      tmpList[i].deliver();
-    }
+		// Dispatch one queued entity
+		const lucky = this.queue.shift();
 
-        // Dispatch one queued entity
-    const lucky = this.queue.shift();
+		if (lucky) {
+			lucky.deliver();
+		}
+	}
 
-    if (lucky) {
-      lucky.deliver();
-    }
-  }
-
-  clear() {
-    this.isFired = false;
-  }
+	clear() {
+		this.isFired = false;
+	}
 }
 
 class Entity extends Model {
-  constructor(sim, name) {
-    super(name);
-    this.sim = sim;
-  }
+	constructor(sim, name) {
+		super(name);
+		this.sim = sim;
+	}
 
-  time() {
-    return this.sim.time();
-  }
+	time() {
+		return this.sim.time();
+	}
 
-  setTimer(duration) {
-    argCheck(arguments, 1, 1);
+	setTimer(duration) {
+		argCheck(arguments, 1, 1);
 
-    const ro = new Request(
-              this,
-              this.sim.time(),
-              this.sim.time() + duration);
+		const ro = new Request(this, this.sim.time(), this.sim.time() + duration);
 
-    this.sim.queue.insert(ro);
-    return ro;
-  }
+		this.sim.queue.insert(ro);
+		return ro;
+	}
 
-  waitEvent(event) {
-    argCheck(arguments, 1, 1, Event);
+	waitEvent(event) {
+		argCheck(arguments, 1, 1, Event);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = event;
-    event.addWaitList(ro);
-    return ro;
-  }
+		ro.source = event;
+		event.addWaitList(ro);
+		return ro;
+	}
 
-  queueEvent(event) {
-    argCheck(arguments, 1, 1, Event);
+	queueEvent(event) {
+		argCheck(arguments, 1, 1, Event);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = event;
-    event.addQueue(ro);
-    return ro;
-  }
+		ro.source = event;
+		event.addQueue(ro);
+		return ro;
+	}
 
-  useFacility(facility, duration) {
-    argCheck(arguments, 2, 2, Facility);
+	useFacility(facility, duration) {
+		argCheck(arguments, 2, 2, Facility);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = facility;
-    facility.use(duration, ro);
-    return ro;
-  }
+		ro.source = facility;
+		facility.use(duration, ro);
+		return ro;
+	}
 
-  putBuffer(buffer, amount) {
-    argCheck(arguments, 2, 2, Buffer);
+	putBuffer(buffer, amount) {
+		argCheck(arguments, 2, 2, Buffer);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = buffer;
-    buffer.put(amount, ro);
-    return ro;
-  }
+		ro.source = buffer;
+		buffer.put(amount, ro);
+		return ro;
+	}
 
-  getBuffer(buffer, amount) {
-    argCheck(arguments, 2, 2, Buffer);
+	getBuffer(buffer, amount) {
+		argCheck(arguments, 2, 2, Buffer);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = buffer;
-    buffer.get(amount, ro);
-    return ro;
-  }
+		ro.source = buffer;
+		buffer.get(amount, ro);
+		return ro;
+	}
 
-  putStore(store, obj) {
-    argCheck(arguments, 2, 2, Store);
+	putStore(store, obj) {
+		argCheck(arguments, 2, 2, Store);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = store;
-    store.put(obj, ro);
-    return ro;
-  }
+		ro.source = store;
+		store.put(obj, ro);
+		return ro;
+	}
 
-  getStore(store, filter) {
-    argCheck(arguments, 1, 2, Store, Function);
+	getStore(store, filter) {
+		argCheck(arguments, 1, 2, Store, Function);
 
-    const ro = new Request(this, this.sim.time(), 0);
+		const ro = new Request(this, this.sim.time(), 0);
 
-    ro.source = store;
-    store.get(filter, ro);
-    return ro;
-  }
+		ro.source = store;
+		store.get(filter, ro);
+		return ro;
+	}
 
-  send(message, delay, entities) {
-    argCheck(arguments, 2, 3);
+	send(message, delay, entities) {
+		argCheck(arguments, 2, 3);
 
-    const ro = new Request(this.sim, this.time(), this.time() + delay);
+		const ro = new Request(this.sim, this.time(), this.time() + delay);
 
-    ro.source = this;
-    ro.msg = message;
-    ro.data = entities;
-    ro.deliver = this.sim.sendMessage;
+		ro.source = this;
+		ro.msg = message;
+		ro.data = entities;
+		ro.deliver = this.sim.sendMessage;
 
-    this.sim.queue.insert(ro);
-  }
+		this.sim.queue.insert(ro);
+	}
 
-  log(message) {
-    argCheck(arguments, 1, 1);
+	log(message) {
+		argCheck(arguments, 1, 1);
 
-    this.sim.log(message, this);
-  }
+		this.sim.log(message, this);
+	}
 }
 
 export { Sim, Facility, Buffer, Store, Event, Entity, argCheck };

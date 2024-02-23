@@ -9,8 +9,8 @@ test("testMessageSendOne", () => {
 	let count = 0;
 
 	class MyEntity extends Sim.Entity {
-		other;
-		master;
+		other: unknown;
+		master: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -18,7 +18,7 @@ test("testMessageSendOne", () => {
 				this.send("message", 10, this.other);
 			}
 		}
-		onMessage = (source, message) => {
+		onMessage = (source: unknown, message: unknown) => {
 			expect(source).toBe(this.other);
 			expect(message).toBe("message");
 			expect(this.time()).toBe(10);
@@ -50,6 +50,8 @@ test("testMessageSendAll", () => {
 	let count = 0;
 
 	class MyEntity extends Sim.Entity {
+		master: unknown;
+		other: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -57,7 +59,7 @@ test("testMessageSendAll", () => {
 				this.send("message", 10);
 			}
 		}
-		onMessage(source, message) {
+		onMessage(source: unknown, message: unknown) {
 			expect(source).toBe(this.other);
 			expect(message).toBe("message");
 			expect(this.time()).toBe(10);
@@ -92,6 +94,9 @@ test("testMessageSendArray", () => {
 	let count = 0;
 
 	class MyEntity extends Sim.Entity {
+		master: unknown;
+		array: unknown;
+		other: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -100,7 +105,7 @@ test("testMessageSendArray", () => {
 			}
 		}
 
-		onMessage(source, message) {
+		onMessage(source: unknown, message: unknown) {
 			expect(source).toBe(this.other);
 			expect(message).toBe("message");
 			expect(this.time()).toBe(10);
@@ -135,6 +140,8 @@ test("testMessageNoCallback", () => {
 	const sim = new Sim.Sim();
 
 	class MyEntity extends Sim.Entity {
+		master: unknown;
+		other: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -167,6 +174,8 @@ test("testMessageDelayedSendOne", () => {
 	let count = 0;
 
 	class MyEntity extends Sim.Entity {
+		master: unknown;
+		other: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -174,7 +183,7 @@ test("testMessageDelayedSendOne", () => {
 				this.setTimer(10).done(this.send, this, ["message", 10, this.other]);
 			}
 		}
-		onMessage(source, message) {
+		onMessage(source: unknown, message: unknown) {
 			expect(source).toBe(this.other);
 			expect(message).toBe("message");
 			expect(this.time()).toBe(20);
@@ -206,6 +215,8 @@ test("testMessageZeroDelay", () => {
 	let count = 0;
 
 	class MyEntity extends Sim.Entity {
+		master: unknown;
+		other: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -213,7 +224,7 @@ test("testMessageZeroDelay", () => {
 				this.setTimer(10).done(this.send, this, ["message", 0, this.other]);
 			}
 		}
-		onMessage(source, message) {
+		onMessage(source: unknown, message: unknown) {
 			expect(source).toBe(this.other);
 			expect(message).toBe("message");
 			expect(this.time()).toBe(10);

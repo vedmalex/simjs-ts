@@ -6,10 +6,13 @@ let finalized = 0;
 test("testFacilityFCFSOneServer", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("facility", Sim.FCFS, 1);
+	const fac = new Sim.Facility("facility", Sim.Facility.FCFS, 1);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count: number;
+		callbackSource: unknown;
+		callbackMessage: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -68,11 +71,12 @@ test("testFacilityFCFSOOneServerTwoEntities", () => {
 	const fac = new Sim.Facility("facility");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count = 0;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
-		start(first) {
+		start(first: boolean) {
 			// entity 1, at time 0: [0, 10]
 			// entity 2, at time 0: [10, 20]
 			// entity 1, at time 4: [20, 30]
@@ -132,10 +136,13 @@ test("testFacilityFCFSOOneServerTwoEntities", () => {
 test("testFacilityFCFSTwoServers", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("facility", Sim.FCFS, 2);
+	const fac = new Sim.Facility("facility", Sim.Facility.FCFS, 2);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count = 0;
+		callbackSource: unknown;
+		callbackMessage: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -191,7 +198,9 @@ test("testFacilityFCFSDrop0", () => {
 	const fac = new Sim.Facility("fcfs", Sim.Facility.FCFS, 1, 0);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count = 0;
+		callbackMessage: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -238,7 +247,9 @@ test("testFacilityFCFSDrop1", () => {
 	const fac = new Sim.Facility("fcfs", Sim.Facility.FCFS, 1, 1);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count = 0;
+		callbackMessage: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -291,7 +302,8 @@ test("testFacilityLCFSSimple", () => {
 	const fac = new Sim.Facility("lcfs", Sim.Facility.LCFS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -326,7 +338,8 @@ test("testFacilityLCFSPreemptTwice", () => {
 	const fac = new Sim.Facility("lcfs", Sim.Facility.LCFS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -368,7 +381,8 @@ test("testFacilityLCFSPreemptTwoLevel", () => {
 	const fac = new Sim.Facility("lcfs", Sim.Facility.LCFS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -410,7 +424,8 @@ test("testFacilityTimeoutDuringUsage", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.FCFS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -459,7 +474,10 @@ test("testFacilityCancelDuringUsage", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.FCFS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		ro!: Sim.Request;
+		ro2!: Sim.Request;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -503,7 +521,9 @@ test("testFacilityLCFSImmuneToRenege", () => {
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		ro!: Sim.Request;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -544,7 +564,8 @@ test("testFacilityPSOne", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -572,7 +593,8 @@ test("testFacilityPSTwoIdentical", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -604,7 +626,8 @@ test("testFacilityPSTwoIdenticalLater", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -641,7 +664,8 @@ test("testFacilityPSTwoOverlapPartial", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -678,7 +702,8 @@ test("testFacilityPSTwoOverlapFull", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -715,7 +740,8 @@ test("testFacilityPSTwoNoOverlap", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -751,7 +777,9 @@ test("testFacilityPSTenNoOverlap", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		callbackData: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -760,7 +788,7 @@ test("testFacilityPSTenNoOverlap", () => {
 				this.setTimer(i)
 					.done(() => {
 						this.useFacility(fac, 1).done(
-							(j) => {
+							(j: number) => {
 								expect(this.time()).toBe(j);
 								this.count++;
 							},
@@ -789,7 +817,9 @@ test("testFacilityPSTenSmall", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		callbackData: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -803,7 +833,7 @@ test("testFacilityPSTenSmall", () => {
 				this.setTimer(2 * i)
 					.done(() => {
 						this.useFacility(fac, 1).done(
-							(j) => {
+							(j: number) => {
 								expect(this.time()).toBe(j);
 								this.count++;
 							},
@@ -831,7 +861,8 @@ test("testFacilityPSTen", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -860,7 +891,8 @@ test("testFacilityPSRampUpDown", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -905,7 +937,9 @@ test("testFacilityPSImmuneToRenege", () => {
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		ro!: Sim.Request;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -946,7 +980,9 @@ test("testFacilityPSCancelDuringUsage", () => {
 	const fac = new Sim.Facility("simple", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		ro!: Sim.Request;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -978,7 +1014,8 @@ test("testFacilityPSDocExample", () => {
 	const network = new Sim.Facility("Network Cable", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -1015,7 +1052,8 @@ test("testFacilityPSNested", () => {
 	const network = new Sim.Facility("abcd", Sim.Facility.PS);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}

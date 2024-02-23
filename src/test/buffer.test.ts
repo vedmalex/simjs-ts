@@ -11,7 +11,7 @@ test("testBufferBlockedPuts", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -61,7 +61,7 @@ test("testBufferBlockedGet", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -111,7 +111,7 @@ test("BufferPutStillWaits", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -163,7 +163,7 @@ test("BufferGetStillWaits", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -215,7 +215,7 @@ test("BufferGetCancel", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -252,7 +252,7 @@ test("BufferPutCancel", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -289,7 +289,7 @@ test("BufferPutTimeout", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -328,7 +328,7 @@ test("BufferPutEventRenege", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -367,7 +367,7 @@ test("BufferGetTimeout", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -406,7 +406,7 @@ test("BufferGetEventRenege", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}

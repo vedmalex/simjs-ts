@@ -10,7 +10,8 @@ test("testEventFlash", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		callbackSource: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -61,7 +62,8 @@ test("testEventSustain", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args) {
+		callbackSource: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}

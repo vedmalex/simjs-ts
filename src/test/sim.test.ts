@@ -19,6 +19,7 @@ test("testFinalize", () => {
 	const sim = new Sim.Sim();
 
 	class MyQueue extends Sim.Queue {
+		capacity = 0;
 		start() {
 			this.capacity = 0;
 		}

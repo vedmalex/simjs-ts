@@ -8,7 +8,8 @@ test("testRequestZeroDelayTimeout", () => {
 	const sim = new Sim.Sim();
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		string;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.string = "start";
 		}
@@ -37,7 +38,8 @@ test("testRequestZeroDelayPutBuffer", () => {
 	const buffer = new Sim.Buffer("a", 100);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		string;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.string = "start";
 		}
@@ -66,7 +68,8 @@ test("testRequestZeroDelayEventWait", () => {
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		string;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.string = "start";
 		}
@@ -97,7 +100,8 @@ test("testRequestZeroDelayEventQueue", () => {
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		string;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.string = "start";
 		}
@@ -128,7 +132,8 @@ test("testRequestZeroDelayFacility", () => {
 	const fac = new Sim.Facility("a");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		string;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.string = "start";
 		}
@@ -159,7 +164,11 @@ test("testRequestCallbackData", () => {
 	const event = new Sim.Event("event");
 
 	class MyEntity extends Sim.Entity {
-		constructor(simInstance) {
+		count;
+		callbackData: unknown;
+		callbackMessage: unknown;
+		callbackSource: unknown;
+		constructor(simInstance: Sim.Sim) {
 			super(simInstance);
 			this.count = 0;
 		}
@@ -195,7 +204,7 @@ test("testRequestCallbackData", () => {
 			expect(typeof this.callbackData).toBe("undefined");
 		}
 
-		fn1(v) {
+		fn1(v: number) {
 			if (this.time() === 0) {
 				expect(v).toBe(1);
 				expect(typeof this.callbackMessage).toBe("undefined");
@@ -208,7 +217,7 @@ test("testRequestCallbackData", () => {
 			this.count++;
 		}
 
-		fn2(v) {
+		fn2(v: number) {
 			// this.userData is visible in all callback functions
 			expect(v).toBe(3);
 			expect(this.callbackSource).toBe(buffer);
@@ -234,7 +243,12 @@ test("testRequestSetTimer", () => {
 	const event = new Sim.Event("event");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		callbackSource: unknown;
+		callbackMessage: unknown;
+		callbackData: unknown;
+		obj: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -245,7 +259,7 @@ test("testRequestSetTimer", () => {
 			// basic timers.. testing set data function
 			this.setTimer(clock++)
 				.setData(1)
-				.done((d) => {
+				.done((d: unknown) => {
 					expect(typeof this.callbackSource).toBe("undefined");
 					expect(typeof this.callbackMessage).toBe("undefined");
 					expect(this.callbackData).toBe(1);
@@ -254,7 +268,7 @@ test("testRequestSetTimer", () => {
 				});
 
 			this.setTimer(clock++)
-				.done((d) => {
+				.done((d: unknown) => {
 					expect(typeof this.callbackSource).toBe("undefined");
 					expect(typeof this.callbackMessage).toBe("undefined");
 					expect(this.callbackData).toBe(1);
@@ -266,7 +280,7 @@ test("testRequestSetTimer", () => {
 			this.obj = { a: 1, b: 2 };
 			this.setTimer(clock++)
 				.setData(this.obj)
-				.done((r, m, d) => {
+				.done((r: unknown, m: unknown, d: unknown) => {
 					expect(typeof this.callbackSource).toBe("undefined");
 					expect(typeof this.callbackMessage).toBe("undefined");
 					expect(this.callbackData).toBe(this.obj);
@@ -276,7 +290,7 @@ test("testRequestSetTimer", () => {
 
 			this.setTimer(clock++)
 				.setData("overwritten")
-				.done((d) => {
+				.done((d: unknown) => {
 					expect(typeof this.callbackSource).toBe("undefined");
 					expect(typeof this.callbackMessage).toBe("undefined");
 					expect(this.callbackData).toBe("final");
@@ -289,7 +303,7 @@ test("testRequestSetTimer", () => {
 			this.setTimer(clock++)
 				.setData("overwritten")
 				.done(
-					(d) => {
+					(d: unknown) => {
 						expect(typeof this.callbackSource).toBe("undefined");
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("final");
@@ -303,7 +317,7 @@ test("testRequestSetTimer", () => {
 
 			this.setTimer(clock++)
 				.setData("overwritten")
-				.done((d) => {
+				.done((d: unknown) => {
 					expect(typeof this.callbackSource).toBe("undefined");
 					expect(typeof this.callbackMessage).toBe("undefined");
 					expect(this.callbackData).toBe("final");
@@ -315,7 +329,7 @@ test("testRequestSetTimer", () => {
 			this.setTimer(clock++)
 				.setData("overwritten")
 				.done(
-					(d) => {
+					(d: unknown) => {
 						expect(typeof this.callbackSource).toBe("undefined");
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("final");
@@ -330,7 +344,7 @@ test("testRequestSetTimer", () => {
 			this.setTimer(clock++)
 				.setData("overwritten")
 				.done(
-					(d, e) => {
+					(d: unknown, e: unknown) => {
 						expect(typeof this.callbackSource).toBe("undefined");
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("final");
@@ -349,7 +363,7 @@ test("testRequestSetTimer", () => {
 				.done(() => {
 					throw new Error("fail");
 				})
-				.unlessEvent(event, (d) => {
+				.unlessEvent(event, (d: unknown) => {
 					expect(typeof this.callbackSource).toBe("undefined");
 					expect(this.callbackMessage).toBe(event);
 					expect(this.callbackData).toBe("event");
@@ -366,7 +380,7 @@ test("testRequestSetTimer", () => {
 				})
 				.unlessEvent(
 					event,
-					(d) => {
+					(d: unknown) => {
 						expect(typeof this.callbackSource).toBe("undefined");
 						expect(this.callbackMessage).toBe(event);
 						expect(this.callbackData).toBe("event");
@@ -384,7 +398,7 @@ test("testRequestSetTimer", () => {
 				})
 				.unlessEvent(
 					event,
-					(d, e) => {
+					(d: unknown, e: unknown) => {
 						expect(typeof this.callbackSource).toBe("undefined");
 						expect(this.callbackMessage).toBe(event);
 						expect(this.callbackData).toBe("event");
@@ -416,7 +430,7 @@ test('testRequestPool', () => {
   const event = new Sim.Event('event');
 
   class MyEntity extends Sim.Entity {
-    constructor(...args) {
+    constructor(...args: Array<unknown>) {
       super(...args);
       this.count = 0;
     }
@@ -506,7 +520,11 @@ test("testRequestBuffer", () => {
 	const event = new Sim.Event("event");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		callbackSource: unknown;
+		callbackMessage: unknown;
+		callbackData: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -518,7 +536,7 @@ test("testRequestBuffer", () => {
 				expect(buffer.available).toBe(0);
 				this.putBuffer(buffer, 10)
 					.setData("abcd")
-					.done((d) => {
+					.done((d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("abcd");
@@ -535,7 +553,7 @@ test("testRequestBuffer", () => {
 				expect(buffer.available).toBe(0);
 				this.putBuffer(buffer, 10)
 					.done(
-						(d) => {
+						(d: unknown) => {
 							expect(this.callbackSource).toBe(buffer);
 							expect(typeof this.callbackMessage).toBe("undefined");
 							expect(this.callbackData).toBe("abcde");
@@ -559,7 +577,7 @@ test("testRequestBuffer", () => {
 				this.getBuffer(buffer, 10)
 					.setData("abcd")
 					.done(
-						(d, e) => {
+						(d: unknown, e: unknown) => {
 							expect(this.callbackSource).toBe(buffer);
 							expect(typeof this.callbackMessage).toBe("undefined");
 							expect(this.callbackData).toBe("abcd");
@@ -580,7 +598,7 @@ test("testRequestBuffer", () => {
 			this.setTimer(41).done(() => {
 				expect(buffer.available).toBe(10);
 				this.getBuffer(buffer, 10)
-					.done((d) => {
+					.done((d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("abcde");
@@ -599,7 +617,7 @@ test("testRequestBuffer", () => {
 					.done(() => {
 						throw new Error("fail");
 					})
-					.waitUntil(1, (d) => {
+					.waitUntil(1, (d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("abcde");
@@ -618,7 +636,7 @@ test("testRequestBuffer", () => {
 					.done(() => {
 						throw new Error("fail");
 					})
-					.waitUntil(1, (d) => {
+					.waitUntil(1, (d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("abcde");
@@ -637,7 +655,7 @@ test("testRequestBuffer", () => {
 					.done(() => {
 						throw new Error("fail");
 					})
-					.unlessEvent(event, (d) => {
+					.unlessEvent(event, (d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(this.callbackMessage).toBe(event);
 						expect(this.callbackData).toBe("abcde");
@@ -659,7 +677,7 @@ test("testRequestBuffer", () => {
 					.done(() => {
 						throw new Error("fail");
 					})
-					.unlessEvent(event, (d) => {
+					.unlessEvent(event, (d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(this.callbackMessage).toBe(event);
 						expect(this.callbackData).toBe("abcde");
@@ -681,7 +699,7 @@ test("testRequestBuffer", () => {
 			this.setTimer(91).done(() => {
 				expect(buffer.available).toBe(80);
 				this.putBuffer(buffer, 50)
-					.done((d) => {
+					.done((d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("1234");
@@ -701,7 +719,7 @@ test("testRequestBuffer", () => {
 			this.setTimer(100).done(() => {
 				expect(buffer.available).toBe(0);
 				this.getBuffer(buffer, 50)
-					.done((d) => {
+					.done((d: unknown) => {
 						expect(this.callbackSource).toBe(buffer);
 						expect(typeof this.callbackMessage).toBe("undefined");
 						expect(this.callbackData).toBe("4321");
@@ -733,7 +751,11 @@ test("testRequestEvents", () => {
 	const event2 = new Sim.Event("event2");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		callbackSource: unknown;
+		callbackMessage: unknown;
+		callbackData: unknown;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -757,7 +779,7 @@ test("testRequestEvents", () => {
 					})
 					.unlessEvent(
 						event2,
-						(d) => {
+						(d: unknown) => {
 							expect(this.callbackSource).toBe(event1);
 							expect(this.callbackMessage).toBe(event2);
 							expect(this.callbackData).toBe("abcd");
@@ -792,7 +814,8 @@ test("testRequestEventRepeat", () => {
 	const event2 = new Sim.Event("event2");
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
@@ -831,7 +854,8 @@ test("testRequestCancel", () => {
 	const buffer = new Sim.Buffer("a", 100);
 
 	class MyEntity extends Sim.Entity {
-		constructor(...args) {
+		count;
+		constructor(...args: Array<unknown>) {
 			super(...args);
 			this.count = 0;
 		}
