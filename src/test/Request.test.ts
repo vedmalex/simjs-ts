@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import type { Callback } from "../lib/request.js";
 import * as Sim from "../sim.js";
 
 let entities = 0;
@@ -8,11 +9,7 @@ test("testRequestZeroDelayTimeout", () => {
 	const sim = new Sim.Sim();
 
 	class MyEntity extends Sim.Entity {
-		string;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.string = "start";
-		}
+		string = "start";
 
 		start() {
 			this.setTimer(0).done(() => {
@@ -38,12 +35,7 @@ test("testRequestZeroDelayPutBuffer", () => {
 	const buffer = new Sim.Buffer("a", 100);
 
 	class MyEntity extends Sim.Entity {
-		string;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.string = "start";
-		}
-
+		string = "start";
 		start() {
 			this.putBuffer(buffer, 10).done(() => {
 				this.string += "-second";
@@ -68,11 +60,7 @@ test("testRequestZeroDelayEventWait", () => {
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		string;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.string = "start";
-		}
+		string = "start";
 
 		start() {
 			event.fire(true);
@@ -100,11 +88,7 @@ test("testRequestZeroDelayEventQueue", () => {
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		string;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.string = "start";
-		}
+		string = "start";
 
 		start() {
 			event.fire(true);
@@ -129,15 +113,10 @@ test("testRequestZeroDelayEventQueue", () => {
 test("testRequestZeroDelayFacility", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("a");
+	const fac = Sim.FacilityFabric("a");
 
 	class MyEntity extends Sim.Entity {
-		string;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.string = "start";
-		}
-
+		string = "start";
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				this.string += "-second";
@@ -176,18 +155,18 @@ test("testRequestCallbackData", () => {
 		start() {
 			this.putBuffer(buffer, 10)
 				.done(this.fn1, null, 1)
-				.unlessEvent(event, this.fn2, null, 2)
-				.waitUntil(10, this.fn1, null, 3)
+				.unlessEvent(event, this.fn2 as Callback, null, 2)
+				.waitUntil(10, this.fn1 as Callback, null, 3)
 				.setData("my data");
 
 			this.putBuffer(buffer, 110)
 				.done(this.fn1, null, 1)
-				.waitUntil(10, this.fn2, null, 3)
+				.waitUntil(10, this.fn2 as Callback, null, 3)
 				.setData("my data");
 
 			this.putBuffer(buffer, 110)
 				.done(this.fn1, this, 1)
-				.unlessEvent(event, this.fn1, this, 2)
+				.unlessEvent(event, this.fn1 as Callback, this, 2)
 				.waitUntil(
 					10,
 					() => {
@@ -243,16 +222,11 @@ test("testRequestSetTimer", () => {
 	const event = new Sim.Event("event");
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		callbackSource: unknown;
 		callbackMessage: unknown;
 		callbackData: unknown;
 		obj: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			let clock = 1;
 
@@ -520,15 +494,10 @@ test("testRequestBuffer", () => {
 	const event = new Sim.Event("event");
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		callbackSource: unknown;
 		callbackMessage: unknown;
 		callbackData: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			// Basic put and get -- requests are immediately successful
 			// put
@@ -751,15 +720,10 @@ test("testRequestEvents", () => {
 	const event2 = new Sim.Event("event2");
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		callbackSource: unknown;
 		callbackMessage: unknown;
 		callbackData: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			this.setTimer(10)
 				.done(() => {
@@ -814,12 +778,7 @@ test("testRequestEventRepeat", () => {
 	const event2 = new Sim.Event("event2");
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
+		count = 0;
 		start() {
 			this.setTimer(10)
 				.done(() => {
@@ -849,17 +808,12 @@ test("testRequestCancel", () => {
 
 	const event = new Sim.Event("event1");
 
-	const fac = new Sim.Facility("facility");
+	const fac = Sim.FacilityFabric("facility");
 
 	const buffer = new Sim.Buffer("a", 100);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
+		count = 0;
 		start() {
 			const ro1 = this.setTimer(50)
 

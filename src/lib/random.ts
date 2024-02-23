@@ -1,4 +1,16 @@
-class Random {
+export class Random {
+	M: number;
+	N: number;
+	MATRIX_A: number;
+	UPPER_MASK: number;
+	LOWER_MASK: number;
+	mt: Array<number>;
+	mti: number;
+	pythonCompatibility = false;
+	skip = false;
+	LOG4 = Math.log(4.0);
+	SG_MAGICCONST = 1.0 + Math.log(4.5);
+	lastNormal = NaN;
 	constructor(seed = new Date().getTime()) {
 		/* Period parameters */
 		this.N = 624;
@@ -14,7 +26,8 @@ class Random {
 		this.initByArray([seed], 1);
 	}
 
-	initGenrand(s) {
+	initGenrand(_s: number) {
+		let s = _s;
 		this.mt[0] = s >>> 0;
 		for (this.mti = 1; this.mti < this.N; this.mti++) {
 			s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
@@ -32,8 +45,10 @@ class Random {
 		}
 	}
 
-	initByArray(initKey, keyLength) {
-		let i, j, k;
+	initByArray(initKey: Array<number>, keyLength: number) {
+		let i: number;
+		let j: number;
+		let k: number;
 
 		this.initGenrand(19650218);
 		i = 1;
@@ -77,7 +92,7 @@ class Random {
 	}
 
 	genrandInt32() {
-		let y;
+		let y: number;
 
 		const mag01 = [0x0, this.MATRIX_A];
 
@@ -85,7 +100,7 @@ class Random {
 
 		if (this.mti >= this.N) {
 			// generate N words at one time
-			let kk;
+			let kk: number;
 
 			if (this.mti === this.N + 1) {
 				// if initGenrand() has not been called,
@@ -154,16 +169,14 @@ class Random {
 		return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
 	}
 
-	exponential(lambda) {
+	exponential(lambda: number) {
 		const r = this.random();
 
 		return -Math.log(r) / lambda;
 	}
 
-	gamma(alpha, beta) {
-		/* Based on Python 2.6 source code of random.py.
-		 */
-		let u;
+	gamma(alpha: number, beta: number) {
+		let u = NaN;
 
 		if (alpha > 1.0) {
 			const ainv = Math.sqrt(2.0 * alpha - 1.0);
@@ -201,7 +214,7 @@ class Random {
 			}
 			return -Math.log(u) * beta;
 		} else {
-			let x;
+			let x = NaN;
 
 			while (true) {
 				// eslint-disable-line no-constant-condition
@@ -212,14 +225,14 @@ class Random {
 				const p = b * u;
 
 				if (p <= 1.0) {
-					x = Math.pow(p, 1.0 / alpha);
+					x = p ** (1.0 / alpha);
 				} else {
 					x = -Math.log((b - p) / alpha);
 				}
 				const u1 = this.random();
 
 				if (p > 1.0) {
-					if (u1 <= Math.pow(x, alpha - 1.0)) {
+					if (u1 <= x ** (alpha - 1.0)) {
 						break;
 					}
 				} else if (u1 <= Math.exp(-x)) {
@@ -230,7 +243,7 @@ class Random {
 		}
 	}
 
-	normal(mu, sigma) {
+	normal(mu: number, sigma: number) {
 		let z = this.lastNormal;
 
 		this.lastNormal = NaN;
@@ -245,14 +258,13 @@ class Random {
 		return mu + z * sigma;
 	}
 
-	pareto(alpha) {
+	pareto(alpha: number) {
 		const u = this.random();
 
-		return 1.0 / Math.pow(1 - u, 1.0 / alpha);
+		return 1.0 / (1 - u) ** (1.0 / alpha);
 	}
 
-	triangular(lower, upper, mode) {
-		// http://en.wikipedia.org/wiki/Triangular_distribution
+	triangular(lower: number, upper: number, mode: number) {
 		const c = (mode - lower) / (upper - lower);
 
 		const u = this.random();
@@ -272,22 +284,13 @@ class Random {
 	 * @param {Number} upper
 	 * @returns {Number}
 	 */
-	uniform(lower, upper) {
+	uniform(lower: number, upper: number) {
 		return lower + this.random() * (upper - lower);
 	}
 
-	weibull(alpha, beta) {
+	weibull(alpha: number, beta: number) {
 		const u = 1.0 - this.random();
 
-		return alpha * Math.pow(-Math.log(u), 1.0 / beta);
+		return alpha * (-Math.log(u)) ** (1.0 / beta);
 	}
 }
-
-/* These real versions are due to Isaku Wada, 2002/01/09 added */
-
-/** ************************************************************************/
-Random.prototype.LOG4 = Math.log(4.0);
-Random.prototype.SG_MAGICCONST = 1.0 + Math.log(4.5);
-
-export { Random };
-export default Random;

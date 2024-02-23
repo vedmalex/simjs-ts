@@ -1,6 +1,17 @@
-class DataSeries {
-	constructor(name) {
-		this.name = name;
+export class DataSeries {
+	protected Count!: number;
+	protected W!: number;
+	protected A!: number;
+	protected Q!: number;
+	protected Max!: number;
+	protected Min!: number;
+	protected Sum!: number;
+	protected hLower!: number;
+	protected hUpper!: number;
+	protected hBucketSize!: number;
+
+	histogram!: Array<number>;
+	constructor(public name?: string) {
 		this.reset();
 	}
 
@@ -20,7 +31,7 @@ class DataSeries {
 		}
 	}
 
-	setHistogram(lower, upper, nbuckets) {
+	setHistogram(lower: number, upper: number, nbuckets: number) {
 		this.hLower = lower;
 		this.hUpper = upper;
 		this.hBucketSize = (upper - lower) / nbuckets;
@@ -34,29 +45,25 @@ class DataSeries {
 		return this.histogram;
 	}
 
-	record(value, weight) {
-		const w = typeof weight === "undefined" ? 1 : weight;
-
-		// document.write("Data series recording " + value + " (weight = " + w + ")\n");
-
+	record(value: number, weight = 1) {
 		if (value > this.Max) this.Max = value;
 		if (value < this.Min) this.Min = value;
 		this.Sum += value;
 		this.Count++;
 		if (this.histogram) {
 			if (value < this.hLower) {
-				this.histogram[0] += w;
+				this.histogram[0] += weight;
 			} else if (value > this.hUpper) {
-				this.histogram[this.histogram.length - 1] += w;
+				this.histogram[this.histogram.length - 1] += weight;
 			} else {
 				const index = Math.floor((value - this.hLower) / this.hBucketSize) + 1;
 
-				this.histogram[index] += w;
+				this.histogram[index] += weight;
 			}
 		}
 
 		// Wi = Wi-1 + wi
-		this.W = this.W + w;
+		this.W = this.W + weight;
 
 		if (this.W === 0) {
 			return;
@@ -65,10 +72,10 @@ class DataSeries {
 		// Ai = Ai-1 + wi/Wi * (xi - Ai-1)
 		const lastA = this.A;
 
-		this.A = lastA + (w / this.W) * (value - lastA);
+		this.A = lastA + (weight / this.W) * (value - lastA);
 
 		// Qi = Qi-1 + wi(xi - Ai-1)(xi - Ai)
-		this.Q = this.Q + w * (value - lastA) * (value - this.A);
+		this.Q = this.Q + weight * (value - lastA) * (value - this.A);
 		// print("\tW=" + this.W + " A=" + this.A + " Q=" + this.Q + "\n");
 	}
 
@@ -109,8 +116,11 @@ class DataSeries {
 	}
 }
 
-class TimeSeries {
-	constructor(name) {
+export class TimeSeries {
+	dataSeries: DataSeries;
+	lastValue = NaN;
+	lastTimestamp = NaN;
+	constructor(name?: string) {
 		this.dataSeries = new DataSeries(name);
 	}
 
@@ -120,7 +130,7 @@ class TimeSeries {
 		this.lastTimestamp = NaN;
 	}
 
-	setHistogram(lower, upper, nbuckets) {
+	setHistogram(lower: number, upper: number, nbuckets: number) {
 		this.dataSeries.setHistogram(lower, upper, nbuckets);
 	}
 
@@ -128,8 +138,8 @@ class TimeSeries {
 		return this.dataSeries.getHistogram();
 	}
 
-	record(value, timestamp) {
-		if (!isNaN(this.lastTimestamp)) {
+	record(value: number, timestamp: number) {
+		if (!Number.isNaN(this.lastTimestamp)) {
 			this.dataSeries.record(this.lastValue, timestamp - this.lastTimestamp);
 		}
 
@@ -137,7 +147,7 @@ class TimeSeries {
 		this.lastTimestamp = timestamp;
 	}
 
-	finalize(timestamp) {
+	finalize(timestamp: number) {
 		this.record(NaN, timestamp);
 	}
 
@@ -174,12 +184,15 @@ class TimeSeries {
 	}
 }
 
-class Population {
-	constructor(name) {
+export class Population {
+	population: number;
+	sizeSeries: TimeSeries;
+	durationSeries: DataSeries;
+	constructor(public name?: string) {
 		this.name = name;
 		this.population = 0;
-		this.sizeSeries = new TimeSeries();
-		this.durationSeries = new DataSeries();
+		this.sizeSeries = new TimeSeries(name);
+		this.durationSeries = new DataSeries(name);
 	}
 
 	reset() {
@@ -188,12 +201,12 @@ class Population {
 		this.population = 0;
 	}
 
-	enter(timestamp) {
+	enter(timestamp: number) {
 		this.population++;
 		this.sizeSeries.record(this.population, timestamp);
 	}
 
-	leave(arrivalAt, leftAt) {
+	leave(arrivalAt: number, leftAt: number) {
 		this.population--;
 		this.sizeSeries.record(this.population, leftAt);
 		this.durationSeries.record(leftAt - arrivalAt);
@@ -203,9 +216,7 @@ class Population {
 		return this.population;
 	}
 
-	finalize(timestamp) {
+	finalize(timestamp: number) {
 		this.sizeSeries.finalize(timestamp);
 	}
 }
-
-export { DataSeries, TimeSeries, Population };

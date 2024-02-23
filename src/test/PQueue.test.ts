@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import type { PQueueRequest } from "../lib/request.js";
 import * as Sim from "../sim.js";
 
 test("testPQueue", () => {
@@ -27,7 +28,7 @@ test("testPQueue", () => {
 		const pq = new Sim.PQueue();
 
 		for (let j = 0; j < arr.length; j++) {
-			pq.insert(new Sim.Request(0, 0, arr[j]));
+			pq.insert(new Sim.Request(0, 0, arr[j]) as PQueueRequest);
 		}
 
 		const out = [];

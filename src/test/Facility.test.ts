@@ -6,16 +6,12 @@ let finalized = 0;
 test("testFacilityFCFSOneServer", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("facility", Sim.Facility.FCFS, 1);
+	const fac = Sim.CreateFacility("facility", Sim.Discipline.FCFS, 1);
 
 	class MyEntity extends Sim.Entity {
-		count: number;
+		count = 0;
 		callbackSource: unknown;
 		callbackMessage: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			// at time 0 => [0, 10]
 			// at time 0 => [10, 20]
@@ -68,14 +64,10 @@ test("testFacilityFCFSOneServer", () => {
 test("testFacilityFCFSOOneServerTwoEntities", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("facility");
+	const fac = Sim.CreateFacility("facility");
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start(first: boolean) {
 			// entity 1, at time 0: [0, 10]
 			// entity 2, at time 0: [10, 20]
@@ -128,24 +120,21 @@ test("testFacilityFCFSOOneServerTwoEntities", () => {
 		}
 	}
 
-	sim.addEntity(MyEntity, null, true);
-	sim.addEntity(MyEntity, null, false);
+	sim.addEntity(MyEntity, undefined, true);
+	sim.addEntity(MyEntity, undefined, false);
 	sim.simulate(100);
 });
 
 test("testFacilityFCFSTwoServers", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("facility", Sim.Facility.FCFS, 2);
+	const fac = Sim.CreateFacility("facility", Sim.Discipline.FCFS, 2);
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackSource: unknown;
 		callbackMessage: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+
 		start() {
 			// at time 0: [0, 10] at server 0
 			// at time 0: [0, 10] at server 1
@@ -195,16 +184,11 @@ test("testFacilityFCFSTwoServers", () => {
 test("testFacilityFCFSDrop0", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("fcfs", Sim.Facility.FCFS, 1, 0);
+	const fac = Sim.CreateFacility("fcfs", Sim.Discipline.FCFS, 1, 0);
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(10);
@@ -244,15 +228,11 @@ test("testFacilityFCFSDrop0", () => {
 test("testFacilityFCFSDrop1", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("fcfs", Sim.Facility.FCFS, 1, 1);
+	const fac = Sim.CreateFacility("fcfs", Sim.Discipline.FCFS, 1, 1);
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(10);
@@ -299,14 +279,10 @@ test("testFacilityFCFSDrop1", () => {
 test("testFacilityLCFSSimple", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("lcfs", Sim.Facility.LCFS);
+	const fac = Sim.CreateFacility("lcfs", Sim.Discipline.LCFS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(20);
@@ -335,14 +311,11 @@ test("testFacilityLCFSSimple", () => {
 test("testFacilityLCFSPreemptTwice", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("lcfs", Sim.Facility.LCFS);
+	const fac = Sim.CreateFacility("lcfs", Sim.Discipline.LCFS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
+
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(30);
@@ -378,14 +351,11 @@ test("testFacilityLCFSPreemptTwice", () => {
 test("testFacilityLCFSPreemptTwoLevel", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("lcfs", Sim.Facility.LCFS);
+	const fac = Sim.CreateFacility("lcfs", Sim.Discipline.LCFS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
+
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(30);
@@ -421,14 +391,10 @@ test("testFacilityLCFSPreemptTwoLevel", () => {
 test("testFacilityTimeoutDuringUsage", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.FCFS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.FCFS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(10);
@@ -471,16 +437,13 @@ test("testFacilityTimeoutDuringUsage", () => {
 test("testFacilityCancelDuringUsage", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.FCFS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.FCFS);
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		ro!: Sim.Request;
 		ro2!: Sim.Request;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+
 		start() {
 			this.ro = this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(10);
@@ -516,17 +479,13 @@ test("testFacilityCancelDuringUsage", () => {
 test("testFacilityLCFSImmuneToRenege", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.LCFS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.LCFS);
 
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		ro!: Sim.Request;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			this.ro = this.useFacility(fac, 10)
 				.done(() => {
@@ -561,14 +520,10 @@ test("testFacilityLCFSImmuneToRenege", () => {
 test("testFacilityPSOne", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(10);
@@ -590,14 +545,10 @@ test("testFacilityPSOne", () => {
 test("testFacilityPSTwoIdentical", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(20);
@@ -623,14 +574,10 @@ test("testFacilityPSTwoIdentical", () => {
 test("testFacilityPSTwoIdenticalLater", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.setTimer(10).done(() => {
 				this.useFacility(fac, 10).done(() => {
@@ -661,14 +608,10 @@ test("testFacilityPSTwoIdenticalLater", () => {
 test("testFacilityPSTwoOverlapPartial", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.setTimer(10).done(() => {
 				this.useFacility(fac, 10).done(() => {
@@ -699,14 +642,10 @@ test("testFacilityPSTwoOverlapPartial", () => {
 test("testFacilityPSTwoOverlapFull", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.setTimer(10).done(() => {
 				this.useFacility(fac, 20).done(() => {
@@ -737,14 +676,10 @@ test("testFacilityPSTwoOverlapFull", () => {
 test("testFacilityPSTwoNoOverlap", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.setTimer(0).done(() => {
 				this.useFacility(fac, 1).done(() => {
@@ -774,15 +709,11 @@ test("testFacilityPSTwoNoOverlap", () => {
 test("testFacilityPSTenNoOverlap", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		callbackData: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			for (let i = 0; i < 10; i++) {
 				this.setTimer(i)
@@ -814,15 +745,11 @@ test("testFacilityPSTenNoOverlap", () => {
 test("testFacilityPSTenSmall", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		callbackData: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(20);
@@ -858,14 +785,10 @@ test("testFacilityPSTenSmall", () => {
 test("testFacilityPSTen", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			for (let i = 0; i < 10; i++) {
 				this.useFacility(fac, 1).done(() => {
@@ -888,14 +811,10 @@ test("testFacilityPSTen", () => {
 test("testFacilityPSRampUpDown", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.setTimer(0).done(() => {
 				this.useFacility(fac, 4).done(() => {
@@ -932,17 +851,13 @@ test("testFacilityPSRampUpDown", () => {
 test("testFacilityPSImmuneToRenege", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	const event = new Sim.Event("a");
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		ro!: Sim.Request;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			this.ro = this.useFacility(fac, 10)
 				.done(() => {
@@ -977,15 +892,11 @@ test("testFacilityPSImmuneToRenege", () => {
 test("testFacilityPSCancelDuringUsage", () => {
 	const sim = new Sim.Sim();
 
-	const fac = new Sim.Facility("simple", Sim.Facility.PS);
+	const fac = Sim.CreateFacility("simple", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
+		count = 0;
 		ro!: Sim.Request;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			this.ro = this.useFacility(fac, 10).done(() => {
 				expect(this.time()).toBe(10);
@@ -1011,14 +922,10 @@ test("testFacilityPSCancelDuringUsage", () => {
 test("testFacilityPSDocExample", () => {
 	const sim = new Sim.Sim();
 
-	const network = new Sim.Facility("Network Cable", Sim.Facility.PS);
+	const network = Sim.CreateFacility("Network Cable", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			// make request at time 0, to use network for 10 sec
 			this.useFacility(network, 10).done(() => {
@@ -1049,14 +956,10 @@ test("testFacilityPSDocExample", () => {
 test("testFacilityPSNested", () => {
 	const sim = new Sim.Sim();
 
-	const network = new Sim.Facility("abcd", Sim.Facility.PS);
+	const network = Sim.CreateFacility("abcd", Sim.Discipline.PS);
 
 	class MyEntity extends Sim.Entity {
-		count;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+		count = 0;
 		start() {
 			this.useFacility(network, 1).done(() => {
 				this.count++;

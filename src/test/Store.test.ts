@@ -12,10 +12,6 @@ test("testStorePut", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, { a: 1 }).done(() => {
@@ -56,10 +52,6 @@ test("testStoreGet", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, { a: 1 }).done(() => {
@@ -102,15 +94,11 @@ test("testStoreGet", () => {
 test("testStoreGetFilter", () => {
 	const sim = new Sim.Sim();
 
-	const store = new Sim.Store(3, "a");
+	const store = new Sim.Store<{ a: number }>(3, "a");
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, { a: 1 }).done(() => {
@@ -160,10 +148,6 @@ test("testStorePutProgress", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, { a: 1 }).done(() => {
@@ -225,11 +209,6 @@ test("testStoreGetProgress", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			this.getStore(store).done(() => {
 				expect(this.time()).toBe(10);
@@ -276,10 +255,6 @@ test("testStoreGetCancel", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.getStore(store)
@@ -325,10 +300,6 @@ test("testStoreGetEventRenege", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, { a: 1 });
@@ -368,10 +339,6 @@ test("testStoreGetTimeout", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, { a: 1 });
@@ -410,10 +377,6 @@ test("testStoreGetCancel", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			this.putStore(store, 1);
@@ -450,10 +413,6 @@ test("testStoreGetStillWaits", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// get waits
@@ -496,17 +455,12 @@ test("testStoreGetStillWaits", () => {
 
 test("testStoreGetFilterWaits", () => {
 	const sim = new Sim.Sim();
-
-	const store = new Sim.Store(100, "a");
+	type Payload = { a: number };
+	const store = new Sim.Store<Payload>(100, "a");
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackMessage!: { a: number };
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			// get waits
 			this.getStore(store, (o: { a: number }) => {

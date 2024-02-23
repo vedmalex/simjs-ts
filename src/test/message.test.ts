@@ -9,8 +9,8 @@ test("testMessageSendOne", () => {
 	let count = 0;
 
 	class MyEntity extends Sim.Entity {
-		other: unknown;
-		master: unknown;
+		other!: MyEntity;
+		master!: boolean;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {
@@ -31,9 +31,9 @@ test("testMessageSendOne", () => {
 		}
 	}
 
-	const o1 = sim.addEntity(MyEntity, true, null);
+	const o1 = sim.addEntity(MyEntity);
 
-	const o2 = sim.addEntity(MyEntity, false, o1);
+	const o2 = sim.addEntity(MyEntity);
 
 	o1.master = true;
 	o1.other = o2;
@@ -95,7 +95,7 @@ test("testMessageSendArray", () => {
 
 	class MyEntity extends Sim.Entity {
 		master: unknown;
-		array: unknown;
+		array!: Array<MyEntity>;
 		other: unknown;
 		start() {} // eslint-disable-line no-empty-function
 
@@ -140,8 +140,8 @@ test("testMessageNoCallback", () => {
 	const sim = new Sim.Sim();
 
 	class MyEntity extends Sim.Entity {
-		master: unknown;
-		other: unknown;
+		master!: boolean;
+		other!: MyEntity;
 		start() {} // eslint-disable-line no-empty-function
 
 		init() {

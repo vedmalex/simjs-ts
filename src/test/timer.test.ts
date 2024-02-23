@@ -76,11 +76,6 @@ test("testTimerRecursive", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			expect(this.time()).toBe(10 * this.count);
 			this.count++;

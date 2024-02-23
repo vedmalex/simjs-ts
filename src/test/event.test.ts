@@ -11,10 +11,7 @@ test("testEventFlash", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackSource: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
+
 		start() {
 			expect(event.isFired).toBe(false);
 
@@ -63,10 +60,6 @@ test("testEventSustain", () => {
 	class MyEntity extends Sim.Entity {
 		count = 0;
 		callbackSource: unknown;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 		start() {
 			expect(event.isFired).toBe(false);
 
@@ -153,7 +146,7 @@ test("testEventWaitQueue", () => {
 	const e = [];
 
 	for (let i = 0; i < 100; i++) {
-		e.push(sim.addEntity(MyEntity, null, i === 0));
+		e.push(sim.addEntity(MyEntity, undefined, i === 0));
 	}
 	sim.simulate(100);
 	expect(wcount).toBe(100);

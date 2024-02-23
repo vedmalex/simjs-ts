@@ -11,11 +11,6 @@ test("testBufferBlockedPuts", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			// at time 0, put 60 units -- succeed
 			this.putBuffer(buffer, 60).done(() => {
@@ -61,10 +56,6 @@ test("testBufferBlockedGet", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// at time 0, put 60 units -- succeed
@@ -111,11 +102,6 @@ test("BufferPutStillWaits", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			// at time 0, put 60 units -- succeed
 			this.putBuffer(buffer, 60).done(() => {
@@ -163,10 +149,6 @@ test("BufferGetStillWaits", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// at time 0, put 60 units -- succeed
@@ -215,10 +197,6 @@ test("BufferGetCancel", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// at time 0, get 60 units -- waits
@@ -252,11 +230,6 @@ test("BufferPutCancel", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			// at time 0, put 110 units -- waits
 			const ro = this.putBuffer(buffer, 110).done(() => {
@@ -289,10 +262,6 @@ test("BufferPutTimeout", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// at time 0, put 110 units -- waits
@@ -328,10 +297,6 @@ test("BufferPutEventRenege", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// at time 0, put 110 units -- waits
@@ -367,10 +332,6 @@ test("BufferGetTimeout", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
 
 		start() {
 			// at time 0, get 110 units -- waits
@@ -406,11 +367,6 @@ test("BufferGetEventRenege", () => {
 
 	class MyEntity extends Sim.Entity {
 		count = 0;
-		constructor(...args: Array<unknown>) {
-			super(...args);
-			this.count = 0;
-		}
-
 		start() {
 			// at time 0, get 110 units -- waits
 			this.getBuffer(buffer, 110)
