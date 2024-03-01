@@ -15,6 +15,7 @@ function buffetRestaurantSimulation(
 	var random = new Sim.Random(Seed);
 
 	class Customer extends Sim.Entity {
+		callbackData!: number;
 		start() {
 			this.order();
 
@@ -25,7 +26,7 @@ function buffetRestaurantSimulation(
 		order() {
 			sim.log("Customer ENTER at " + this.time());
 			stats.enter(this.time());
-
+			debugger;
 			this.getBuffer(buffet, 1)
 				.done(() => {
 					sim.log("Customer at CASHIER " + this.time() + " (entered at " + this.callbackData + ")");

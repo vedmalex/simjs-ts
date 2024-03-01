@@ -31,10 +31,7 @@ export class Random {
 		this.mt[0] = s >>> 0;
 		for (this.mti = 1; this.mti < this.N; this.mti++) {
 			s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
-			this.mt[this.mti] =
-				((((s & 0xffff0000) >>> 16) * 1812433253) << 16) +
-				(s & 0x0000ffff) * 1812433253 +
-				this.mti;
+			this.mt[this.mti] = ((((s & 0xffff0000) >>> 16) * 1812433253) << 16) + (s & 0x0000ffff) * 1812433253 + this.mti;
 
 			/* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
 			/* In the previous versions, MSBs of the seed affect   */
@@ -58,9 +55,7 @@ export class Random {
 			const s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
 
 			this.mt[i] =
-				(this.mt[i] ^
-					(((((s & 0xffff0000) >>> 16) * 1664525) << 16) +
-						(s & 0x0000ffff) * 1664525)) +
+				(this.mt[i] ^ (((((s & 0xffff0000) >>> 16) * 1664525) << 16) + (s & 0x0000ffff) * 1664525)) +
 				initKey[j] +
 				j; /* non linear */
 			this.mt[i] >>>= 0; /* for WORDSIZE > 32 machines */
@@ -76,9 +71,7 @@ export class Random {
 			const s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
 
 			this.mt[i] =
-				(this.mt[i] ^
-					(((((s & 0xffff0000) >>> 16) * 1566083941) << 16) +
-						(s & 0x0000ffff) * 1566083941)) -
+				(this.mt[i] ^ (((((s & 0xffff0000) >>> 16) * 1566083941) << 16) + (s & 0x0000ffff) * 1566083941)) -
 				i; /* non linear */
 			this.mt[i] >>>= 0; /* for WORDSIZE > 32 machines */
 			i++;
@@ -108,19 +101,14 @@ export class Random {
 			}
 
 			for (kk = 0; kk < this.N - this.M; kk++) {
-				y =
-					(this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
+				y = (this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
 				this.mt[kk] = this.mt[kk + this.M] ^ (y >>> 1) ^ mag01[y & 0x1];
 			}
 			for (; kk < this.N - 1; kk++) {
-				y =
-					(this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
-				this.mt[kk] =
-					this.mt[kk + (this.M - this.N)] ^ (y >>> 1) ^ mag01[y & 0x1];
+				y = (this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
+				this.mt[kk] = this.mt[kk + (this.M - this.N)] ^ (y >>> 1) ^ mag01[y & 0x1];
 			}
-			y =
-				(this.mt[this.N - 1] & this.UPPER_MASK) |
-				(this.mt[0] & this.LOWER_MASK);
+			y = (this.mt[this.N - 1] & this.UPPER_MASK) | (this.mt[0] & this.LOWER_MASK);
 			this.mt[this.N - 1] = this.mt[this.M - 1] ^ (y >>> 1) ^ mag01[y & 0x1];
 
 			this.mti = 0;
@@ -284,7 +272,7 @@ export class Random {
 	 * @param {Number} upper
 	 * @returns {Number}
 	 */
-	uniform(lower: number, upper: number) {
+	uniform(lower: number, upper: number): number {
 		return lower + this.random() * (upper - lower);
 	}
 
@@ -293,4 +281,59 @@ export class Random {
 
 		return alpha * (-Math.log(u)) ** (1.0 / beta);
 	}
+	generate(config: RandomConfig) {
+		switch (config.type) {
+			case "exponential":
+				return this.exponential(config.lambda);
+			case "gamma":
+				return this.gamma(config.alpha, config.beta);
+			case "normal":
+				return this.normal(config.mu, config.sigma);
+			case "pareto":
+				return this.pareto(config.alpha);
+			case "triangular":
+				return this.triangular(config.lower, config.upper, config.mode);
+			case "uniform":
+				return this.uniform(config.lower, config.upper);
+			case "weibull":
+				return this.weibull(config.alpha, config.beta);
+		}
+	}
 }
+
+// нужно передать параметры для функции
+export type RandomConfig =
+	| {
+			type: "weibull";
+			alpha: number;
+			beta: number;
+	  }
+	| {
+			type: "uniform";
+			lower: number;
+			upper: number;
+	  }
+	| {
+			type: "triangular";
+			lower: number;
+			upper: number;
+			mode: number;
+	  }
+	| {
+			type: "pareto";
+			alpha: number;
+	  }
+	| {
+			type: "normal";
+			mu: number;
+			sigma: number;
+	  }
+	| {
+			type: "gamma";
+			alpha: number;
+			beta: number;
+	  }
+	| {
+			type: "exponential";
+			lambda: number;
+	  };

@@ -18,7 +18,7 @@ import { Population } from "./stats/Population";
 import { TimeSeries } from "./stats/TimeSeries";
 import { CreateFacility } from "./types/CreateFacility";
 import { Discipline } from "./types/Discipline";
-import { Random } from "./utils/Random";
+import { Random, type RandomConfig } from "./utils/Random";
 
 export {
 	Sim,
@@ -34,7 +34,7 @@ export {
 	Store,
 	Discipline,
 };
-export type { FacilityT };
+export type { FacilityT, RandomConfig };
 export { DataSeries, TimeSeries, Population };
 export { Request };
 export { PQueue, Queue };

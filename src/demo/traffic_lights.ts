@@ -29,6 +29,7 @@ function trafficLightSimulation(GREEN_TIME: number, MEAN_ARRIVAL: number, SEED: 
 	}
 
 	class Traffic extends Sim.Entity {
+		callbackData!: number;
 		start() {
 			this.generateTraffic("North", trafficLights[0]); // traffic for North -> South
 			this.generateTraffic("South", trafficLights[0]); // traffic for South -> North
@@ -44,7 +45,7 @@ function trafficLightSimulation(GREEN_TIME: number, MEAN_ARRIVAL: number, SEED: 
 			// The done() function will be called when the event fires
 			// (i.e. the light turns green).
 			this.waitEvent(light)
-				.done(function () {
+				.done(() => {
 					var arrivedAt = this.callbackData;
 					// STATS: record that vehicle has left the intersection
 					stats.leave(arrivedAt, this.time());
