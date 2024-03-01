@@ -119,7 +119,7 @@ export class Sim {
 		this.logger = logger;
 	}
 
-	log(message: unknown, entity: Entity) {
+	log(message: unknown, entity?: Entity) {
 		if (!this.logger) return;
 		let entityMsg = "";
 

@@ -1,216 +1,212 @@
 class ImageView {
-  constructor(canvas, type, name, x, y, hasIn, hasOut) {
-    this.canvas = canvas;
-    this.type = type;
-    this.name = name;
+	constructor(canvas, type, name, x, y, hasIn, hasOut) {
+		this.canvas = canvas;
+		this.type = type;
+		this.name = name;
 
+		if (type === "queue") {
+			this.width = 116 * 0.8;
+			this.height = 55 * 0.8;
+			this.image = canvas.image("images/server.png", x, y, this.width, this.height);
+		} else if (type === "source") {
+			this.image = canvas.image("images/customers.png", x, y, 34, 34);
+			this.width = 34;
+			this.height = 34;
+		} else if (type === "sink") {
+			this.width = 32;
+			this.height = 32;
+			this.image = canvas.image("images/door_out.png", x, y, this.width, this.height);
+		}
+		this.x = x;
+		this.y = y;
+		this.hasIn = hasIn;
+		this.hasOut = hasOut;
 
-    if (type === 'queue') {
-      this.width = 116 * 0.8;
-      this.height = 55 * 0.8;
-      this.image = canvas.image('images/server.png', x, y, this.width, this.height);
+		this.text = canvas.text(x, y, this.name);
+		this.counters = canvas.text(x, y, "");
+		this.counters.hide();
 
-    } else if (type === 'source') {
-      this.image = canvas.image('images/customers.png', x, y, 34, 34);
-      this.width = 34;
-      this.height = 34;
-    } else if (type === 'sink') {
-      this.width = 32;
-      this.height = 32;
-      this.image = canvas.image('images/door_out.png', x, y, this.width, this.height);
-    }
-    this.x = x;
-    this.y = y;
-    this.hasIn = hasIn;
-    this.hasOut = hasOut;
+		this.image.attr({ cursor: "move" });
+		this.image.view = this;
+		this.image.animate({ scale: "1.2 1.2" }, 200, function () {
+			this.animate({ scale: "1 1" }, 200);
+		});
 
-    this.text = canvas.text(x, y, this.name);
-    this.counters = canvas.text(x, y, '');
-    this.counters.hide();
+		if (this.hasOut) {
+			this.arrow = canvas.image("images/orange-arrow.gif", x, y, 12, 12);
+			this.arrow.view = this;
+			this.arrow.drag(
+				function (dx, dy) {
+					this.attr({ x: this.ox + dx, y: this.oy + dy });
+					this.paper.connection(this.conn);
+				},
+				function () {
+					this.conn = this.paper.connection(this.view.image, this, "#000");
+					this.ox = this.attr("x");
+					this.oy = this.attr("y");
+				},
+				function () {
+					this.conn.line.remove();
+					this.conn = null;
 
-    this.image.attr({cursor: 'move'});
-    this.image.view = this;
-    this.image.animate({scale: "1.2 1.2"}, 200, function () {
-      this.animate({scale: "1 1"}, 200);
-    });
+					const views = QueueApp.views;
+					const len = views.length;
+					const x = this.attr("x");
+					const y = this.attr("y");
 
-    if (this.hasOut) {
-      this.arrow = canvas.image("images/orange-arrow.gif", x, y, 12, 12);
-      this.arrow.view = this;
-      this.arrow.drag(
-        function (dx, dy) {
-          this.attr({x: this.ox + dx, y: this.oy + dy});
-          this.paper.connection(this.conn);
-        },
-        function () {
-          this.conn = this.paper.connection(this.view.image, this, "#000");
-          this.ox = this.attr("x");
-          this.oy = this.attr("y");
-        },
-        function () {
-          this.conn.line.remove();
-          this.conn = null;
+					for (let i = len - 1; i >= 0; i--) {
+						const obj = views[i];
+						if (obj.acceptDrop(x, y)) {
+							this.hide();
+							this.view.connect(obj);
+							return;
+						}
+					}
 
-          const views = QueueApp.views;
-          const len = views.length;
-          const x = this.attr('x');
-          const y = this.attr('y');
+					const view = this.view;
+					this.attr({ x: view.x + view.width + 2, y: view.y + view.height / 2 - 6 });
+				},
+			);
+		}
 
-          for (let i = len - 1; i >= 0; i--) {
-            const obj = views[i];
-            if (obj.acceptDrop(x, y)) {
-              this.hide();
-              this.view.connect(obj);
-              return;
-            }
-          }
+		// move
+		this.moveto(x, y);
 
-          const view = this.view;
-          this.attr({x: view.x + view.width + 2, y: view.y + view.height / 2 - 6});
-        });
-    }
+		// Set up event listeners
+		this.image.drag(
+			function (dx, dy) {
+				const view = this.view;
+				view.moveto(view.ox + dx, view.oy + dy);
+			},
+			function () {
+				const view = this.view;
+				view.ox = view.x;
+				view.oy = view.y;
+			},
+			() => {},
+		);
 
-    // move
-    this.moveto(x, y);
+		this.image.dblclick(function () {
+			this.view.model.showSettings();
+		});
+	}
 
-    // Set up event listeners
-    this.image.drag(
-      function (dx, dy) {
-        const view = this.view;
-        view.moveto(view.ox + dx, view.oy + dy);
-      },
-      function () {
-        const view = this.view;
-        view.ox = view.x;
-        view.oy = view.y;
-      },
-      () => {
+	moveto(x, y) {
+		var len;
+		var i;
+		let dot;
 
-      });
+		if (x > 600 - this.width || y > 400 - this.height || x < 0 || y < 0) {
+			return;
+		}
 
-    this.image.dblclick(function () {
-      this.view.model.showSettings();
-    });
-  }
+		this.x = x;
+		this.y = y;
 
-  moveto(x, y) {
-    var len;
-    var i;
-    let dot;
+		this.image.attr({ x, y });
+		this.text.attr({ x: this.x + this.width / 2, y: this.y + this.height + 5 });
+		this.counters.attr({ x: this.x + this.width / 2, y: this.y + this.height + 20 });
+		if (this.arrow) {
+			this.arrow.attr({ x: this.x + this.width + 2, y: this.y + this.height / 2 - 6 });
+		}
 
-    if (x > 600 - this.width || y > 400 - this.height || x < 0 || y < 0) {
-      return;
-    }
+		if (this.hasIn) {
+			var len = QueueApp.views.length;
+			for (var i = len - 1; i >= 0; i--) {
+				QueueApp.views[i].moveConnection(this);
+			}
+		}
 
-    this.x = x;
-    this.y = y;
+		if (this.arrow && this.arrow.conn) {
+			this.canvas.connection(this.arrow.conn);
+		}
+	}
 
-    this.image.attr({x, y});
-    this.text.attr({x: this.x + this.width / 2, y: this.y + this.height + 5});
-    this.counters.attr({x: this.x + this.width / 2, y: this.y + this.height + 20});
-    if (this.arrow) {
-      this.arrow.attr({x: this.x + this.width + 2, y: this.y + this.height / 2 - 6});
-    }
+	connect(to) {
+		const conn = this.canvas.connection(this.image, to.dropObject(), "#000");
+		conn.line.attr({ "stroke-width": 3, stroke: "#F7D68A" });
+		conn.fromView = this;
+		conn.toView = to;
+		this.arrow.conn = conn;
+		this.arrow.hide();
+		this.model.dest = to.model;
+	}
 
-    if (this.hasIn) {
-      var len = QueueApp.views.length;
-      for (var i = len - 1; i >= 0; i--) {
-        QueueApp.views[i].moveConnection(this);
-      }
-    }
+	unlink() {
+		let i, len, index;
 
-    if (this.arrow && this.arrow.conn) {
-      this.canvas.connection(this.arrow.conn);
-    }
-  }
+		len = QueueApp.models.length;
+		for (i = len - 1; i >= 0; i--) {
+			if (QueueApp.models[i] === this.model) {
+				index = i;
+				break;
+			}
+		}
 
-  connect(to) {
-    const conn = this.canvas.connection(this.image, to.dropObject(), "#000");
-    conn.line.attr({'stroke-width': 3, 'stroke': '#F7D68A'});
-    conn.fromView = this;
-    conn.toView = to;
-    this.arrow.conn = conn;
-    this.arrow.hide();
-    this.model.dest = to.model;
-  }
+		if (index) QueueApp.models.splice(index, 1);
 
-  unlink() {
-    let i, len, index;
+		if (this.model) this.model.unlink();
+		this.disconnect();
+		len = QueueApp.views.length;
+		for (i = len - 1; i >= 0; i--) {
+			QueueApp.views[i].disconnect(this);
+			if (QueueApp.views[i] === this) index = i;
+		}
 
-    len = QueueApp.models.length;
-    for (i = len - 1; i >= 0; i--) {
-      if (QueueApp.models[i] === this.model) {
-        index = i;
-        break;
-      }
-    }
+		QueueApp.views.splice(index, 1);
 
-    if (index) QueueApp.models.splice(index, 1);
+		this.image.remove();
+		if (this.arrow) this.arrow.remove();
+		this.counters.remove();
+		this.text.remove();
+	}
 
+	disconnect(dest) {
+		if (this.arrow && this.arrow.conn && (!dest || this.arrow.conn.toView === dest)) {
+			this.arrow.conn.line.remove();
+			this.arrow.conn = null;
+			this.arrow.attr({ x: this.x + this.width + 2, y: this.y + this.height / 2 - 6 });
+			this.arrow.show();
+			this.model.dest = null;
+		}
+	}
 
-    if (this.model) this.model.unlink();
-    this.disconnect();
-    len = QueueApp.views.length;
-    for (i = len - 1; i >= 0; i--) {
-      QueueApp.views[i].disconnect(this);
-      if (QueueApp.views[i] === this) index = i;
-    }
+	dropObject() {
+		return this.image;
+	}
 
-    QueueApp.views.splice(index, 1);
+	acceptDrop(x, y) {
+		if (!this.hasIn) return false;
+		return x > this.x - 10 && x < this.x + this.width + 10 && y > this.y - 10 && y < this.y + this.height + 10;
+	}
 
-    this.image.remove();
-    if (this.arrow) this.arrow.remove();
-    this.counters.remove();
-    this.text.remove();
+	moveConnection(dest) {
+		if (this.arrow && this.arrow.conn && this.arrow.conn.toView === dest) {
+			this.canvas.connection(this.arrow.conn);
+		}
+	}
 
-  }
+	jsonify() {
+		const json = {
+			x: this.x,
+			y: this.y,
+			type: this.type,
+			name: this.name,
+		};
 
-  disconnect(dest) {
-    if (this.arrow && this.arrow.conn && (!dest || this.arrow.conn.toView === dest)) {
-      this.arrow.conn.line.remove();
-      this.arrow.conn = null;
-      this.arrow.attr({x: this.x + this.width + 2, y: this.y + this.height / 2 - 6});
-      this.arrow.show();
-      this.model.dest = null;
-    }
-  }
+		if (this.arrow && this.arrow.conn) {
+			json.out = this.arrow.conn.toView.name;
+		}
 
-  dropObject() {
-    return this.image;
-  }
+		if (this.model) {
+			json.model = this.model.jsonify();
+		}
 
-  acceptDrop(x, y) {
-    if (!this.hasIn) return false;
-    return (x > (this.x - 10) && x < (this.x + this.width + 10)
-        && y > (this.y - 10) && y < (this.y + this.height + 10));
-  }
+		return json;
+	}
 
-  moveConnection(dest) {
-    if (this.arrow && this.arrow.conn && this.arrow.conn.toView === dest) {
-      this.canvas.connection(this.arrow.conn);
-    }
-  }
-
-  jsonify() {
-    const json = {
-      x: this.x,
-      y: this.y,
-      type: this.type,
-      name: this.name};
-
-    if (this.arrow && this.arrow.conn) {
-      json.out = this.arrow.conn.toView.name;
-    }
-
-    if (this.model) {
-      json.model = this.model.jsonify();
-    }
-
-    return json;
-  }
-
-  showCounters(incoming, outgoing) {
-  /*
+	showCounters(incoming, outgoing) {
+		/*
     var msg = '';
 
     if (!isNaN(incoming)) msg += 'In: ' + incoming;
@@ -218,5 +214,5 @@ class ImageView {
     this.counters.attr({text: msg});
     this.counters.show();
     */
-  }
+	}
 }

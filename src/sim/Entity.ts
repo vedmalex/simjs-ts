@@ -12,7 +12,7 @@ import { Sim } from "./Sim";
 import { Store } from "./Store";
 
 export class Entity extends Model {
-	sim;
+	sim: Sim;
 	constructor(sim: Sim, name?: string) {
 		super(name);
 		this.sim = sim;
@@ -23,11 +23,7 @@ export class Entity extends Model {
 	}
 
 	setTimer(duration: number) {
-		const ro = new Request(
-			this,
-			this.sim.time(),
-			this.sim.time() + duration,
-		) as PQueueRequest;
+		const ro = new Request(this, this.sim.time(), this.sim.time() + duration) as PQueueRequest;
 
 		this.sim.queue.insert(ro);
 		return ro;
@@ -90,11 +86,7 @@ export class Entity extends Model {
 	}
 
 	send(message: unknown, delay: number, entities?: Entity | Array<Entity>) {
-		const ro = new Request(
-			this.sim,
-			this.time(),
-			this.time() + delay,
-		) as PQueueRequest;
+		const ro = new Request(this.sim, this.time(), this.time() + delay) as PQueueRequest;
 
 		ro.source = this;
 		ro.msg = message;

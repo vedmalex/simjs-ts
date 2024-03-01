@@ -1,5 +1,16 @@
 import * as Sim from "../index";
 
+export type AppModel = {
+	until: number;
+	seed: number;
+	objects: Array<{
+		type: string;
+		name: string;
+		out: string | Array<string>;
+		model: Record<string, any>;
+	}>;
+};
+
 const model = {
 	until: 25000,
 	seed: 1234,
@@ -57,6 +68,7 @@ class ServerModel {
 	infinite: boolean;
 	entity!: ServerEntity;
 	name: string;
+
 	constructor(sim: Sim.Sim, random: Sim.Random, name: string) {
 		this.name = name;
 		this.nservers = 1;
@@ -213,16 +225,6 @@ class MonitorModel {
 
 // -----
 
-export type AppModel = {
-	until: number;
-	seed: number;
-	objects: Array<{
-		type: string;
-		name: string;
-		out: string | Array<string>;
-	}>;
-};
-
 function QueueApp(init: AppModel) {
 	let until = 5000;
 	let seed = 1234;
@@ -232,7 +234,6 @@ function QueueApp(init: AppModel) {
 	var sim = new Sim.Sim();
 	var random = new Sim.Random(seed);
 
-	var len = init.objects.length;
 	const ModelList = new Map<string, any>();
 	// var ModelFactory = { queue: ServerModel, source: SourceModel, splitter: SplitterModel, monitor: MonitorModel };
 
@@ -244,7 +245,8 @@ function QueueApp(init: AppModel) {
 		else if (conf.type === "splitter") model = new SplitterModel(sim, random, conf.name, 0.5);
 		else throw "Cannot create model for " + conf.name;
 
-		//		for (prop in conf.model) model[prop] = conf.model[prop];
+		for (prop in conf.model) model[prop] = conf.model[prop];
+
 		ModelList.set(conf.name, model);
 		model.start();
 	}

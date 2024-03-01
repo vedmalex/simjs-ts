@@ -1,3 +1,4 @@
 import type { Argument } from "./Argument";
+import type { CallbackContext } from "./CallbackContext";
 
-export type Callback = ((...argument: Array<Argument>) => void) | undefined;
+export type Callback = ((this: CallbackContext, ...argument: Array<Argument>) => void) | undefined;

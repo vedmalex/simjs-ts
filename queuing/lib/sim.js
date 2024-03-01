@@ -1,4 +1,3 @@
-// @bun
 // src/sim/Model.ts
 class Model {
 	id;
@@ -289,10 +288,7 @@ class Queue extends Model {
 		this.timestamp = [];
 	}
 	report() {
-		return [
-			this.stats.sizeSeries.average(),
-			this.stats.durationSeries.average(),
-		];
+		return [this.stats.sizeSeries.average(), this.stats.durationSeries.average()];
 	}
 	empty() {
 		return this.data.length === 0;
@@ -660,12 +656,7 @@ class Request extends RequestBase {
 	}
 	waitUntil(delay, callback, context, argument) {
 		if (this.noRenege) return this;
-		const ro = this._addRequest(
-			this.scheduledAt + delay,
-			callback,
-			context,
-			argument,
-		);
+		const ro = this._addRequest(this.scheduledAt + delay, callback, context, argument);
 		this.entity.sim.queue.insert(ro);
 		return this;
 	}
@@ -748,10 +739,7 @@ class FacilityFCFS extends FacilityBase {
 	}
 	queue = new Queue();
 	use(duration, ro) {
-		if (
-			(this.maxqlen === 0 && !this.free) ||
-			(this.maxqlen > 0 && this.queue.size() >= this.maxqlen)
-		) {
+		if ((this.maxqlen === 0 && !this.free) || (this.maxqlen > 0 && this.queue.size() >= this.maxqlen)) {
 			ro.msg = -1;
 			ro.deliverAt = ro.entity.time();
 			ro.entity.sim.queue.insert(ro);
@@ -815,10 +803,8 @@ class FacilityLCFS extends FacilityBase {
 	currentRO;
 	use(duration, ro) {
 		if (this.currentRO) {
-			this.busyDuration +=
-				this.currentRO.entity.time() - this.currentRO.lastIssued;
-			this.currentRO.remaining =
-				this.currentRO.deliverAt - this.currentRO.entity.time();
+			this.busyDuration += this.currentRO.entity.time() - this.currentRO.lastIssued;
+			this.currentRO.remaining = this.currentRO.deliverAt - this.currentRO.entity.time();
 			this.queue.push(this.currentRO, ro.entity.time());
 		}
 		this.currentRO = ro;
@@ -886,11 +872,7 @@ class FacilityPS extends FacilityBase {
 			if (ev.ro === ro) {
 				continue;
 			}
-			const newev = new Request(
-				this,
-				current,
-				current + (ev.deliverAt - current) * multiplier,
-			);
+			const newev = new Request(this, current, current + (ev.deliverAt - current) * multiplier);
 			newev.ro = ev.ro;
 			newev.source = this;
 			newev.deliver = this.useProcessorSharingCallback;
@@ -899,11 +881,7 @@ class FacilityPS extends FacilityBase {
 			ro.entity.sim.queue.insert(newev);
 		}
 		if (isAdded) {
-			const newev = new Request(
-				this,
-				current,
-				current + ro.duration * (size + 1),
-			);
+			const newev = new Request(this, current, current + ro.duration * (size + 1));
 			newev.ro = ro;
 			newev.source = this;
 			newev.deliver = this.useProcessorSharingCallback;
@@ -985,8 +963,7 @@ class PQueue extends Model {
 			const leftChildIndex = 2 * index + 1;
 			const rightChildIndex = 2 * index + 2;
 			const smallerChildIndex =
-				rightChildIndex < len &&
-				!this.greater(a[rightChildIndex], a[leftChildIndex])
+				rightChildIndex < len && !this.greater(a[rightChildIndex], a[leftChildIndex])
 					? rightChildIndex
 					: leftChildIndex;
 			if (this.greater(a[smallerChildIndex], node)) {
@@ -1115,14 +1092,9 @@ class Sim {
 	}
 	addEntity(Klass, name, ...args) {
 		if (!Klass.prototype.start) {
-			throw new Error(
-				`Entity class ${Klass.name} must have start() function defined`,
-			);
+			throw new Error(`Entity class ${Klass.name} must have start() function defined`);
 		}
-		if (
-			typeof name === "string" &&
-			typeof this.entitiesByName[name] !== "undefined"
-		) {
+		if (typeof name === "string" && typeof this.entitiesByName[name] !== "undefined") {
 			throw new Error(`Entity name ${name} already exists`);
 		}
 		const entity = new Klass(this, name);
@@ -1234,10 +1206,7 @@ class Random {
 		this.mt[0] = s >>> 0;
 		for (this.mti = 1; this.mti < this.N; this.mti++) {
 			s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
-			this.mt[this.mti] =
-				((((s & 4294901760) >>> 16) * 1812433253) << 16) +
-				(s & 65535) * 1812433253 +
-				this.mti;
+			this.mt[this.mti] = ((((s & 4294901760) >>> 16) * 1812433253) << 16) + (s & 65535) * 1812433253 + this.mti;
 			this.mt[this.mti] >>>= 0;
 		}
 	}
@@ -1252,11 +1221,7 @@ class Random {
 		for (; k; k--) {
 			const s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
 			this.mt[i] =
-				(this.mt[i] ^
-					(((((s & 4294901760) >>> 16) * 1664525) << 16) +
-						(s & 65535) * 1664525)) +
-				initKey[j] +
-				j;
+				(this.mt[i] ^ (((((s & 4294901760) >>> 16) * 1664525) << 16) + (s & 65535) * 1664525)) + initKey[j] + j;
 			this.mt[i] >>>= 0;
 			i++;
 			j++;
@@ -1268,11 +1233,7 @@ class Random {
 		}
 		for (k = this.N - 1; k; k--) {
 			const s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
-			this.mt[i] =
-				(this.mt[i] ^
-					(((((s & 4294901760) >>> 16) * 1566083941) << 16) +
-						(s & 65535) * 1566083941)) -
-				i;
+			this.mt[i] = (this.mt[i] ^ (((((s & 4294901760) >>> 16) * 1566083941) << 16) + (s & 65535) * 1566083941)) - i;
 			this.mt[i] >>>= 0;
 			i++;
 			if (i >= this.N) {
@@ -1291,19 +1252,14 @@ class Random {
 				this.initGenrand(5489);
 			}
 			for (kk = 0; kk < this.N - this.M; kk++) {
-				y =
-					(this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
+				y = (this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
 				this.mt[kk] = this.mt[kk + this.M] ^ (y >>> 1) ^ mag01[y & 1];
 			}
 			for (; kk < this.N - 1; kk++) {
-				y =
-					(this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
-				this.mt[kk] =
-					this.mt[kk + (this.M - this.N)] ^ (y >>> 1) ^ mag01[y & 1];
+				y = (this.mt[kk] & this.UPPER_MASK) | (this.mt[kk + 1] & this.LOWER_MASK);
+				this.mt[kk] = this.mt[kk + (this.M - this.N)] ^ (y >>> 1) ^ mag01[y & 1];
 			}
-			y =
-				(this.mt[this.N - 1] & this.UPPER_MASK) |
-				(this.mt[0] & this.LOWER_MASK);
+			y = (this.mt[this.N - 1] & this.UPPER_MASK) | (this.mt[0] & this.LOWER_MASK);
 			this.mt[this.N - 1] = this.mt[this.M - 1] ^ (y >>> 1) ^ mag01[y & 1];
 			this.mti = 0;
 		}
@@ -1423,48 +1379,24 @@ class Random {
 }
 
 // src/index.ts
-if (typeof window !== "undefined") {
-	window.Sim = {
-		Buffer,
-		DataSeries,
-		Entity,
-		Event,
-		FacilityBase,
-		FacilityFCFS,
-		FacilityFabric,
-		FacilityLCFS,
-		FacilityPS,
-		CreateFacility,
-		Model,
-		PQueue,
-		Population,
-		Queue,
-		Random,
-		Request,
-		Sim,
-		Store,
-		TimeSeries,
-	};
-}
-export {
-	TimeSeries,
-	Store,
-	Sim,
-	Request,
-	Random,
-	Queue,
-	Population,
-	PQueue,
-	Model,
-	FacilityPS,
-	FacilityLCFS,
-	FacilityFabric,
-	FacilityFCFS,
-	FacilityBase,
-	Event,
-	Entity,
-	Discipline,
-	DataSeries,
-	CreateFacility,
+window.Sim = {
 	Buffer,
+	DataSeries,
+	Entity,
+	Event,
+	FacilityBase,
+	FacilityFCFS,
+	FacilityFabric,
+	FacilityLCFS,
+	FacilityPS,
+	CreateFacility,
+	Model,
+	PQueue,
+	Population,
+	Queue,
+	Random,
+	Request,
+	Sim,
+	Store,
+	TimeSeries,
 };
