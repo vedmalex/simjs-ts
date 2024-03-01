@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import type { PQueueRequest } from "../lib/request.js";
-import * as Sim from "../sim.js";
+import * as Sim from "../index";
+import type { PQueueRequest } from "../request/PQueueRequest";
 
 test("testPQueue", () => {
 	const dataset = [

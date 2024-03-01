@@ -17,9 +17,9 @@ export class DataSeries {
 
 	reset() {
 		this.Count = 0;
-		this.W = 0.0;
-		this.A = 0.0;
-		this.Q = 0.0;
+		this.W = 0;
+		this.A = 0;
+		this.Q = 0;
 		this.Max = -Infinity;
 		this.Min = Infinity;
 		this.Sum = 0;
@@ -113,110 +113,5 @@ export class DataSeries {
 
 	deviation() {
 		return Math.sqrt(this.variance());
-	}
-}
-
-export class TimeSeries {
-	dataSeries: DataSeries;
-	lastValue = NaN;
-	lastTimestamp = NaN;
-	constructor(name?: string) {
-		this.dataSeries = new DataSeries(name);
-	}
-
-	reset() {
-		this.dataSeries.reset();
-		this.lastValue = NaN;
-		this.lastTimestamp = NaN;
-	}
-
-	setHistogram(lower: number, upper: number, nbuckets: number) {
-		this.dataSeries.setHistogram(lower, upper, nbuckets);
-	}
-
-	getHistogram() {
-		return this.dataSeries.getHistogram();
-	}
-
-	record(value: number, timestamp: number) {
-		if (!Number.isNaN(this.lastTimestamp)) {
-			this.dataSeries.record(this.lastValue, timestamp - this.lastTimestamp);
-		}
-
-		this.lastValue = value;
-		this.lastTimestamp = timestamp;
-	}
-
-	finalize(timestamp: number) {
-		this.record(NaN, timestamp);
-	}
-
-	count() {
-		return this.dataSeries.count();
-	}
-
-	min() {
-		return this.dataSeries.min();
-	}
-
-	max() {
-		return this.dataSeries.max();
-	}
-
-	range() {
-		return this.dataSeries.range();
-	}
-
-	sum() {
-		return this.dataSeries.sum();
-	}
-
-	average() {
-		return this.dataSeries.average();
-	}
-
-	deviation() {
-		return this.dataSeries.deviation();
-	}
-
-	variance() {
-		return this.dataSeries.variance();
-	}
-}
-
-export class Population {
-	population: number;
-	sizeSeries: TimeSeries;
-	durationSeries: DataSeries;
-	constructor(public name?: string) {
-		this.name = name;
-		this.population = 0;
-		this.sizeSeries = new TimeSeries(name);
-		this.durationSeries = new DataSeries(name);
-	}
-
-	reset() {
-		this.sizeSeries.reset();
-		this.durationSeries.reset();
-		this.population = 0;
-	}
-
-	enter(timestamp: number) {
-		this.population++;
-		this.sizeSeries.record(this.population, timestamp);
-	}
-
-	leave(arrivalAt: number, leftAt: number) {
-		this.population--;
-		this.sizeSeries.record(this.population, leftAt);
-		this.durationSeries.record(leftAt - arrivalAt);
-	}
-
-	current() {
-		return this.population;
-	}
-
-	finalize(timestamp: number) {
-		this.sizeSeries.finalize(timestamp);
 	}
 }

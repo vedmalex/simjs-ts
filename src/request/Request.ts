@@ -1,46 +1,13 @@
-import { Buffer, Entity, Event, type FacilityT, Store } from "./sim.js";
-
-export type Callback = ((...argument: Array<Argument>) => void) | undefined;
-export type Context = unknown | undefined;
-export type Argument = (unknown | undefined) | Array<Argument>;
-
-export type PQueueRequest = Request & {
-	order: number;
-};
-
-export class RequestBase {
-	entity: unknown;
-	scheduledAt: number;
-	deliverAt: number;
-	deliveryPending = false;
-	callbacks: Array<[Callback, Context, Argument]> = [];
-	cancelled = false;
-	group: Array<RequestBase> | null = null;
-	source: unknown;
-	noRenege = false;
-	data: unknown;
-	msg: unknown;
-
-	constructor(entity: unknown, currentTime: number, deliverAt: number) {
-		this.entity = entity;
-		this.scheduledAt = currentTime;
-		this.deliverAt = deliverAt;
-	}
-
-	done(callback: unknown, context: Context, argument: Argument) {
-		this.callbacks.push([callback as Callback, context, argument]);
-		return this;
-	}
-
-	setData(data: unknown) {
-		this.data = data;
-		return this;
-	}
-
-	Null() {
-		return this;
-	}
-}
+import { Buffer } from "../sim/Buffer";
+import { Entity } from "../sim/Entity";
+import { Event } from "../sim/Event";
+import { Store } from "../sim/Store";
+import type { Argument } from "./Argument";
+import type { Callback } from "./Callback";
+import type { Context } from "./Context";
+import type { PQueueRequest } from "./PQueueRequest";
+import { RequestBase } from "./RequestBase";
+import { doCallback } from "./doCallback";
 
 export class Request extends RequestBase {
 	entity: Entity;
@@ -101,31 +68,16 @@ export class Request extends RequestBase {
 		return this;
 	}
 
-	waitUntil(
-		delay: number,
-		callback?: Callback,
-		context?: Context,
-		argument?: Argument,
-	) {
+	waitUntil(delay: number, callback?: Callback, context?: Context, argument?: Argument) {
 		if (this.noRenege) return this;
 
-		const ro = this._addRequest(
-			this.scheduledAt + delay,
-			callback,
-			context,
-			argument,
-		);
+		const ro = this._addRequest(this.scheduledAt + delay, callback, context, argument);
 
 		this.entity.sim.queue.insert(ro);
 		return this;
 	}
 
-	unlessEvent(
-		event: Event | Array<Event>,
-		callback?: Callback,
-		context?: Context,
-		argument?: Argument,
-	) {
+	unlessEvent(event: Event | Array<Event>, callback?: Callback, context?: Context, argument?: Argument) {
 		if (this.noRenege) return this;
 
 		if (event instanceof Event) {
@@ -161,14 +113,9 @@ export class Request extends RequestBase {
 		if (!this.callbacks) return;
 
 		if (this.group && this.group.length > 0) {
-			_doCallback.call(
-				this,
-				this.group[0].source,
-				this.msg,
-				this.group[0].data,
-			);
+			doCallback.call(this, this.group[0].source, this.msg, this.group[0].data);
 		} else {
-			_doCallback.call(this, this.source, this.msg, this.data);
+			doCallback.call(this, this.source, this.msg, this.data);
 		}
 	}
 
@@ -194,12 +141,7 @@ export class Request extends RequestBase {
 		return this;
 	}
 
-	_addRequest(
-		deliverAt: number,
-		callback: Callback,
-		context: Context,
-		argument: Argument,
-	) {
+	_addRequest(deliverAt: number, callback: Callback, context: Context, argument: Argument) {
 		const ro = new Request(this.entity, this.scheduledAt, deliverAt);
 
 		ro.callbacks.push([callback, context, argument]);
@@ -211,64 +153,5 @@ export class Request extends RequestBase {
 		this.group.push(ro);
 		ro.group = this.group;
 		return ro as unknown as PQueueRequest;
-	}
-}
-
-export const Requests = {
-	Entity: Request,
-} as const;
-
-export function createRequest<T extends keyof typeof Requests>(
-	source: T,
-	entity: (typeof Requests)[T],
-	currentTime: number,
-	deliverAt: number,
-): RequestBase {
-	switch (source) {
-		case "Entity":
-			return new Requests[source](entity, currentTime, deliverAt);
-		default:
-			return new RequestBase(entity, currentTime, deliverAt);
-	}
-}
-
-export type CallbackContext = {
-	callbackSource: unknown;
-	callbackMessage: unknown;
-	callbackData: unknown;
-};
-
-function _doCallback(
-	this: RequestBase,
-	source: unknown,
-	msg: unknown,
-	data: unknown,
-) {
-	for (let i = 0; i < this.callbacks.length; i++) {
-		const callback = this.callbacks[i][0];
-
-		if (!callback) continue;
-
-		let context = this.callbacks[i][1] as CallbackContext;
-
-		if (!context) context = this.entity as unknown as CallbackContext;
-
-		const argument = this.callbacks[i][2];
-
-		context.callbackSource = source;
-		context.callbackMessage = msg;
-		context.callbackData = data;
-
-		if (!argument) {
-			callback.call(context);
-		} else if (Array.isArray(argument)) {
-			callback.apply(context, argument);
-		} else {
-			callback.call(context, argument);
-		}
-
-		context.callbackSource = undefined;
-		context.callbackMessage = undefined;
-		context.callbackData = undefined;
 	}
 }

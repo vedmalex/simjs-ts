@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import * as Sim from "../sim.js";
+import * as Sim from "../index";
 
 test("testStartArguments", () => {
 	const sim = new Sim.Sim("simple");

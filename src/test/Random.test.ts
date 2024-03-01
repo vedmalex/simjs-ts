@@ -1,5 +1,5 @@
 import { test } from "bun:test";
-import { Random } from "../sim";
+import { Random } from "..";
 import { assertAlmost } from "./utils.test";
 
 /* eslint-disable camelcase */

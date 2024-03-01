@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import type { Callback } from "../lib/request.js";
-import * as Sim from "../sim.js";
+import * as Sim from "../index";
+import type { Callback } from "../request/Callback";
 
 let entities = 0;
 let finalized = 0;

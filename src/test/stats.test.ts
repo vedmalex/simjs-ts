@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import * as Sim from "../sim.js";
+import * as Sim from "../index";
 
 import { assertAlmost } from "./utils.test";
 

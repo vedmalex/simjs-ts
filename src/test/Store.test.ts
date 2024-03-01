@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import * as Sim from "../sim.js";
+import * as Sim from "../index";
 
 let entities = 0;
 let finalized = 0;
